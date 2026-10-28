@@ -5,7 +5,7 @@ license: MIT
 compatibility: DeepSeek Harness, an interactive Windows desktop with Proteus 8.17 SP2, Python 3.10+, and the full companion repository with its dependencies. Device definitions, project templates and firmware are local user-supplied inputs. Model access may require network access.
 metadata:
   author: "Fish for Proteus contributors"
-  version: "0.2.1"
+  version: "0.2.2"
   source: "https://github.com/Lorentz-Caldfilis/fish-proteus817-skill"
 ---
 

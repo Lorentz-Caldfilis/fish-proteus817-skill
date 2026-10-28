@@ -2,7 +2,23 @@
 
 [English README](../README.md) · [中文说明](../README.zh-CN.md)
 
-## Current publication revision: 0.2.1
+## Current patch: 0.2.2
+
+This patch addresses a user-observed split-edit failure: an imported device
+definition survived saving, but its placement template was unavailable after
+reopening unless an instance had already been placed. Recovery must use the
+selected definition already embedded in the project, preserve collision
+rejection and leave unrelated unsupported definitions alone.
+
+The bounded launcher also reports terminal progress without exposing model
+text, credentials or raw native logs. Its final stdout JSON and local evidence
+retain their existing roles. A terminal heartbeat is not a simulation pass.
+
+The original failed task is retained privately. This document does not predeclare
+new test, native, DSH, artifact or CI outcomes: results are bound to the actual
+0.2.2 source, packages and external validation summary after execution.
+
+## 0.2.1 publication revision
 
 Version 0.2.1 is an Alpha documentation and release-metadata revision for
 [fish-proteus817-skill](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill).

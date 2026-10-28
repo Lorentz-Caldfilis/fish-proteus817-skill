@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.2 — 2026-10-28
+
+- Restore placement templates for selected embedded device definitions after
+  saving and reopening, so import and placement can occur in different edits.
+  Existing definitions are not overwritten; unrelated unsupported definitions
+  are not eagerly instantiated.
+- Add bounded-launcher terminal progress while retaining final stdout JSON and
+  local event evidence. Progress excludes model text, credentials and raw logs.
+- Add regression coverage for split requests and process-output handling.
+  Actual checks and package identities accompany the 0.2.2 validation assets;
+  the original user failure remains recorded.
+
+中文：修复分次导入/保存重开后无法放置器件的问题，并补充终端进度，
+保留冲突拒绝、原始失败和逐版本证据边界。
+
 ## 0.2.1 — 2026-10-28
 
 - Prepare the clean public repository `Lorentz-Caldfilis/fish-proteus817-skill`

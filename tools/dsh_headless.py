@@ -16,6 +16,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import time
 
 # Bootstrap only paths derived from this trusted script, never the task input.
 # -I also omits the script directory, so register tools before its local import.
@@ -183,6 +184,88 @@ def design_input_manifest(args: argparse.Namespace) -> dict:
     return result
 
 
+def progress_snapshot(path: Path, allowed_actions: set[str]) -> dict:
+    """Read completed audit rows without exposing inputs, messages or paths."""
+    snapshot = {"tool_calls": 0, "blocked_calls": 0, "last_action": None, "last_status": None}
+    statuses = {"prepared", "built", "file_verified", "native_verified", "runtime_observed",
+                "runtime_verified", "passed", "blocked", "unsupported", "failed"}
+    try:
+        # A tool can be appending the last UTF-8/JSON line during this read.
+        # Only newline-terminated records are observations of completed calls.
+        lines = path.read_bytes().split(b"\n")[:-1]
+    except OSError:
+        return snapshot
+    for line in lines:
+        try:
+            row = json.loads(line)
+        except (ValueError, UnicodeDecodeError):
+            continue
+        if not isinstance(row, dict):
+            continue
+        action = row.get("action", row.get("operation"))
+        if not isinstance(action, str) or action not in allowed_actions:
+            continue
+        status = row.get("payload_status")
+        status = status if isinstance(status, str) and status in statuses else "unknown"
+        snapshot["tool_calls"] += 1
+        snapshot["blocked_calls"] += status in {"blocked", "unsupported", "failed"}
+        snapshot["last_action"], snapshot["last_status"] = action, status
+    return snapshot
+
+
+def communicate_with_progress(process: subprocess.Popen, task: str, *, timeout: float,
+                              audit_path: Path, allowed_actions: set[str],
+                              stream=None, interval: float = 10) -> tuple[str, str]:
+    """Drain one child while reporting safe metadata within one total deadline.
+
+    Retrying communicate after TimeoutExpired preserves buffered output. Input
+    is supplied only once; the retry never starts another model or resends it.
+    """
+    if timeout <= 0 or interval <= 0:
+        raise ValueError("Timeout and progress interval must be positive.")
+    stream = sys.stderr if stream is None else stream
+    started = time.monotonic()
+    deadline = started + timeout
+    first = True
+    def report(message):
+        # Progress is optional. A closed console must not interrupt draining or
+        # leave the paid child running after an unrelated display failure.
+        try:
+            print(message, file=stream, flush=True)
+        except (OSError, ValueError):
+            pass
+    report("[DSH] started; waiting for model/tool activity")
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise subprocess.TimeoutExpired(process.args, timeout)
+        try:
+            return process.communicate(task if first else None, timeout=min(interval, remaining))
+        except subprocess.TimeoutExpired:
+            if time.monotonic() >= deadline:
+                raise subprocess.TimeoutExpired(process.args, timeout) from None
+            progress = progress_snapshot(audit_path, allowed_actions)
+            last = (f"{progress['last_action']}/{progress['last_status']}"
+                    if progress["last_action"] is not None else "waiting")
+            report(f"[DSH] elapsed={int(time.monotonic()-started)}s; "
+                   f"tool_calls={progress['tool_calls']}; blocked={progress['blocked_calls']}; last={last}")
+        finally:
+            first = False
+
+
+def stop_owned_process(process: subprocess.Popen) -> None:
+    """Stop only the child returned by this launch, including its Windows tree."""
+    if process.poll() is not None:
+        return
+    if os.name == "nt":
+        subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                       capture_output=True, timeout=30, creationflags=subprocess.CREATE_NO_WINDOW)
+        if process.poll() is None:
+            process.kill()
+    else:
+        process.kill()
+
+
 def run(args: argparse.Namespace) -> dict:
     workspace = args.workspace.expanduser().resolve(strict=True)
     if workspace != REPOSITORY:
@@ -301,15 +384,18 @@ def run(args: argparse.Namespace) -> dict:
         stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace",
         creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
     )
-    timed_out = False
+    timed_out = cancelled = False
     try:
-        stdout, stderr = process.communicate(task, timeout=args.timeout)
+        stdout, stderr = communicate_with_progress(
+            process, task, timeout=args.timeout, audit_path=Path(plugin["config"]["auditPath"]),
+            allowed_actions=set(enabled))
     except subprocess.TimeoutExpired:
         timed_out = True
-        if os.name == "nt":
-            subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], capture_output=True, timeout=30)
-        else:
-            process.kill()
+        stop_owned_process(process)
+        stdout, stderr = process.communicate(timeout=30)
+    except KeyboardInterrupt:
+        cancelled = True
+        stop_owned_process(process)
         stdout, stderr = process.communicate(timeout=30)
     # Redact the launch credential even if an upstream error unexpectedly echoes it.
     secrets = {value for key, value in launch_env.items() if key in {"DEEPSEEK_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY"} and value}
@@ -320,7 +406,7 @@ def run(args: argparse.Namespace) -> dict:
     (output / "stderr.log").write_text(stderr, encoding="utf-8")
     summary = summarize_events(stdout, process.returncode)
     result = {
-        "status": "timeout" if timed_out else ("finished" if summary["agent_turn_completed"] else "error"),
+        "status": "cancelled" if cancelled else ("timeout" if timed_out else ("finished" if summary["agent_turn_completed"] else "error")),
         "started_utc": started,
         "ended_utc": datetime.now(timezone.utc).isoformat(),
         "workspace": str(workspace),
@@ -337,6 +423,7 @@ def run(args: argparse.Namespace) -> dict:
         "original_credential_store_modified": original_fingerprint != credential_fingerprint(credential_store),
         "exit_code": process.returncode,
         "timed_out": timed_out,
+        "cancelled": cancelled,
         "skill": installation["skill"],
         "events": str(output / "events.jsonl"),
         "diagnostics": str(output / "stderr.log"),
@@ -386,6 +473,8 @@ def main() -> int:
     try:
         result = probe(args.dsh_executable) if args.probe else run(args)
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        if result.get("status") == "cancelled":
+            return 130
         return 0 if result.get("status") in {"available", "finished"} else 1
     except (OSError, ValueError, subprocess.SubprocessError) as exc:
         print(json.dumps({"status": "error", "message": str(exc)}, ensure_ascii=False), file=sys.stderr)

@@ -8,7 +8,7 @@
       "path": "component_codec.py",
       "upstream_path": "api/component_codec.py",
       "original_git_blob_sha1": "8eeb01fdb7f32363488d6820cd0d618af80d9028",
-      "adapted_sha256": "7640cbe406a023d0edd887e49a71f4b36259ff40b88ca4510a032ca50f29de19"
+      "adapted_sha256": "c177392dee7d9ead67359498ae9b9dbd68267fd253560db40c396880b095b879"
     },
     {
       "path": "device_library.py",

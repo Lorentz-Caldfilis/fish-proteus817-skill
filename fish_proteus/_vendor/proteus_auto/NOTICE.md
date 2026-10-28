@@ -10,3 +10,8 @@ are excluded. Experimental clone/swap demo helpers are not public dependencies.
 Local modifications start with package-relative imports. Configuration and
 8.17 compatibility changes are recorded separately by the Fish implementation;
 upstream 8.16 native tests are not evidence that this adapted source works on 8.17.
+
+The component codec also restores a requested, previously imported embedded
+definition lazily after a save/reopen, sharing the existing validated template
+constructor. Definitions are not overwritten or reimported, unused definitions
+are not eagerly parsed, and a rejected add does not change the template cache.

@@ -265,6 +265,19 @@ class Circuit:
             _need(old_pointer in (self._root, self._default), "Unknown sheet-directory target")
             struct.pack_into("<I", dsn, pos + 2, old_pointer + delta)
             pos += 6
+        template = self._template_from_definition(name, dsn, metadata, entry["path"])
+        # Commit only after parsing and validating the entire imported dependency set.
+        self._dsn = bytes(dsn)
+        self._members["ROOT.DSN"] = self._dsn
+        self._root, self._default, self._directory = root, default, directory
+        self._body += delta
+        self.templates[name] = template
+        return self
+
+    def _template_from_definition(self, name, dsn, metadata, source):
+        """Construct a supported instance template without mutating a project."""
+        _need(metadata["pin_parse_status"] == "parsed", metadata["pin_parse_status"])
+        _need(name != "VPULSE", "VPULSE native instance serialization is not supported; metadata remains readable")
         geometry = symbol_pins(dsn, name)
         pins = [(pin['name'], pin['number']) for pin in geometry]
         if metadata['pinouts']:
@@ -323,7 +336,13 @@ class Circuit:
         defaults = metadata["sections"].get("COMPONENT", [])
         properties = "\n".join(defaults) + "\n"
         _need(len(properties) <= 65535 and properties.isascii(), "Unsupported device-default encoding")
-        prototype = next(iter(self.templates.values()))
+        prototype = next(iter(self.templates.values()), None)
+        if prototype is None:
+            # Only borrow the already recognized instance text styles. No donor
+            # definitions, instances or connections enter the current project.
+            fallback = Project(self._fallback_template)
+            _need(fallback._components, "No supported component prototype is available")
+            prototype = template_from_component(fallback, next(iter(fallback._components)))
         tails = [bytearray(tail) for tail in prototype["text_tails"]]
         for tail in tails:
             x, y = struct.unpack_from("<ii", tail)
@@ -353,20 +372,38 @@ class Circuit:
             "record_tag": 8 if any(re.match(r'\{?ACTIVE=', line)
                                   for line in metadata['sections'].get('DEVICE', [])) else 0,
             "show_properties": simple_analogue,
-            "library": entry["path"], "model_evidence": metadata["models"]}
-        # Commit only after parsing and validating the entire imported dependency set.
-        self._dsn = bytes(dsn)
-        self._members["ROOT.DSN"] = self._dsn
-        self._root, self._default, self._directory = root, default, directory
-        self._body += delta
-        self.templates[name] = template
-        return self
+            "library": source, "model_evidence": metadata["models"]}
+        return template
+
+    def _embedded_template(self, name):
+        """Lazily restore a saved but not yet instantiated device definition.
+
+        Other embedded devices remain unparsed until requested. This does not
+        reimport definitions, replace conflicting names or change native bytes.
+        """
+        from .device_library import definition_groups, describe_definition
+
+        definitions = definition_groups(self._dsn)
+        _need(name in definitions["devices"], "Device is not in the imported template library")
+        definition = definitions["devices"][name]
+        body = definition["body"]
+        required = {match.group().decode("ascii").rstrip("\0")
+                    for match in re.finditer(rb"\$[A-Z][A-Z0-9_]*\x00", body)}
+        _need(required <= definitions["graphics"].keys(),
+              f"Missing graphic dependencies: {sorted(required - definitions['graphics'].keys())}")
+        entry = {"name": name, "path": str(self.source), "library": "embedded",
+                 "timestamp": struct.unpack_from("<I", definition["entry"], 1 + len(name))[0]}
+        metadata = describe_definition(entry, body)
+        _need(metadata["name"] == name, "Embedded device identity changed")
+        return self._template_from_definition(name, self._dsn, metadata, entry["path"])
 
     def import_from_project(self, project, device):
         return self.import_device(device, donor_project=project)
 
     def add(self, device, ref, value, x, y, *, rotation=0, mirror_x=False, mirror_y=False, properties=None):
-        _need(device in self.templates, "Device is not in the imported template library")
+        template = self.templates.get(device)
+        if template is None:
+            template = self._embedded_template(device)
         _need(isinstance(ref, str) and re.fullmatch(r"[A-Z][A-Z0-9_]*[0-9][A-Z0-9_]*", ref), "Invalid reference")
         _need(len(ref) <= 63 and not any(part["ref"] == ref for part in self._parts), "Duplicate/oversized reference")
         _need(isinstance(value, str) and value and all(32 <= ord(c) < 127 for c in value), "Value must be printable ASCII")
@@ -377,7 +414,11 @@ class Circuit:
         part = {"device": device, "ref": ref, "value": value, "x": x, "y": y,
                 "rotation": rotation, "mirror_x": mirror_x, "mirror_y": mirror_y,
                 "properties": dict(properties or {})}
+        if device not in self.templates:
+            part["template"] = template
         self._validate(self._parts + [part], self._connections)
+        # A rejected add must not change even the template cache.
+        self.templates.setdefault(device, template)
         self._parts.append(part)
         return self
 

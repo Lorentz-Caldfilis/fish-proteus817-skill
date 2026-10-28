@@ -26,9 +26,9 @@
       "sha256": "3e02199fec930c4edab56bc6b5602b9c8dda6690c36fa0711e8605c5283e4927"
     },
     {
-      "bytes": 7220,
+      "bytes": 8028,
       "path": "CHANGELOG.md",
-      "sha256": "1000d33798782d7073d91680c1d016db3bd1a4dcdb142720fb29b28b8dc0776b"
+      "sha256": "2d210dc1b8c9995db0fae8d7eb4c979030f714cf902efd168734fc33ee4c4dad"
     },
     {
       "bytes": 2871,
@@ -56,14 +56,14 @@
       "sha256": "b68db94477127eda8ebc70141198558d51d7d4dc241b16b191241e11083b3ae2"
     },
     {
-      "bytes": 22217,
+      "bytes": 22278,
       "path": "README.md",
-      "sha256": "c5df32656afd80840166e3187d5bbe0d6c0c14213c1883529ef72b75b0ed047e"
+      "sha256": "3c55d23ffa69c74c5b577d3693e55967c2c1ec4fa2ecba135721584019b38cb2"
     },
     {
-      "bytes": 19178,
+      "bytes": 19279,
       "path": "README.zh-CN.md",
-      "sha256": "fff753a122c7455a9791cdc9383c9e105c53ef73d7f45db2529e772531ca4ae4"
+      "sha256": "120956fbc47f5ff1aaef8ebfef790ba2d989a5da60dfc35225e73fe56a2a6cfd"
     },
     {
       "bytes": 2962,
@@ -76,9 +76,9 @@
       "sha256": "6f459d919dc4331cc1f559a2a4efa9040f87ddce05259a9f980c7cd7edeeea76"
     },
     {
-      "bytes": 12601,
+      "bytes": 13254,
       "path": "docs/DEVELOPMENT.md",
-      "sha256": "e67f84436603b60a8a4390e08606a57c8336b76768acd402b5e6900ed736a4d1"
+      "sha256": "a56de676ccfeb468ca63b19254e1a6ec2a6f07a9433236c7f0c3c1f12392f71b"
     },
     {
       "bytes": 7345,
@@ -86,9 +86,9 @@
       "sha256": "ffb61795b4929973ab9e9fe0b32c2d407abb52c73c4ff24ef11eccba073c7480"
     },
     {
-      "bytes": 6807,
+      "bytes": 7652,
       "path": "docs/RELEASE_STATUS.md",
-      "sha256": "ec82639e505f6dafb8c60b476d306663afc9a2da2ccd0c036f1e63124582f5b9"
+      "sha256": "717fd8ce70654c09e64e5983bb0d2a15a9738418c82746ea4b5435b7892dad31"
     },
     {
       "bytes": 4268,
@@ -138,7 +138,7 @@
     {
       "bytes": 109,
       "path": "fish_proteus/__init__.py",
-      "sha256": "58fda2e14667d3e70cd0dc7a9710708d463b5219d255cfa67c41d42eaf88cd5d"
+      "sha256": "50fe1969af1d595c44f4e0074377efabac76d0a4b8adaa33cd06d0edf900ad2a"
     },
     {
       "bytes": 48,
@@ -156,14 +156,14 @@
       "sha256": "8dec42db2e2d6ffc455602c3916bc9cbc4d18f0027a55331270f7d6ae4afa329"
     },
     {
-      "bytes": 644,
+      "bytes": 958,
       "path": "fish_proteus/_vendor/proteus_auto/NOTICE.md",
-      "sha256": "52864ce2994428fc0ccaa91f2fc5fbd5f3fe05662c83f68d7be62e04c21f29f3"
+      "sha256": "294b9400934f217782b042a565a1475794e8ddc6495ad17b2064a9b19a54c55d"
     },
     {
       "bytes": 3367,
       "path": "fish_proteus/_vendor/proteus_auto/PROVENANCE.json",
-      "sha256": "5dcdef6649aa7a9006d935c06ebbd723350a5481c5c85bde4210e4eb4ef186ab"
+      "sha256": "d0a240d9360cf38acedceba6bf5192c3b0d2bc8ea92f8d862ba870e26db7e06f"
     },
     {
       "bytes": 78,
@@ -171,9 +171,9 @@
       "sha256": "1b685b627584d45f7dddc5db95b26c362f5430032109bb757fa4bf7aafe34fda"
     },
     {
-      "bytes": 54769,
+      "bytes": 57186,
       "path": "fish_proteus/_vendor/proteus_auto/component_codec.py",
-      "sha256": "7640cbe406a023d0edd887e49a71f4b36259ff40b88ca4510a032ca50f29de19"
+      "sha256": "c177392dee7d9ead67359498ae9b9dbd68267fd253560db40c396880b095b879"
     },
     {
       "bytes": 8035,
@@ -306,14 +306,14 @@
       "sha256": "e066e0caaa8d31630de101b136dc6e04d73cd6dce3e9f6f128e103c5b9a2af22"
     },
     {
-      "bytes": 4409,
+      "bytes": 4477,
       "path": "public-release.json",
-      "sha256": "ecf754a60a35755ca9d1c1e30d8eb63494ff0f645df6268cab9487651c731cb9"
+      "sha256": "f1588e62a886842e3b089d2f368b441815879622c5d251be7b22862738ce7322"
     },
     {
       "bytes": 1658,
       "path": "pyproject.toml",
-      "sha256": "f7154832cdb596f6a3f19f56e262bb30d716f415853180ef9b85b6ed02080890"
+      "sha256": "8b7501b4418bae8e1effef607d3d896f3d42c53502220f6c9eb33a2d6ae301a3"
     },
     {
       "bytes": 1573,
@@ -383,7 +383,7 @@
     {
       "bytes": 7179,
       "path": "skills/fish-proteus817/SKILL.md",
-      "sha256": "fb4642451d1efbfd9509d92422a973271356f5a3f6558a68955180b2ad9e5337"
+      "sha256": "b83863d7361aa78f7b2076f6047d0c659a6b6447ae2c5dad62d3f3813a80267d"
     },
     {
       "bytes": 6555,
@@ -434,6 +434,11 @@
       "bytes": 15073,
       "path": "tests/test_dsh_model_projection.py",
       "sha256": "4616062355624ab95ff5ee766d327b8cbd91b8c57738a42b4f7650e70b831a93"
+    },
+    {
+      "bytes": 11246,
+      "path": "tests/test_dsh_progress.py",
+      "sha256": "ad388b3de283f0c5ff323a1f53dd0c6afe7c0bf1f9c6f30ef6e163193b8d69e0"
     },
     {
       "bytes": 6102,
@@ -491,6 +496,11 @@
       "sha256": "67cf57cfed7e9d5b624c0037c525afdd1104bdef2ab04837a3fb586cdfb6decc"
     },
     {
+      "bytes": 6664,
+      "path": "tests/test_split_import.py",
+      "sha256": "0e246ec1b48ba0879026df60ee73c997e11a6d331fdc7ac5343873a8eb7a51cb"
+    },
+    {
       "bytes": 6630,
       "path": "tests/test_verification.py",
       "sha256": "cd391ee09b83072fa2620584bcd9bb9394a9edf4e7bfa38d3ec46cfcc0171cfa"
@@ -546,9 +556,9 @@
       "sha256": "8b447aabf105c887ae304a476419baf73f1759877c5af809e891084a95c6094a"
     },
     {
-      "bytes": 22220,
+      "bytes": 26353,
       "path": "tools/dsh_headless.py",
-      "sha256": "4b299fd74a12020e783f8ad37908e16c942ebc51805d6ef7ec2cc86c3e8d24c9"
+      "sha256": "277701ab912ecbeaeaa84aca2a9a36758bc6bdb442935fc072a6d97e3d8dcca7"
     },
     {
       "bytes": 3553,
@@ -582,5 +592,5 @@
     }
   ],
   "schema": "fish-proteus.public-manifest.v1",
-  "version": "0.2.1"
+  "version": "0.2.2"
 }

@@ -7,12 +7,13 @@ editing existing circuits, assigning firmware, running owned native sessions,
 and checking actual simulation results. **DeepSeek Harness (DSH)** uses a typed
 design tool; the three 8086 course workflows remain optional recipes.
 
-**Version 0.2.1 · Alpha · MIT · Target: Proteus 8.17 SP2 (8.17.37159)**
+**Version 0.2.2 · Alpha · MIT · Target: Proteus 8.17 SP2 (8.17.37159)**
 
 This is an experimental open-source Skill for the supported scope below.
-Version 0.2.1 updates public documentation and release metadata; its simulation
-implementation is unchanged from 0.2.0. See [release status](docs/RELEASE_STATUS.md)
-for the completed 0.2.0 baseline and the evidence rules for the new distribution.
+Version 0.2.2 addresses devices imported in one saved edit and placed in a later
+edit, and adds terminal progress for the bounded DSH launcher. See
+[release status](docs/RELEASE_STATUS.md) for version-specific evidence and the
+completed 0.2.0 baseline; supported formats and simulation scope remain bounded.
 
 ## Scope
 

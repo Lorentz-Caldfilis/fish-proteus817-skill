@@ -1,5 +1,17 @@
 # Development and maintenance
 
+## 0.2.2 split-edit regression
+
+Importing a definition, saving, reopening and only then placing an instance is
+a required workflow. Same-batch import-and-add tests do not cover it. The patch
+recovers only a selected embedded definition's template without overwriting
+definitions or parsing every unused device. Check empty and populated sheets,
+repeated reopening, duplicate-import refusal and unchanged source inputs.
+
+The DSH launcher must show bounded metadata-only progress while keeping its
+final stdout JSON and complete local evidence. Repeated communicate waits must
+not resend the task, duplicate model execution or reset the overall timeout.
+
 ## 0.2.0 development scope
 
 The 0.2.0 baseline has completed its supported local acceptance, including the

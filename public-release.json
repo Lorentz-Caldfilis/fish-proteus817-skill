@@ -87,6 +87,7 @@
     "tests/test_dsh_discovery.py",
     "tests/test_dsh_gate.py",
     "tests/test_dsh_model_projection.py",
+    "tests/test_dsh_progress.py",
     "tests/test_generic_acceptance.py",
     "tests/test_generic_config.py",
     "tests/test_generic_firmware.py",
@@ -98,6 +99,7 @@
     "tests/test_runtime_generic.py",
     "tests/test_runtime_timing.py",
     "tests/test_simulation_options.py",
+    "tests/test_split_import.py",
     "tests/test_verification.py",
     "tests/test_waveform.py",
     "tests/test_wire_orientation.py",
@@ -118,5 +120,5 @@
     "tools/vendor_provenance.py"
   ],
   "schema": "fish-proteus.public-source.v1",
-  "version": "0.2.1"
+  "version": "0.2.2"
 }
