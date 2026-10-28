@@ -1,0 +1,80 @@
+{
+  "schema": "fish-proteus.vendor.v1",
+  "repository": "https://github.com/kudoumakoto6523-design/Proteus_automatic_package",
+  "commit": "7439819a7ea4cff47fb9b321d8b0e97ac74fafb2",
+  "license": "MIT; LICENSE.upstream",
+  "files": [
+    {
+      "path": "component_codec.py",
+      "upstream_path": "api/component_codec.py",
+      "original_git_blob_sha1": "8eeb01fdb7f32363488d6820cd0d618af80d9028",
+      "adapted_sha256": "7640cbe406a023d0edd887e49a71f4b36259ff40b88ca4510a032ca50f29de19"
+    },
+    {
+      "path": "device_library.py",
+      "upstream_path": "api/device_library.py",
+      "original_git_blob_sha1": "c8d168ee8d03f90377a02aee2ad5217b06b100eb",
+      "adapted_sha256": "90b26388652cf3363bacbca447c583ba322bace826ab698b238144ee0d40134d"
+    },
+    {
+      "path": "interactive_native.py",
+      "upstream_path": "api/interactive_native.py",
+      "original_git_blob_sha1": "a79a8ac1b06efa783a1d9a14bd468804d86742c2",
+      "adapted_sha256": "707f4e801ab6d798c369a8697bf41c75ec9dc61d28cda2bd0205414ced7a0dec"
+    },
+    {
+      "path": "measurements.py",
+      "upstream_path": "api/measurements.py",
+      "original_git_blob_sha1": "b5d80c342861d4c9862814bb4cafa5fc2104bbc4",
+      "adapted_sha256": "350e8e61862938f69e0478718955477b8833ae12a89f76bde3d8a2cdfa0da966"
+    },
+    {
+      "path": "net_edit.py",
+      "upstream_path": "api/net_edit.py",
+      "original_git_blob_sha1": "f1e0822126573f58325e450f163694aaf3643fc5",
+      "adapted_sha256": "ee3b8595d66708dd193556bbf4935d8ea4c6991c07c2b762e19aac178dc93bc8"
+    },
+    {
+      "path": "net_objects.py",
+      "upstream_path": "api/net_objects.py",
+      "original_git_blob_sha1": "db18cca5ff09deeb34f46e543c455dc6988a50bf",
+      "adapted_sha256": "a7cc0b9486bc7971f0e589b804e241160092de23cbeea97806095d1f7a169a22"
+    },
+    {
+      "path": "pin_geometry.py",
+      "upstream_path": "api/pin_geometry.py",
+      "original_git_blob_sha1": "f15f89428304e6a10d372f8b75957a9bd84b113e",
+      "adapted_sha256": "c91f444c9fbb8cdd13bac8f4dac9629e5db35eccd0861c09306953bbcaf3c8e3"
+    },
+    {
+      "path": "proteus_native.py",
+      "upstream_path": "api/proteus_native.py",
+      "original_git_blob_sha1": "3f78a9bd35bd9e64d409f773d3d94d8a99795502",
+      "adapted_sha256": "7ed99ed11f4ddbd6247b4f86c39ba99bbd5887015dc7ad67a47a0bc93af48e0e"
+    },
+    {
+      "path": "proteus_project.py",
+      "upstream_path": "api/proteus_project.py",
+      "original_git_blob_sha1": "5ba7c023361525271466f341b30be1c17641b6cf",
+      "adapted_sha256": "38f3d5eeaf2ffb2366eb0f0fe4db730467609e66ce05a6dbe536ef8189d06e95"
+    },
+    {
+      "path": "proteus_session.py",
+      "upstream_path": "api/proteus_session.py",
+      "original_git_blob_sha1": "d42784fd5f0a38c675788586370a14dbd61e33a4",
+      "adapted_sha256": "343ea75cedef1787aa775ae3f710c000dda04dd12ace6c4a3c1a675af5fb2ba6"
+    },
+    {
+      "path": "simulation.py",
+      "upstream_path": "api/simulation.py",
+      "original_git_blob_sha1": "b73eefc8b52bebbabca9eaabf36b0fb5308d8b4c",
+      "adapted_sha256": "de5770a2b8f4d4b1a3d861eb1212565bbb6612aa34058282cb07f1781ff762da"
+    },
+    {
+      "path": "wire_codec.py",
+      "upstream_path": "api/wire_codec.py",
+      "original_git_blob_sha1": "6dbfcd8722f4c3e513c8441a8cf123ef9888ef0b",
+      "adapted_sha256": "e885fc1d57feec741ee2fe04bf1f69c95f38164e8e161b43cd33797368ba8896"
+    }
+  ]
+}

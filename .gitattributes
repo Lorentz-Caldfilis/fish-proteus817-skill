@@ -1,0 +1,8 @@
+* text=auto eol=lf
+# Evidence hashes refer to exact bytes, including native CRLF and whitespace.
+evidence/** -text -whitespace
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.zip -text
+*.whl -text

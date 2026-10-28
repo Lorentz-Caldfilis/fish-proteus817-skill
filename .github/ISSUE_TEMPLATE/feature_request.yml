@@ -1,0 +1,15 @@
+name: Feature request / 功能建议
+description: Describe a concrete supported workflow or compatibility improvement.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and desired outcome / 问题与目标
+      description: Identify the affected template or environment and how success could be observed.
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints and available public inputs / 约束与可公开资料
+      description: Link only material you have the right to share. Do not attach private course or account files.

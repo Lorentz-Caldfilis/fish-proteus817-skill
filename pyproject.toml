@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fish-for-proteus817"
+version = "0.2.1"
+description = "Composable circuit-design skill, native automation and 8086 workflows for Proteus 8.17 SP2"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md", "runtime_adaptation/LICENSE.upstream", "runtime_adaptation/NOTICE.md", "fish_proteus/_vendor/proteus_auto/LICENSE.upstream", "fish_proteus/_vendor/proteus_auto/NOTICE.md"]
+authors = [{name = "Fish for Proteus contributors"}]
+dependencies = []
+keywords = ["agent-skills", "deepseek-harness", "proteus", "8086", "8253", "8255"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Education",
+]
+
+[project.optional-dependencies]
+dsh = ["PyYAML>=6,<7"]
+
+[project.urls]
+Homepage = "https://github.com/Lorentz-Caldfilis/fish-proteus817-skill"
+Repository = "https://github.com/Lorentz-Caldfilis/fish-proteus817-skill"
+Issues = "https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/issues"
+
+[project.scripts]
+fish-proteus = "fish_proteus.cli:main"
+
+[tool.setuptools]
+packages = ["fish_proteus", "fish_proteus._vendor", "fish_proteus._vendor.proteus_auto", "runtime_adaptation"]
+include-package-data = false
+
+[tool.setuptools.package-data]
+runtime_adaptation = ["ocr.ps1", "LICENSE.upstream", "NOTICE.md"]
+"fish_proteus._vendor.proteus_auto" = ["LICENSE.upstream", "NOTICE.md", "PROVENANCE.json"]

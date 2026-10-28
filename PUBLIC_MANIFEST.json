@@ -1,0 +1,586 @@
+{
+  "files": [
+    {
+      "bytes": 188,
+      "path": ".gitattributes",
+      "sha256": "b7416285ae4af471503e2c2cf3fd4246bbc5d9a9f5c2df1e577704b2b0c930f0"
+    },
+    {
+      "bytes": 1314,
+      "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
+      "sha256": "deca75fa4a0f6528be439806f2052a0077cfe6696e0915db470c82fef6c614f9"
+    },
+    {
+      "bytes": 622,
+      "path": ".github/ISSUE_TEMPLATE/feature_request.yml",
+      "sha256": "1bd8fe7102ca72d2cbb44d09712e31c7c6eb2a6b6467830cc0d9c2e80fab69ab"
+    },
+    {
+      "bytes": 1770,
+      "path": ".github/workflows/ci.yml",
+      "sha256": "d9cb4d00e1bd8adb42f8508c144641f18093b9d60266692dad37cb86d49feeae"
+    },
+    {
+      "bytes": 663,
+      "path": ".gitignore",
+      "sha256": "3e02199fec930c4edab56bc6b5602b9c8dda6690c36fa0711e8605c5283e4927"
+    },
+    {
+      "bytes": 7220,
+      "path": "CHANGELOG.md",
+      "sha256": "1000d33798782d7073d91680c1d016db3bd1a4dcdb142720fb29b28b8dc0776b"
+    },
+    {
+      "bytes": 2871,
+      "path": "CONTRIBUTING.md",
+      "sha256": "a90464504dab2c7dfdb93b9b99cd0e6c2848cdf3356d72c7a4ea5c584641f5ae"
+    },
+    {
+      "bytes": 1086,
+      "path": "LICENSE",
+      "sha256": "9a4a87e7e9ea29254dbe9ef49fdced8d226eac8b26fc7e988da7b9f703655f46"
+    },
+    {
+      "bytes": 1795,
+      "path": "LICENSE.zh-CN.md",
+      "sha256": "21b56272aaf6c69ec5192718738e7102a26d28753aac163eccba6cceab6315f3"
+    },
+    {
+      "bytes": 1279,
+      "path": "MANIFEST.in",
+      "sha256": "739c643b874ef9ae9631fa7ce23a59b0a56c779768e621b9160fa4684a4f7e16"
+    },
+    {
+      "bytes": 9134,
+      "path": "PUBLICATION.md",
+      "sha256": "b68db94477127eda8ebc70141198558d51d7d4dc241b16b191241e11083b3ae2"
+    },
+    {
+      "bytes": 22217,
+      "path": "README.md",
+      "sha256": "c5df32656afd80840166e3187d5bbe0d6c0c14213c1883529ef72b75b0ed047e"
+    },
+    {
+      "bytes": 19178,
+      "path": "README.zh-CN.md",
+      "sha256": "fff753a122c7455a9791cdc9383c9e105c53ef73d7f45db2529e772531ca4ae4"
+    },
+    {
+      "bytes": 2962,
+      "path": "SECURITY.md",
+      "sha256": "c83e9fc42014fa88a2e59cd924d97d314c70eabe32e9a73d4aff9e27d36c540f"
+    },
+    {
+      "bytes": 4761,
+      "path": "THIRD_PARTY_NOTICES.md",
+      "sha256": "6f459d919dc4331cc1f559a2a4efa9040f87ddce05259a9f980c7cd7edeeea76"
+    },
+    {
+      "bytes": 12601,
+      "path": "docs/DEVELOPMENT.md",
+      "sha256": "e67f84436603b60a8a4390e08606a57c8336b76768acd402b5e6900ed736a4d1"
+    },
+    {
+      "bytes": 7345,
+      "path": "docs/GENERIC_API.md",
+      "sha256": "ffb61795b4929973ab9e9fe0b32c2d407abb52c73c4ff24ef11eccba073c7480"
+    },
+    {
+      "bytes": 6807,
+      "path": "docs/RELEASE_STATUS.md",
+      "sha256": "ec82639e505f6dafb8c60b476d306663afc9a2da2ccd0c036f1e63124582f5b9"
+    },
+    {
+      "bytes": 4268,
+      "path": "docs/SKILL_FORMAT.md",
+      "sha256": "4e4073023c5e28d2c123bdbb6e37bf51abce5d8b63fdce89d5401a4fb274c4ad"
+    },
+    {
+      "bytes": 28656,
+      "path": "docs/VALIDATION.md",
+      "sha256": "c61a9ee72c621be67d583122910c762f5f5636d20d8a25da0396c2479e7f8e20"
+    },
+    {
+      "bytes": 7876,
+      "path": "docs/design/ARCHITECTURE.md",
+      "sha256": "a2a582def03aac6bf0e110e84cb1f49e220b0afd5b8c1cb7f73bee746aeda2a0"
+    },
+    {
+      "bytes": 7194,
+      "path": "docs/design/DESIGN_STANDARD.md",
+      "sha256": "ca02b0e1af06680fb8b01ed21ec740c42975ba109abba9c821df0eac8e962f19"
+    },
+    {
+      "bytes": 10992,
+      "path": "docs/design/ROADMAP.md",
+      "sha256": "6a919f63788070dbafe0660ad9630376b7e661a17de848761c7b32abf3fbc117"
+    },
+    {
+      "bytes": 1361,
+      "path": "examples/stm32_gpio_follow/README.md",
+      "sha256": "2e6150880de1c0d80d45559818768283388e753310e2915e5ffd9e3100c88c12"
+    },
+    {
+      "bytes": 921,
+      "path": "examples/stm32_gpio_follow/main.c",
+      "sha256": "cd810c3623144e026c3c724eae67581830b0471cf0e50ba79997a08d3884714c"
+    },
+    {
+      "bytes": 576,
+      "path": "examples/stm32_gpio_follow/startup.S",
+      "sha256": "03232ae86ac483f602fbea31dbbe24377bdb19789c86d480527c7dda6959d497"
+    },
+    {
+      "bytes": 586,
+      "path": "examples/stm32_gpio_follow/stm32f103r6.ld",
+      "sha256": "fefb0a7ebe4a99c4ac17014a2ed780c0c1a64673e52782644e7d4db0d6c315c4"
+    },
+    {
+      "bytes": 109,
+      "path": "fish_proteus/__init__.py",
+      "sha256": "58fda2e14667d3e70cd0dc7a9710708d463b5219d255cfa67c41d42eaf88cd5d"
+    },
+    {
+      "bytes": 48,
+      "path": "fish_proteus/__main__.py",
+      "sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d"
+    },
+    {
+      "bytes": 85,
+      "path": "fish_proteus/_vendor/__init__.py",
+      "sha256": "492298028b8b381ca33c633ce2f2bc0bca5d8d6f653844935a703444a4616845"
+    },
+    {
+      "bytes": 1574,
+      "path": "fish_proteus/_vendor/proteus_auto/LICENSE.upstream",
+      "sha256": "8dec42db2e2d6ffc455602c3916bc9cbc4d18f0027a55331270f7d6ae4afa329"
+    },
+    {
+      "bytes": 644,
+      "path": "fish_proteus/_vendor/proteus_auto/NOTICE.md",
+      "sha256": "52864ce2994428fc0ccaa91f2fc5fbd5f3fe05662c83f68d7be62e04c21f29f3"
+    },
+    {
+      "bytes": 3367,
+      "path": "fish_proteus/_vendor/proteus_auto/PROVENANCE.json",
+      "sha256": "5dcdef6649aa7a9006d935c06ebbd723350a5481c5c85bde4210e4eb4ef186ab"
+    },
+    {
+      "bytes": 78,
+      "path": "fish_proteus/_vendor/proteus_auto/__init__.py",
+      "sha256": "1b685b627584d45f7dddc5db95b26c362f5430032109bb757fa4bf7aafe34fda"
+    },
+    {
+      "bytes": 54769,
+      "path": "fish_proteus/_vendor/proteus_auto/component_codec.py",
+      "sha256": "7640cbe406a023d0edd887e49a71f4b36259ff40b88ca4510a032ca50f29de19"
+    },
+    {
+      "bytes": 8035,
+      "path": "fish_proteus/_vendor/proteus_auto/device_library.py",
+      "sha256": "90b26388652cf3363bacbca447c583ba322bace826ab698b238144ee0d40134d"
+    },
+    {
+      "bytes": 15063,
+      "path": "fish_proteus/_vendor/proteus_auto/interactive_native.py",
+      "sha256": "707f4e801ab6d798c369a8697bf41c75ec9dc61d28cda2bd0205414ced7a0dec"
+    },
+    {
+      "bytes": 7901,
+      "path": "fish_proteus/_vendor/proteus_auto/measurements.py",
+      "sha256": "350e8e61862938f69e0478718955477b8833ae12a89f76bde3d8a2cdfa0da966"
+    },
+    {
+      "bytes": 6679,
+      "path": "fish_proteus/_vendor/proteus_auto/net_edit.py",
+      "sha256": "ee3b8595d66708dd193556bbf4935d8ea4c6991c07c2b762e19aac178dc93bc8"
+    },
+    {
+      "bytes": 23116,
+      "path": "fish_proteus/_vendor/proteus_auto/net_objects.py",
+      "sha256": "a7cc0b9486bc7971f0e589b804e241160092de23cbeea97806095d1f7a169a22"
+    },
+    {
+      "bytes": 7341,
+      "path": "fish_proteus/_vendor/proteus_auto/pin_geometry.py",
+      "sha256": "c91f444c9fbb8cdd13bac8f4dac9629e5db35eccd0861c09306953bbcaf3c8e3"
+    },
+    {
+      "bytes": 3257,
+      "path": "fish_proteus/_vendor/proteus_auto/proteus_native.py",
+      "sha256": "7ed99ed11f4ddbd6247b4f86c39ba99bbd5887015dc7ad67a47a0bc93af48e0e"
+    },
+    {
+      "bytes": 12089,
+      "path": "fish_proteus/_vendor/proteus_auto/proteus_project.py",
+      "sha256": "38f3d5eeaf2ffb2366eb0f0fe4db730467609e66ce05a6dbe536ef8189d06e95"
+    },
+    {
+      "bytes": 12888,
+      "path": "fish_proteus/_vendor/proteus_auto/proteus_session.py",
+      "sha256": "343ea75cedef1787aa775ae3f710c000dda04dd12ace6c4a3c1a675af5fb2ba6"
+    },
+    {
+      "bytes": 27676,
+      "path": "fish_proteus/_vendor/proteus_auto/simulation.py",
+      "sha256": "de5770a2b8f4d4b1a3d861eb1212565bbb6612aa34058282cb07f1781ff762da"
+    },
+    {
+      "bytes": 16837,
+      "path": "fish_proteus/_vendor/proteus_auto/wire_codec.py",
+      "sha256": "e885fc1d57feec741ee2fe04bf1f69c95f38164e8e161b43cd33797368ba8896"
+    },
+    {
+      "bytes": 3474,
+      "path": "fish_proteus/artifacts.py",
+      "sha256": "d5496f53fc337ad5e789f6aab44a047c27c49d5b192f9f15a3a7c65f4ccbcfcc"
+    },
+    {
+      "bytes": 11107,
+      "path": "fish_proteus/automation.py",
+      "sha256": "869107ee68256a83db7bebe99f6258cae323a260e97c43e83537831b9a74a7d8"
+    },
+    {
+      "bytes": 14618,
+      "path": "fish_proteus/build.py",
+      "sha256": "83c198153a8f65abf61a2415bd141a4a548271f3d466437a419c6ec90d187c65"
+    },
+    {
+      "bytes": 6677,
+      "path": "fish_proteus/cli.py",
+      "sha256": "3decb79f87f60cff5ee5021b31fb79949b6eecb8b7c3adf70b253d42d9e68822"
+    },
+    {
+      "bytes": 3543,
+      "path": "fish_proteus/config.py",
+      "sha256": "e9cbd2b3d16faed72428a5e337665b88c003fb5efaee953752b581ad325947a3"
+    },
+    {
+      "bytes": 15307,
+      "path": "fish_proteus/course.py",
+      "sha256": "56a00e1ee6b60c587333aa8b3ba722d42a85c2fdd84b88a30f3ba079d5fd1a34"
+    },
+    {
+      "bytes": 66483,
+      "path": "fish_proteus/design_cli.py",
+      "sha256": "cb2685853f91dafd6d2fd3c97a4c905885c3d194ed896ba8318019667ba7b383"
+    },
+    {
+      "bytes": 3175,
+      "path": "fish_proteus/environment.py",
+      "sha256": "5ba4327074e59b72357583f13326382b409caafd3dd9ac3464bfaa9d3fff3eb8"
+    },
+    {
+      "bytes": 9992,
+      "path": "fish_proteus/firmware.py",
+      "sha256": "873919dd02097bcc388ce34045d690edb178a185c5a32db4912b7bbf90c48df8"
+    },
+    {
+      "bytes": 11670,
+      "path": "fish_proteus/led_observation.py",
+      "sha256": "725940f90687e1ef78ed96e4aec385eae1d87f4a330b84be25456f94271f920a"
+    },
+    {
+      "bytes": 4079,
+      "path": "fish_proteus/netlist.py",
+      "sha256": "e109d39899c7066df76ae63c4012096f7f34538ed97f43ce01b31e4bb6cb6dfa"
+    },
+    {
+      "bytes": 12009,
+      "path": "fish_proteus/pin_observation.py",
+      "sha256": "86e55644e39078084abf380868f22cde48dedd8a8d333d53874f61d357f34efc"
+    },
+    {
+      "bytes": 6016,
+      "path": "fish_proteus/simulation_options.py",
+      "sha256": "07cfadccbd3e7eba5c439d45945d8b16013429cbaed938b39c25588e8cfe780e"
+    },
+    {
+      "bytes": 11210,
+      "path": "fish_proteus/verification.py",
+      "sha256": "a4d2aa1fde61d62ee377d0ff0ffd370ff7113537189f1e9665bd85925e1af8ad"
+    },
+    {
+      "bytes": 12771,
+      "path": "fish_proteus/waveform.py",
+      "sha256": "e066e0caaa8d31630de101b136dc6e04d73cd6dce3e9f6f128e103c5b9a2af22"
+    },
+    {
+      "bytes": 4409,
+      "path": "public-release.json",
+      "sha256": "ecf754a60a35755ca9d1c1e30d8eb63494ff0f645df6268cab9487651c731cb9"
+    },
+    {
+      "bytes": 1658,
+      "path": "pyproject.toml",
+      "sha256": "f7154832cdb596f6a3f19f56e262bb30d716f415853180ef9b85b6ed02080890"
+    },
+    {
+      "bytes": 1573,
+      "path": "runtime_adaptation/LICENSE.upstream",
+      "sha256": "5ae0fb1a3679efee0927cf115a2bc832b830351b175535447119111269010f3b"
+    },
+    {
+      "bytes": 1415,
+      "path": "runtime_adaptation/NOTICE.md",
+      "sha256": "85d83019ee40a3795ac3509b82aff80810e03d6dd1ac788fb8c8d6c11bcfad85"
+    },
+    {
+      "bytes": 64,
+      "path": "runtime_adaptation/__init__.py",
+      "sha256": "b7b8e8ae4dd4a7f5884679e6f8f9679765de8ae250428daee6b383774b61d65d"
+    },
+    {
+      "bytes": 2561,
+      "path": "runtime_adaptation/capture.py",
+      "sha256": "f4e7bcb7cf4026cb528313a4eb61fea5bad6cfb98d639ddc8323344009fa4f26"
+    },
+    {
+      "bytes": 18250,
+      "path": "runtime_adaptation/controller.py",
+      "sha256": "89eebb97e26d92ee6877902f6ab168f44d45862a02273d39ac07db283653efd8"
+    },
+    {
+      "bytes": 20483,
+      "path": "runtime_adaptation/generic.py",
+      "sha256": "a936bef58db88e1c037d5a73a84b3b39efa391c37130067ef33324df3fcfe56c"
+    },
+    {
+      "bytes": 1092,
+      "path": "runtime_adaptation/image_evidence.py",
+      "sha256": "a2cd8130a0e47dbd8789db92d8cdc333bcd771f65b087b9f5ed8c5c95aa74099"
+    },
+    {
+      "bytes": 4011,
+      "path": "runtime_adaptation/native.py",
+      "sha256": "10ba10ed97ea5e8dfea958159338ebbfee45522da4589f133ef0e5f259c0fe84"
+    },
+    {
+      "bytes": 2800,
+      "path": "runtime_adaptation/ocr.ps1",
+      "sha256": "ee77470fbc3a874fcf91dd6cc3261e8671521dd788c7f3029440c5d4cfcadbe9"
+    },
+    {
+      "bytes": 4876,
+      "path": "runtime_adaptation/profile817.py",
+      "sha256": "4021d875e375f8219181e872b76b68b92093674de84c4a3edbf5a37c2fbd6912"
+    },
+    {
+      "bytes": 19474,
+      "path": "runtime_adaptation/runner.py",
+      "sha256": "4abf558498ddeffbeec7b3fe79160a5afb4b2fd21e185c76e89f19d81635521e"
+    },
+    {
+      "bytes": 13076,
+      "path": "runtime_adaptation/session.py",
+      "sha256": "f60c0bfbaa446f96847f12363a8f1fe3f466f8354e7d667049b4e2cc92207f4d"
+    },
+    {
+      "bytes": 1086,
+      "path": "skills/fish-proteus817/LICENSE.txt",
+      "sha256": "9a4a87e7e9ea29254dbe9ef49fdced8d226eac8b26fc7e988da7b9f703655f46"
+    },
+    {
+      "bytes": 7179,
+      "path": "skills/fish-proteus817/SKILL.md",
+      "sha256": "fb4642451d1efbfd9509d92422a973271356f5a3f6558a68955180b2ad9e5337"
+    },
+    {
+      "bytes": 6555,
+      "path": "skills/fish-proteus817/references/cases-and-evidence.md",
+      "sha256": "378649ac835cdd4e137467e4ee5c4deb0b4ac44f6de2ebb92f9e1f96c4a69ccd"
+    },
+    {
+      "bytes": 11580,
+      "path": "skills/fish-proteus817/references/generic-api.md",
+      "sha256": "a314e60160229cdc45e3ca47f8b5bbca13cf1c0ef627debbd8780387fdf216e1"
+    },
+    {
+      "bytes": 4430,
+      "path": "skills/fish-proteus817/references/workflows-and-evidence.md",
+      "sha256": "922f1f6837911a1f7e165e17931df621048ba3399ce51ef22324d032412ab6a9"
+    },
+    {
+      "bytes": 8767,
+      "path": "tests/test_build.py",
+      "sha256": "8ba506b09a26a15428dd1c0e5f52f522a879b4addb2dbe39a628f86f1f68d48c"
+    },
+    {
+      "bytes": 2413,
+      "path": "tests/test_cli.py",
+      "sha256": "9355729541e36fa10f3a3bd1edc3d36ce0b92485421a3fc3b774183993029c44"
+    },
+    {
+      "bytes": 5883,
+      "path": "tests/test_course.py",
+      "sha256": "a86859bec112d7713d1b858fb4cbbf8e03e1d52f9d46a1323597331a66a40ded"
+    },
+    {
+      "bytes": 29226,
+      "path": "tests/test_design_tool.py",
+      "sha256": "c5c9fbb4d081093d23eae5b7d2996b0ada5a7f2c5f51c106ec1b4fc009008dfd"
+    },
+    {
+      "bytes": 3508,
+      "path": "tests/test_dsh_discovery.py",
+      "sha256": "b045a2309fa3e9b64f3219c146c7c907f1bf1b167e77cd3908e2d19fefebd91e"
+    },
+    {
+      "bytes": 4996,
+      "path": "tests/test_dsh_gate.py",
+      "sha256": "1a564aa2e3cc36faaaf4ffd5cb61ba41268e8b2cbe6f47d7ebe0a745a588f0c9"
+    },
+    {
+      "bytes": 15073,
+      "path": "tests/test_dsh_model_projection.py",
+      "sha256": "4616062355624ab95ff5ee766d327b8cbd91b8c57738a42b4f7650e70b831a93"
+    },
+    {
+      "bytes": 6102,
+      "path": "tests/test_generic_acceptance.py",
+      "sha256": "f5a018cf4b18fad2c3a7ead46f7d8990cb3e8787635fd8bfeabb677c9d8f8d79"
+    },
+    {
+      "bytes": 3721,
+      "path": "tests/test_generic_config.py",
+      "sha256": "e5091f2143435bcd53bb887b017ca69814969a8eaa60f1a51eedf6f99c47bdd7"
+    },
+    {
+      "bytes": 4976,
+      "path": "tests/test_generic_firmware.py",
+      "sha256": "0fef1c0db5037aaebbc322293e1a3b2d24e170369bd48932ecbca5f6cbb6ce75"
+    },
+    {
+      "bytes": 6972,
+      "path": "tests/test_generic_property_body.py",
+      "sha256": "d1bd73b08dc1f9f4a073b08b817085766feaf7762b9f5ba0ce536362b50118c4"
+    },
+    {
+      "bytes": 4495,
+      "path": "tests/test_led_observation.py",
+      "sha256": "b4f9740fb6448b2f14b8bd6ecf1049c4c1d2526ebfa8e3e867eedb8068ab053d"
+    },
+    {
+      "bytes": 7084,
+      "path": "tests/test_pin_observation.py",
+      "sha256": "a601098779aa21c7c1e76f8a2a04a7a02f58aee727c59672fdccdd607c025e9f"
+    },
+    {
+      "bytes": 6064,
+      "path": "tests/test_public_release.py",
+      "sha256": "812e62b64eb038ca65ed0dcfc8d50015add30b3f74ad0cb1d3bdd72c23b96018"
+    },
+    {
+      "bytes": 5481,
+      "path": "tests/test_runtime.py",
+      "sha256": "3981857732d3ceea09dff40168c2ad72571efe7fa1e2e3c036346203b45a6a67"
+    },
+    {
+      "bytes": 8385,
+      "path": "tests/test_runtime_generic.py",
+      "sha256": "2f88b963481c3be1fff20c9a982d2af3d9d26633d42218e9c359141b9a6948ee"
+    },
+    {
+      "bytes": 5806,
+      "path": "tests/test_runtime_timing.py",
+      "sha256": "49e2e838decbe9486b2afc8b51a043b06ee03c03fba5b026c81349081ee7eacb"
+    },
+    {
+      "bytes": 5233,
+      "path": "tests/test_simulation_options.py",
+      "sha256": "67cf57cfed7e9d5b624c0037c525afdd1104bdef2ab04837a3fb586cdfb6decc"
+    },
+    {
+      "bytes": 6630,
+      "path": "tests/test_verification.py",
+      "sha256": "cd391ee09b83072fa2620584bcd9bb9394a9edf4e7bfa38d3ec46cfcc0171cfa"
+    },
+    {
+      "bytes": 6979,
+      "path": "tests/test_waveform.py",
+      "sha256": "9fd6872ca53fe2e8d4077e3df98b90cf27a4fd9b8e246d34785024189baa6769"
+    },
+    {
+      "bytes": 6218,
+      "path": "tests/test_wire_orientation.py",
+      "sha256": "a8a9d7d53f7fb78192bc66527086a9ad22ba15519c6f3abd2ff04a38018c479b"
+    },
+    {
+      "bytes": 5536,
+      "path": "tools/acceptance.py",
+      "sha256": "9a68a1cad188a3e2451c36bb7bbe62d0b5fd6272a5a2b5a1e3b29e85e73d4a46"
+    },
+    {
+      "bytes": 3551,
+      "path": "tools/bootstrap_nasm.py",
+      "sha256": "204310e86c98a77831f2b062ba799125af5d753cfb894354e0327bb10e681027"
+    },
+    {
+      "bytes": 3329,
+      "path": "tools/build_stm32_demo.py",
+      "sha256": "d1a178dcb0e3fd82cc5c250d386feba7d6c8f076a1ee02254d1760584b4c0fc2"
+    },
+    {
+      "bytes": 1099,
+      "path": "tools/demo_task_100khz.txt",
+      "sha256": "10d7d5d7bcc1ed8262078e51181543c67f10f6a5d63a7a0eff0e39dd03f6d10c"
+    },
+    {
+      "bytes": 1819,
+      "path": "tools/demo_task_generic.txt",
+      "sha256": "6ec4dd41b371330b43281106f3ad826b7c54e9756cdcac3faf5808b56dcb8640"
+    },
+    {
+      "bytes": 2493,
+      "path": "tools/design_gate.py",
+      "sha256": "d4ffe3d66aa4137e8b427519edba66f2601efb5626472fc0804910c944196b05"
+    },
+    {
+      "bytes": 5510,
+      "path": "tools/dsh_cli_gate.py",
+      "sha256": "374f7050f5689be162821a27526aec429d00d5d9645042d7ec1e931e92ef06c5"
+    },
+    {
+      "bytes": 24350,
+      "path": "tools/dsh_design_tool.mjs",
+      "sha256": "8b447aabf105c887ae304a476419baf73f1759877c5af809e891084a95c6094a"
+    },
+    {
+      "bytes": 22220,
+      "path": "tools/dsh_headless.py",
+      "sha256": "4b299fd74a12020e783f8ad37908e16c942ebc51805d6ef7ec2cc86c3e8d24c9"
+    },
+    {
+      "bytes": 3553,
+      "path": "tools/dsh_install_skill.py",
+      "sha256": "512e9077fd27c2e0bb5369c92bc6faf87bc0460c210fcd9cb6dcb1bd523d5286"
+    },
+    {
+      "bytes": 5783,
+      "path": "tools/dsh_project_tool.mjs",
+      "sha256": "8ecf45c69bd2fb84fccd5edb134ce342d11d03acc3d2fcb4da3a0fa41375a9bd"
+    },
+    {
+      "bytes": 8798,
+      "path": "tools/generic_native_acceptance.py",
+      "sha256": "db681e4c9a565295004265f90665b9a67d54ac067851b6a0ea26bd9f181eb0b8"
+    },
+    {
+      "bytes": 29213,
+      "path": "tools/generic_structure_acceptance.py",
+      "sha256": "d00c743596c10ed93302f34b0ba6fd07bdf7398840b78a30729c4746e657b18e"
+    },
+    {
+      "bytes": 10836,
+      "path": "tools/public_release.py",
+      "sha256": "cf6d6cae53f6d18f99e3f15a2f3e6e281ceddaf83c4c30ee8fda339cdd60fae8"
+    },
+    {
+      "bytes": 1639,
+      "path": "tools/vendor_provenance.py",
+      "sha256": "47fa1bb7e17092feb3cd241f4f0122677ecaa061c089b0570a493e72ef4bcbea"
+    }
+  ],
+  "schema": "fish-proteus.public-manifest.v1",
+  "version": "0.2.1"
+}
