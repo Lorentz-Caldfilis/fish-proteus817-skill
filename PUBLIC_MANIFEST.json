@@ -441,9 +441,9 @@
       "sha256": "e567cb2cfd97b0fa530f402b1bf4e09df412aa1a072ef24cbc9629a5ed7dc003"
     },
     {
-      "bytes": 25779,
+      "bytes": 25945,
       "path": "tests/test_desktop_install.py",
-      "sha256": "1b9d8b589ef7e10619d8a3cac9518f7c428211457f1b432e225e20b6a9a47a7d"
+      "sha256": "ae116f71e7c3d1ed756efec114c291f63666d48fd1b76ae067e4a2782dc6b340"
     },
     {
       "bytes": 7320,

@@ -20,7 +20,9 @@ class DesktopInstallTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="fish-desktop-install-")
         self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
+        # Windows hosted runners may return an 8.3 TEMP spelling (RUNNER~1).
+        # Use the same canonical paths as installation preflight and mutation.
+        self.root = Path(self.temporary.name).resolve()
         self.repo = self.root / "repo with spaces"
         self.home = self.root / "dsh-home"
         self.profile = self.home / "profiles/desktop/cordis.patch.yml"
