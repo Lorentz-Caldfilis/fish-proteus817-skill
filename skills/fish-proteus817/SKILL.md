@@ -1,53 +1,38 @@
 ---
 name: fish-proteus817
-description: Create, inspect and edit supported Proteus 8.17 SP2 schematics from natural-language requests, using installed device definitions, pin connections, labels, terminals, power rails and firmware. Use the companion Python backend and typed DSH tool for owned native sessions, simulation sequences, binary controls, GPIO logs and existing graph CSV measurements. Includes 8086 course recipes.
+description: Design, edit and test supported Proteus 8.17 SP2 circuits from natural-language requests in DeepSeek Harness. Discover local devices and projects, build new schematics or modify copies, load firmware, run simulations and verify measured results. Includes optional 8086 course examples.
 license: MIT
-compatibility: DeepSeek Harness, an interactive Windows desktop with Proteus 8.17 SP2, Python 3.10+, and the full companion repository with its dependencies. Device definitions, project templates and firmware are local user-supplied inputs. Model access may require network access.
+compatibility: DeepSeek Harness desktop with the companion desktop tool installed once, Windows with Proteus 8.17 SP2, and Python 3.10+. Local device definitions, models and firmware depend on the task. Model access may require network access.
 metadata:
   author: "Fish for Proteus contributors"
-  version: "0.2.2"
+  version: "0.3.0"
   source: "https://github.com/Lorentz-Caldfilis/fish-proteus817-skill"
 ---
 
-# Proteus 8.17 SP2 design and simulation
+# Proteus design and simulation
 
-Compose circuits from actual device definitions, components, pins and nets. The three 8086 course cases are optional recipes. Supported file layouts, device definitions and native capabilities must be checked for the current task; this skill does not promise arbitrary Proteus formats, all devices, PCB routing or new graph/probe creation.
+Use `fish_proteus_design` to turn the user's circuit goal into an editable project and appropriate checks. Work from actual local devices, pins and models. Choose the design and verification method for the request; the course examples are optional recipes, not the available task set.
 
-Clone the [companion repository](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill) and follow its [setup instructions](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/blob/main/README.md). Copying this skill alone does not provide its Python CLI, native adapter or DSH launcher. Keep DSH, Python, project files and Proteus on the same Windows desktop. The skill license is [MIT](LICENSE.txt); proprietary installed resources remain separate.
+The [companion repository](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill) supplies the Python/native backend and a desktop installer. Copying this Skill alone does not register its tool. If `fish_proteus_design` is absent, report the missing desktop integration; do not simulate tool results. See [setup](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/blob/main/README.md). The Skill is [MIT](LICENSE.txt); installed Proteus resources remain separate.
 
-## Select the workflow
+## Work from the user's goal
 
-- For composable designs, use `fish_proteus_design`. Read [generic API](references/generic-api.md) for exact fields and [workflow and evidence](references/workflows-and-evidence.md) for planning and native verification.
-- For the supplied 8086 divider, cascade or K0-controlled 8255 examples, the legacy `fish_proteus` tool/CLI remains available. Read [course recipes](references/cases-and-evidence.md).
+Check `capabilities` when starting or diagnosing the environment. The desktop adapter automatically manages session-scoped tasks, revisions and storage. Use `task_create` for a distinct new design, `task_list`/`task_select` to resume another design, and `resource_register` when the user supplies a project or firmware. Do not ask the user to prepare internal IDs, job directories or launch arguments. Read [desktop workflow](references/desktop-workflow.md), or `help` topic `desktop`, when using these operations.
 
-The host fixes the task root, original input IDs, configuration and enabled actions. Use only those actions. Neither tool accepts arbitrary code, commands, executables or host paths. Do not broaden permissions, change directory ACLs, replace Proteus DLLs or modify global configuration to bypass a blocked route.
+Clarify material design choices that cannot be inferred from the request or available resources. Otherwise discover the installed libraries and relevant local samples, inspect definitions and choose a workable approach. Sample projects may supply a format container, device definition or an analysis instrument; distinguish these from the new circuit you design.
 
-In a bounded DSH deployment without file-reading tools, load those references through `fish_proteus_design` with `action="help"` and `topic="actions"`, `"edits"`, `"steps"`, `"assertions"` or `"workflow"`. Read the relevant topic before using its signatures.
+Use `create` for new topology, `open` for a recognized existing project, or explicit `stage` for supported native operations on an opaque project. An unsupported open is a reason to explain the limitation, not to replace the original with a blank design. Edits affect managed copies. Use `project_export` when the user wants a deliverable outside managed storage; report the actual generated project location.
 
-## Compose and inspect
+## Compose and check
 
-Start with `action="capabilities"`. Check the service/protocol, registered input IDs, allowed actions, installed resources and native profile probe. An implemented API or matching fingerprint is not a completed native/runtime test.
+Read the relevant [API contract](references/generic-api.md), also available as `help` topics `actions`, `edits`, `steps` and `assertions`, before unfamiliar calls. Inspect actual device pins and models before connecting; duplicate names can belong to different libraries. Coordinates are native integers: **100000 = 1 mm**.
 
-Search the installed library, then inspect the exact device with its enumerated library selector. Duplicate device names can exist in different libraries. Read actual pins, properties and model requirements before importing or connecting; do not infer pin names from screen positions. Coordinates are signed native integers: **100000 = 1 mm**. Read the exact method contract before choosing angles, labels or property values.
+Submit related edits atomically, then inspect the saved result. Desktop calls may omit `expected_revision`; explicit stale revisions are still rejected. Register firmware and use its returned ID for assignment. Bind interactive controls before opening the native session. Automatic wire routing connects pins but does not guarantee good visible layout.
 
-Use `create` to construct a new topology in a format template, `open` to preserve a recognized registered project, or explicit `stage` for an opaque existing project that needs native or bounded generator-property operations. A failed `open` must not be replaced silently with a blank circuit. Originals, donors, installed libraries and samples remain unchanged.
+## Simulate and evaluate
 
-Read the returned `current.revision`. Submit structured `edit.operations` with that `expected_revision`. Edits save a new managed project only after the entire batch succeeds. After changes, inspect the saved project and use the fresh revision. Resolve ambiguous devices, unknown objects or stale revisions instead of guessing. Automatic connectivity routing is not a general obstacle-avoidance layout engine; inspect visible layout when it matters.
+Choose measurements that establish the requested behavior. Read [workflow and evidence](references/workflows-and-evidence.md) for native sequences, power/model setup, timing, GPIO and existing graph CSV. For CM3 GPIO, configure the processor's supported trace property before opening the native session; the reference records the tested STM32 setting. Keep continuous stimulus/response steps in one `run_sequence`; separate calls start separate native sessions. Supported formats, devices and measurements must be checked for the task. Arbitrary Proteus versions, PCB routing and new graph/probe creation are not established capabilities.
 
-Assign firmware through registered/extracted firmware IDs. Literal PROGRAM/file/script paths are disabled in the typed tool. Before interactive input, bind controls in the file layer, save, and open a new native session so the bindings actually load.
+Verify against expectations chosen before measurement. Saved structure, native SDF, runtime observations and passed behavioral assertions are different results. A successful command or opened window does not prove circuit behavior; unavailable measurements stay unverified. Report actual results, project location and useful limits without making the user manage internal evidence plumbing.
 
-## Run and verify
-
-Use an enabled `run_sequence` to keep ordered steps in one Session/PID. It always attempts to stop and close its owned process, and saves the task copy by default. Native property changes and explicit saves require a stopped simulation. Do not edit the same project concurrently in another process. Separate sequences create separate sessions; collect a complete input/output response sequence in one call when continuity matters.
-
-The sequence can read native SDF, current simulation time, binary control position, CM3 GPIO events and existing graph CSV. Choose only a supported measurement method. A button/switch command or its mechanical position is not downstream GPIO, voltage or LED response. For graph-based analysis, use `export_graph` with `simulate=true` to clear/recalculate old data; preserve duplicate trace names with `occurrence` and reject out-of-range samples.
-
-Native LOGFILE is host-controlled and buffered until normal process close. Log/GPIO/error steps record their actual request clocks, then acquire final raw data after cleanup. Request GPIO while running/paused, before stopping; its returned `events` include only timestamps through that recorded clock. Keep each traced sequence in one engine epoch: test reset or stop/restart separately. Verification requires the complete final raw-log artifact and its hash, not a partial live file or clipboard view.
-
-Keep requested duration, measured native elapsed time, tolerance, overshoot and completion separate. If actual time is unavailable, retain `actual_time_verified=false` and `simulation_seconds=null`; never substitute wall time, sleep or the requested number. The course timer uses a native request and may lack OCR clock evidence; its counter behavior is independently checked from an actual scope trace.
-
-Verify against an independent design specification, truth table or numerical model. File structure, actual native SDF and measured behavior yield different evidence levels. A completed agent turn, schema check, file save, opened window or command acknowledgement does not establish the circuit behavior. Fresh artifact hashes and revision identity must match before verification.
-
-For the 8255 course recipe, output observation is D0..D7 LED illumination, not direct PB-register access. Require actual SDF wiring, independently read PA0 and same-simulation `1 -> 0 -> 1` with two stable frames per phase. Grey or ambiguous pin markers remain unknown.
-
-Report the task/circuit/session identity, project revision, input/firmware identity, parameters, actual observations, verification level, evidence references and any blocked stage. Do not turn missing evidence or unsupported capability into a pass.
+For the optional 8086 divider, cascade and 8255 examples, read [course recipes](references/cases-and-evidence.md). Existing specialized headless deployments retain their host-selected operations and input registration; those setup rules do not apply to normal desktop use.

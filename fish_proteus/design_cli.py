@@ -773,10 +773,11 @@ class DesignTask:
         run_root.mkdir(parents=True, exist_ok=False)
         snapshot = run_root / "project-input.pdsprj"
         shutil.copyfile(project, snapshot)
+        capture_log = any(step["op"] in {"log", "gpio_events", "errors"} for step in p["steps"])
         result = {"schema": "fish-proteus.design-run.v1", "request_id": request_id,
                   "project_before_sha256": _sha(project), "steps": [], "cleanup": {},
                   "status": "blocked", "actual_time_verified": False, "simulation_seconds": None,
-                  "log_complete": False, "final_active_clock": None,
+                  "log_complete": False, "log_capture_requested": capture_log, "final_active_clock": None,
                   "single_log_epoch": _single_log_epoch(p["steps"])}
         pending, deferred = [], []
         session = simulation = log_directory = None
@@ -805,9 +806,11 @@ class DesignTask:
             return key
 
         try:
-            log_directory = _make_log_directory(self.root)
-            logfile = log_directory / "native.log"
-            session = rt.Session(project, config=self.config(), logfile=logfile)
+            session_options = {"config": self.config()}
+            if capture_log:
+                log_directory = _make_log_directory(self.root)
+                session_options["logfile"] = log_directory / "native.log"
+            session = rt.Session(project, **session_options)
             simulation = rt.Simulation(session)
             result["session_id"] = str(getattr(session, "identity", {}).get("session_id", uuid.uuid4().hex))
             result["identity"] = getattr(session, "identity", {"pid": session.pid})
@@ -887,7 +890,7 @@ class DesignTask:
                         except (OSError, RuntimeError, TimeoutError) as cleanup_error:
                             result["cleanup"]["forced_cleanup_error"] = str(cleanup_error)
             try:
-                if session is not None:
+                if session is not None and capture_log:
                     metadata = dict(getattr(session, "log_metadata", {}) or {})
                     result["log_metadata"] = metadata
                     finalized = bool(getattr(session, "normal_closed", False)) and metadata.get("complete") is True and metadata.get("finalized_after_process_close") is True
@@ -997,7 +1000,7 @@ class DesignTask:
         self.record(snapshot, "project_snapshot", session_id=result.get("session_id"))
         result["run_artifact_id"] = run_record["artifact_id"]
         return result["status"], result, {"native_session_started": session is not None, "saved_project": native_saved,
-                                        "only_owned_process": True, "native_logfile_host_selected": True}
+                                        "only_owned_process": True, "native_logfile_host_selected": log_directory is not None}
 
     def _complete_log(self, record, data):
         _need(isinstance(data, dict) and data.get("log_complete") is True

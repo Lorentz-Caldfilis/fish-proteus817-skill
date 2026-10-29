@@ -1,5 +1,28 @@
 # Development and maintenance
 
+## Desktop integration target (2026-10-29)
+
+The next delivery must work in the installed DSH desktop after one setup.
+Ordinary natural-language tasks must not require headless launch arguments,
+predeclared input IDs or hand-created job directories. See the
+[desktop integration design](design/DESKTOP_INTEGRATION.md) for the current
+architecture and acceptance gates. Existing course recipes remain optional.
+Preserve earlier failed/incomplete runs, and verify actual normal-profile
+registration and session use separately from offline and headless tests.
+
+The desktop entry is a stable bootstrap: DSH 0.2.1-rc.3 retains the previous
+callback when an existing entry changes its module name. A configuration update
+must make that bootstrap import a new content-addressed implementation URL.
+Keep the bootstrap protocol stable and preserve installer-owned block boundaries.
+Local call audits record the loaded implementation URI and source identity.
+Use the real Agent session for task scope; do not restore the old global guard.
+
+Pure SDF/property sequences do not request LOGFILE. GPIO/log/error observations
+still require complete normal-close logging and matching hashes. The tested
+STM32F103R6 GPIO path needs its saved TRACE_GPIO configuration; the desktop
+preflight reports missing/disabled tracing before launching, without assuming
+that other microcontroller models support the same property.
+
 ## 0.2.2 split-edit regression
 
 Importing a definition, saving, reopening and only then placing an instance is

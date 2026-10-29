@@ -1,5 +1,10 @@
 # Generic file and runtime API
 
+For ordinary DSH desktop use, run the one-time desktop installer and use the
+[desktop task/resource contract](../skills/fish-proteus817/references/desktop-workflow.md).
+It manages session tasks, resource IDs and current revisions around this API;
+the Python examples and specialized CLI below remain available independently.
+
 The generic workflow composes real devices, pins and operations. The three 8086
 course cases remain separate recipes. Runtime support requires a licensed local
 Windows installation and a validated native build; a catalogue match alone

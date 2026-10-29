@@ -7,11 +7,12 @@ editing existing circuits, assigning firmware, running owned native sessions,
 and checking actual simulation results. **DeepSeek Harness (DSH)** uses a typed
 design tool; the three 8086 course workflows remain optional recipes.
 
-**Version 0.2.2 · Alpha · MIT · Target: Proteus 8.17 SP2 (8.17.37159)**
+**Version 0.3.0 · Alpha · MIT · Target: Proteus 8.17 SP2 (8.17.37159)**
 
 This is an experimental open-source Skill for the supported scope below.
-Version 0.2.2 addresses devices imported in one saved edit and placed in a later
-edit, and adds terminal progress for the bounded DSH launcher. See
+Version 0.3.0 adds one-time DSH desktop integration, automatic session tasks and
+on-demand local project/firmware registration. Split-edit import fixes and the
+specialized headless launcher remain available. See
 [release status](docs/RELEASE_STATUS.md) for version-specific evidence and the
 completed 0.2.0 baseline; supported formats and simulation scope remain bounded.
 
@@ -25,7 +26,7 @@ completed 0.2.0 baseline; supported formats and simulation scope remain bounded.
 | `Session` / `Simulation` | Own one process; read native SDF/properties; save; start/pause/stop/reset and request native timed intervals. | Interactive Windows and an exact supported native build/profile. |
 | Firmware and inputs | Check ELF/Intel HEX identity; assign and read back PROGRAM; bind BUTTON, SW-SPST, SW-SPST-MOM, SWITCH, LOGICSTATE and LOGICTOGGLE. | Two actuator slots per binary input, ten slots total; binding changes require save/reopen. |
 | Measurements | CM3 GPIO events with timestamps; existing graph CSV, duplicate trace occurrences and in-range interpolation. | GPIO events are digital states; existing analyses must be recalculated for fresh graph evidence. |
-| DSH | Revision-checked edit batches, registered input IDs, one-session native sequences and declarative assertions. | Host fixes paths and enabled actions; tool arguments contain domain operations. |
+| DSH desktop | Persistent tool registration, automatic session tasks, local resource discovery/registration, editable project export, native sequences and assertions. | One-time companion installation; actual device/model support remains task-specific. |
 
 Recorded local evidence includes 13 native structural candidates and six actual
 CM3 GPIO 0→1→0 sequences. The final 0.2.0 wheel passed representative native checks
@@ -83,14 +84,35 @@ set `$FishPython = (Get-Command python.exe).Source` and use that interpreter for
 installation and subsequent commands. The `dsh` extra installs PyYAML for
 credential-store handling and log redaction.
 
-Install the skill into this project's DSH discovery directory:
+Install the desktop integration once:
 
 ```powershell
-& $FishPython tools/dsh_install_skill.py
+& $FishPython tools/dsh_install_desktop.py
 ```
 
-This writes `.dsh/skills/fish-proteus817/`. An identical installation is reused;
-`--update` preserves a backup before replacing a differing installation.
+The installer adds the global Skill and one local-plugin entry to your existing
+DSH desktop profile, preserving backups and other settings. It stores the actual
+Python and repository paths. If desktop discovery needs help, supply
+`--dsh-executable 'C:\path\to\DeepSeek Harness.exe'` once. Keep the companion
+repository at that location. `--dry-run` checks readiness without writing;
+`--uninstall` removes this registration and restores a previous global Skill.
+
+Then use an ordinary DSH desktop conversation, for example:
+
+> Use the Proteus skill to create an RC low-pass schematic with R=2.2k and
+> C=100n. Add input/output labels, check the saved wiring and component values,
+> and give me the editable project location. Distinguish file checks from simulation.
+
+No per-task launch arguments, donor manifest or job directory is needed. The
+adapter discovers installed resources and manages separate tasks per conversation.
+Provide a local project or firmware path in your request when the task needs it.
+For multiple designs in one conversation, ask to create another task or resume
+an earlier one. See [desktop workflow](skills/fish-proteus817/references/desktop-workflow.md)
+for the tool contract and [release status](docs/RELEASE_STATUS.md) for actual
+desktop loading and acceptance results.
+
+`tools/dsh_install_skill.py` remains a project-only Skill installer for specialized
+deployments; by itself it does not register the desktop execution tool.
 
 ## Compose a circuit with Python
 
@@ -127,12 +149,12 @@ Saves validate source identity and refuse stale edits or implicit overwrites.
 The [Python API](docs/GENERIC_API.md) documents firmware, owned `Session` and
 `Simulation` calls, six input types, CM3 logs and existing graph CSV operations.
 
-## Use the generic DSH workflow
+## Optional: specialized headless acceptance
 
-The `fish_proteus_design` tool searches devices, edits a managed topology and
-verifies recorded evidence. Mutations carry `expected_revision`; project and
-firmware inputs use host-registered IDs. The default design allowlist enables
-file operations. Enable `run_sequence` explicitly for native execution.
+The following launch arguments are for isolated reproducible experiments,
+not ordinary desktop setup. In this specialized deployment, mutations carry
+`expected_revision`, inputs are host-registered, and `run_sequence` must be
+explicitly enabled. The desktop adapter manages these internals automatically.
 The read-only `help` action supplies the exact actions, edits, steps, assertions
 and workflow contract through the tool when filesystem access is disabled.
 

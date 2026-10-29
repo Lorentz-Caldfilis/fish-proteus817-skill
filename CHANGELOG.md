@@ -1,6 +1,24 @@
 # Changelog
 
+## 0.3.0 — 2026-10-29
+
+- Add one-time installation of the Skill and persistent tool into the existing
+  DSH desktop profile, with preserved settings, backups and uninstall support.
+- Manage tasks by real desktop session, discover installed resources, register
+  local projects/firmware during work and export editable project copies.
+- Fill current revisions internally while preserving explicit stale checks,
+  input identities, atomic edits and independent native evidence.
+- Rewrite the Skill around natural-language goals and resource selection;
+  retain course recipes and the bounded launcher as optional workflows.
+- Keep actual desktop, offline and native acceptance results separate in
+  the release record. Earlier incomplete runs remain incomplete.
+
+中文：一次安装后通过普通 DSH 桌面会话使用通用工具，自动管理任务和输入，
+不再要求日常准备启动参数；课程示例保持可选。
+
 ## 0.2.2 — 2026-10-28
+
+Not released as a separate distribution; these repairs are included in 0.3.0.
 
 - Restore placement templates for selected embedded device definitions after
   saving and reopening, so import and placement can occur in different edits.
@@ -9,6 +27,8 @@
 - Add bounded-launcher terminal progress while retaining final stdout JSON and
   local event evidence. Progress excludes model text, credentials and raw logs.
 - Add regression coverage for split requests and process-output handling.
+- Document the validated STM32/LOGICSTATE rail self-bindings, avoiding a native
+  netlist-compilation failure when only rail voltages and CPU aliases were set.
   Actual checks and package identities accompany the 0.2.2 validation assets;
   the original user failure remains recorded.
 

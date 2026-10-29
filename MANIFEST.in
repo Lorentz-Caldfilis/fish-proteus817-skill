@@ -14,6 +14,8 @@ include tools/acceptance.py tools/bootstrap_nasm.py tools/demo_task_100khz.txt
 include tools/dsh_cli_gate.py tools/dsh_headless.py tools/dsh_install_skill.py
 include tools/dsh_project_tool.mjs tools/public_release.py
 include tools/design_gate.py tools/dsh_design_tool.mjs tools/vendor_provenance.py
+include tools/desktop_gate.py tools/dsh_desktop_tool.mjs tools/dsh_desktop_bootstrap.mjs
+include tools/dsh_install_desktop.py
 include tools/demo_task_generic.txt
 include tools/generic_structure_acceptance.py
 include tools/generic_native_acceptance.py

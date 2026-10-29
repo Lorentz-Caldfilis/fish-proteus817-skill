@@ -4,9 +4,9 @@
 
 面向 Proteus 的 Agent Skill 与 Python 工具库：组合受支持的原理图、编辑既有电路、配置固件、运行自有原生会话，并检查实际仿真结果。**DeepSeek Harness（DSH）** 通过类型化设计工具执行任务；三个 8086 课程流程保留为可选 recipes。
 
-**版本 0.2.2 · Alpha · MIT 许可证 · 目标：Proteus 8.17 SP2（8.17.37159）**
+**版本 0.3.0 · Alpha · MIT 许可证 · 目标：Proteus 8.17 SP2（8.17.37159）**
 
-本项目以实验性开源 Skill 发布，支持范围如下。0.2.2 针对“导入后单独保存、下次再放置器件”的跨调用工作流修复模板恢复，并为受限 DSH 启动器增加终端进度。[发行状态](docs/RELEASE_STATUS.md)区分各版本的实际验证与已完成的 0.2.0 基线；支持格式和仿真能力边界保持。
+本项目以实验性开源 Skill 发布，支持范围如下。0.3.0 增加一次性 DSH 桌面接入、自动会话任务和任务中途工程/固件登记；保留分次导入修复及专用 headless 启动器。[发行状态](docs/RELEASE_STATUS.md)区分桌面验收、各版本实际检查与历史基线。
 
 ## 支持范围
 
@@ -18,7 +18,7 @@
 | `Session` / `Simulation` | 管理自有进程，读取原生 SDF/属性，保存，启停/暂停/复位及原生计时。 | 需要可交互 Windows 桌面和精确支持的原生构建配置。 |
 | 固件与输入 | ELF/Intel HEX 身份检查、PROGRAM 配置与回读；绑定 BUTTON、SW-SPST、SW-SPST-MOM、SWITCH、LOGICSTATE、LOGICTOGGLE。 | 每个二态输入占两个执行器槽，总共十槽；改绑定后须保存重开。 |
 | 测量 | 带时间戳的 CM3 GPIO 事件；已有图表 CSV、同名轨迹 occurrence 和范围内插值。 | GPIO 事件是数字状态；新图表证据必须重新计算已有分析。 |
-| DSH | revision 校验的编辑批次、登记输入 ID、同会话原生序列及声明式验证。 | 宿主固定路径和允许操作；工具参数为领域操作。 |
+| DSH 桌面 | 持久工具注册、自动会话任务、本地资源发现/登记、可编辑工程导出、原生序列及断言。 | 首次安装配套接入；实际器件/模型兼容性按任务确认。 |
 
 本机已记录 13 个原生结构候选及六类真实 CM3 GPIO 0→1→0。0.2.0 最终 wheel 已完成实际隔离安装和代表性原生验证，完成该版 G12 验收；每次发行仍须保留该包哈希和安装复核。真实 DSH 在同一受管项目上分文件设计与另行授权的运行续段完成闭环，本机已完成所述参考能力的受支持范围对齐验证。证据与 G01–G14 门槛见[验证说明](docs/VALIDATION.md)和[路线](docs/design/ROADMAP.md)。任意 Proteus 格式、PCB 布局和新建图表/探针不在本实现范围内。
 
@@ -51,13 +51,21 @@ $FishPython = (Resolve-Path .\.venv\Scripts\python.exe).Path
 
 虚拟环境是可选项。使用现有 Python 3.10+ 时，可设置 `$FishPython = (Get-Command python.exe).Source`，安装和运行均使用同一解释器。`dsh` 可选依赖安装 PyYAML，用于凭据存储处理和日志脱敏。
 
-安装项目级 DSH Skill：
+一次性安装桌面接入：
 
 ```powershell
-& $FishPython tools/dsh_install_skill.py
+& $FishPython tools/dsh_install_desktop.py
 ```
 
-安装位置为 `.dsh/skills/fish-proteus817/`。内容一致时复用现有安装；需要更新时使用 `--update`，不同版本会先备份再替换。
+安装器会安装全局 Skill，并仅向已有 DSH 桌面 profile 增加本插件，保留备份和其他设置。Python 与仓库绝对位置会持久保存，不依赖临时环境变量。自动发现 DSH 失败时，仅在首次安装补充 `--dsh-executable 'C:\你的路径\DeepSeek Harness.exe'`。请保留该仓库位置；`--dry-run` 只检查，`--uninstall` 撤销本插件并恢复此前全局 Skill。
+
+随后直接在普通 DSH 桌面会话中提出要求，例如：
+
+> 使用 Proteus skill 新建一个 R=2.2k、C=100n 的 RC 低通原理图，添加输入输出标签，检查保存后的连接和器件值，给出可编辑工程位置。请区分文件检查与仿真结果。
+
+不需要逐次准备启动参数、donor 清单或任务目录。工具自动发现安装资源，按对话隔离并管理任务；需要既有工程或固件时，在要求中给出本地路径即可。同一对话要设计另一个电路或继续旧设计，可以直接要求新建或切换任务。详见[桌面工作流](skills/fish-proteus817/references/desktop-workflow.md)；本机实际加载和验收结果见[发行状态](docs/RELEASE_STATUS.md)。
+
+`tools/dsh_install_skill.py` 保留用于专用部署的项目级 Skill 安装，单独执行它不会注册桌面工具。
 
 ## 使用 Python 组合电路
 
@@ -84,9 +92,9 @@ circuit.save(".work/new-filter.pdsprj")
 
 `ProteusConfig.discover()` 支持显式资源路径和当前进程的 `FISH_PROTEUS_EXE`、`FISH_PROTEUS_LIBRARY`、`FISH_PROTEUS_SAMPLES`、`FISH_PROTEUS_TEMPLATE`。安装资源保持只读。保存校验来源身份，拒绝陈旧修改和隐式覆盖。[Python API](docs/GENERIC_API.md) 说明固件、自有 `Session` / `Simulation`、六类输入、CM3 日志及已有图表 CSV 接口。
 
-## 在 DSH 中使用通用设计工具
+## 可选：专用 headless 验收
 
-`fish_proteus_design` 查询器件、编辑受管拓扑并验证已记录证据。修改携带 `expected_revision`，项目与固件使用宿主登记的输入 ID。design 默认白名单启用文件操作；原生运行须明确启用 `run_sequence`。
+以下启动参数只用于独立可复现实验，不是普通桌面使用的准备步骤。该专用部署中修改携带 `expected_revision`，输入由宿主登记，原生运行须明确启用 `run_sequence`；桌面工具自动管理这些内部参数。
 禁用文件系统工具时，模型可通过只读 `help` 动作取得 actions、edits、steps、assertions 与 workflow 的精确合约。
 
 显式 `stage` 可准备未经结构重建的工作副本，供受支持的原生或生成器操作使用；它不会让未知项目变成可重建的可编辑拓扑，`open` 失败也不能静默改走空白新建。

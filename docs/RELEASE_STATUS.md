@@ -2,7 +2,57 @@
 
 [English README](../README.md) · [中文说明](../README.zh-CN.md)
 
-## Current patch: 0.2.2
+## Current desktop integration: 0.3.0
+
+Version 0.3.0 adds a persistent ordinary-desktop plugin and session/task/resource
+management. The one-time installer preserves other profile settings and installs
+the global Skill. The specialized headless launcher remains optional.
+
+Actual normal-desktop acceptance: in the existing desktop conversation,
+the real selected model loaded Skill 0.3.0 and called `fish_proteus_design` with
+`capabilities`, returning `prepared` and the matching 8.17.37159 profile. No shell
+or headless invocation substituted for that call.
+
+In a separate ordinary desktop conversation, a natural-language RC design
+completed 41 backend calls, native SDF inspection, five passing structural
+assertions and editable-project export. The same conversation created an
+independent STM32 task and registered the supplied firmware during work. Its
+initial attempts omitted analog supply bindings and then GPIO trace setup;
+those failed/unobserved runs remain retained. After the trace prerequisite was
+added to the workflow reference and a steer message requested rereading it,
+the existing project passed GPIO 010, three actual native intervals of
+0.1/0.1/0.1025 seconds (each within 0.003 seconds) and no-errors assertions.
+This is a documented continuation, not an unassisted first-attempt claim.
+The previous RC task remained intact; an unsupported sample-open scratch task
+also remains recorded without a success claim.
+
+The persistent entry uses a stable bootstrap and content-addressed JS
+implementations. Actual subsequent tool audits recorded the new implementation
+URI after hot updates; ordinary profile settings and tool mode were preserved.
+Cold restart was checked without debugging flags: both existing desktop agents
+still exposed the tool and the task catalogue restored the previous designs.
+This startup check inspected the real registry; model-driven invocation is the
+separate desktop evidence above. The temporary verifier was removed, repeated
+installation returned `unchanged`, and all profile bytes outside the managed
+plugin block matched the original user configuration.
+
+The final clean source passed 245 offline tests (221 passed, 24 explicit optional
+environment skips). Official Skill validation, 12 vendor provenance checks and
+48 archive/source checks passed. The exact 0.3.0 wheel was installed in an
+isolated interpreter: six loaded module identities matched clean source, native
+structure/save/reopen, GPIO 010, timing, reset-stopped and fresh 41-row CSV
+passed. Installed desktop task creation, automatic revisions and a pure
+netlist-only native assertion also passed. An initial private harness attempt
+selected a non-ASCII LOGFILE path and was rejected; it remains recorded. The
+retry used the backend's owned ASCII staging and passed without a source change.
+Final artifact hashes and remote CI/publication identity belong to the release
+validation record, not to older 0.2.x assets.
+
+Pure native structural sequences no longer require a simulation LOGFILE when
+no log, GPIO or errors observation is requested. Full runtime logging and
+hash-based verification remain required for the corresponding assertions.
+
+## Retained 0.2.2 repairs and incomplete acceptance
 
 This patch addresses a user-observed split-edit failure: an imported device
 definition survived saving, but its placement template was unavailable after
@@ -17,6 +67,13 @@ retain their existing roles. A terminal heartbeat is not a simulation pass.
 The original failed task is retained privately. This document does not predeclare
 new test, native, DSH, artifact or CI outcomes: results are bound to the actual
 0.2.2 source, packages and external validation summary after execution.
+
+A generated-circuit follow-up isolated a separate power setup error: VCC/GND
+rail definitions lacked their same-name net bindings. With the same topology
+and firmware, adding only those bindings produced GPIO 010; the unchanged
+control case failed native compilation. The Skill reference and demo task now
+state the tested requirement. The initial whole-agent retry timed out; any
+guided continuation is recorded separately, not relabeled as a single-run pass.
 
 ## 0.2.1 publication revision
 

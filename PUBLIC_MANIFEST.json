@@ -26,9 +26,9 @@
       "sha256": "3e02199fec930c4edab56bc6b5602b9c8dda6690c36fa0711e8605c5283e4927"
     },
     {
-      "bytes": 8028,
+      "bytes": 9203,
       "path": "CHANGELOG.md",
-      "sha256": "2d210dc1b8c9995db0fae8d7eb4c979030f714cf902efd168734fc33ee4c4dad"
+      "sha256": "5d635527379609a7e53beeb35bec9c57e6b8eae1d3b27408276f14b805be05fb"
     },
     {
       "bytes": 2871,
@@ -46,9 +46,9 @@
       "sha256": "21b56272aaf6c69ec5192718738e7102a26d28753aac163eccba6cceab6315f3"
     },
     {
-      "bytes": 1279,
+      "bytes": 1405,
       "path": "MANIFEST.in",
-      "sha256": "739c643b874ef9ae9631fa7ce23a59b0a56c779768e621b9160fa4684a4f7e16"
+      "sha256": "6dc06f2bf9e934817ea0331d54df3c561677e5e5febf0baaca1e1fdc4cfc7d29"
     },
     {
       "bytes": 9134,
@@ -56,19 +56,19 @@
       "sha256": "b68db94477127eda8ebc70141198558d51d7d4dc241b16b191241e11083b3ae2"
     },
     {
-      "bytes": 22278,
+      "bytes": 23686,
       "path": "README.md",
-      "sha256": "3c55d23ffa69c74c5b577d3693e55967c2c1ec4fa2ecba135721584019b38cb2"
+      "sha256": "59650cbc43b8ecdea3911848e467cacfb7b14e9472b78963ddd05ebdc8659345"
     },
     {
-      "bytes": 19279,
+      "bytes": 20410,
       "path": "README.zh-CN.md",
-      "sha256": "120956fbc47f5ff1aaef8ebfef790ba2d989a5da60dfc35225e73fe56a2a6cfd"
+      "sha256": "e35f02e35a94406a5188856dbe85d500ef9bba92dd86bc007f78900c17a19558"
     },
     {
-      "bytes": 2962,
+      "bytes": 3107,
       "path": "SECURITY.md",
-      "sha256": "c83e9fc42014fa88a2e59cd924d97d314c70eabe32e9a73d4aff9e27d36c540f"
+      "sha256": "dcdbae52a0f33b221b418aaa1a3990e2d441ae890687d5eebc1ce63637cbf0f3"
     },
     {
       "bytes": 4761,
@@ -76,19 +76,19 @@
       "sha256": "6f459d919dc4331cc1f559a2a4efa9040f87ddce05259a9f980c7cd7edeeea76"
     },
     {
-      "bytes": 13254,
+      "bytes": 14655,
       "path": "docs/DEVELOPMENT.md",
-      "sha256": "a56de676ccfeb468ca63b19254e1a6ec2a6f07a9433236c7f0c3c1f12392f71b"
+      "sha256": "c82324a03dc0ad0797206f9035e99394e167ed21170e395f592723b82197fd0f"
     },
     {
-      "bytes": 7345,
+      "bytes": 7671,
       "path": "docs/GENERIC_API.md",
-      "sha256": "ffb61795b4929973ab9e9fe0b32c2d407abb52c73c4ff24ef11eccba073c7480"
+      "sha256": "a9d868206cb343e8aac9b5631964b81e52b8489190bd11b198f78f1a78fbfd1f"
     },
     {
-      "bytes": 7652,
+      "bytes": 11304,
       "path": "docs/RELEASE_STATUS.md",
-      "sha256": "717fd8ce70654c09e64e5983bb0d2a15a9738418c82746ea4b5435b7892dad31"
+      "sha256": "9ecf68ea43bbda948c01c82bb034fd359b9966466b429c26c332766bb83e27ff"
     },
     {
       "bytes": 4268,
@@ -109,6 +109,11 @@
       "bytes": 7194,
       "path": "docs/design/DESIGN_STANDARD.md",
       "sha256": "ca02b0e1af06680fb8b01ed21ec740c42975ba109abba9c821df0eac8e962f19"
+    },
+    {
+      "bytes": 5365,
+      "path": "docs/design/DESKTOP_INTEGRATION.md",
+      "sha256": "ed493e3beffce445ae9822120b9b5497d8c9340a691e15bade56510578961a99"
     },
     {
       "bytes": 10992,
@@ -138,7 +143,7 @@
     {
       "bytes": 109,
       "path": "fish_proteus/__init__.py",
-      "sha256": "50fe1969af1d595c44f4e0074377efabac76d0a4b8adaa33cd06d0edf900ad2a"
+      "sha256": "9eb8d5a6c0b88258d9cce0b07a46c3ade32c28d9f00841a931bc865c934278bd"
     },
     {
       "bytes": 48,
@@ -261,9 +266,14 @@
       "sha256": "56a00e1ee6b60c587333aa8b3ba722d42a85c2fdd84b88a30f3ba079d5fd1a34"
     },
     {
-      "bytes": 66483,
+      "bytes": 66746,
       "path": "fish_proteus/design_cli.py",
-      "sha256": "cb2685853f91dafd6d2fd3c97a4c905885c3d194ed896ba8318019667ba7b383"
+      "sha256": "99af2076335b2a375bb5e3abf8678423cffe484e5c808e9a25ac61e0356d2935"
+    },
+    {
+      "bytes": 29303,
+      "path": "fish_proteus/desktop.py",
+      "sha256": "972317723dde490125167e698a4eb4fecbc1459e8e183db923df13cb60e4f4eb"
     },
     {
       "bytes": 3175,
@@ -306,14 +316,14 @@
       "sha256": "e066e0caaa8d31630de101b136dc6e04d73cd6dce3e9f6f128e103c5b9a2af22"
     },
     {
-      "bytes": 4477,
+      "bytes": 4896,
       "path": "public-release.json",
-      "sha256": "f1588e62a886842e3b089d2f368b441815879622c5d251be7b22862738ce7322"
+      "sha256": "47217631426433c731c672e73748e24e67070de9a403b8b84a66e415074b0d70"
     },
     {
       "bytes": 1658,
       "path": "pyproject.toml",
-      "sha256": "8b7501b4418bae8e1effef607d3d896f3d42c53502220f6c9eb33a2d6ae301a3"
+      "sha256": "ec8d4d43e1262abea2dea79a7e5839913d33f9054e16671f18303a31985d5f5b"
     },
     {
       "bytes": 1573,
@@ -381,9 +391,9 @@
       "sha256": "9a4a87e7e9ea29254dbe9ef49fdced8d226eac8b26fc7e988da7b9f703655f46"
     },
     {
-      "bytes": 7179,
+      "bytes": 4879,
       "path": "skills/fish-proteus817/SKILL.md",
-      "sha256": "b83863d7361aa78f7b2076f6047d0c659a6b6447ae2c5dad62d3f3813a80267d"
+      "sha256": "2237dcbd4bf1fbfb769ebbe942f9fb6ac2c2b729a8fee74d932d84143286b838"
     },
     {
       "bytes": 6555,
@@ -391,14 +401,19 @@
       "sha256": "378649ac835cdd4e137467e4ee5c4deb0b4ac44f6de2ebb92f9e1f96c4a69ccd"
     },
     {
-      "bytes": 11580,
-      "path": "skills/fish-proteus817/references/generic-api.md",
-      "sha256": "a314e60160229cdc45e3ca47f8b5bbca13cf1c0ef627debbd8780387fdf216e1"
+      "bytes": 4492,
+      "path": "skills/fish-proteus817/references/desktop-workflow.md",
+      "sha256": "f62304141fc6d72fac39c2de14bf764b3588c92b0504bdbefbae9ce68a7cc811"
     },
     {
-      "bytes": 4430,
+      "bytes": 12236,
+      "path": "skills/fish-proteus817/references/generic-api.md",
+      "sha256": "8baffd4741f908814ab51ec2b71f75099b55ecc39b0166ed3eb92b0587ba92e0"
+    },
+    {
+      "bytes": 5611,
       "path": "skills/fish-proteus817/references/workflows-and-evidence.md",
-      "sha256": "922f1f6837911a1f7e165e17931df621048ba3399ce51ef22324d032412ab6a9"
+      "sha256": "013c3cf9c8f9e1f0876b64020a93d24f9c93fcd0eb607e1fbec4f852c1da663c"
     },
     {
       "bytes": 8767,
@@ -416,9 +431,24 @@
       "sha256": "a86859bec112d7713d1b858fb4cbbf8e03e1d52f9d46a1323597331a66a40ded"
     },
     {
-      "bytes": 29226,
+      "bytes": 29382,
       "path": "tests/test_design_tool.py",
-      "sha256": "c5c9fbb4d081093d23eae5b7d2996b0ada5a7f2c5f51c106ec1b4fc009008dfd"
+      "sha256": "4c75ee3ca36875b2b21bc02e39f0c9ec930a86c4a9f03e45e76d64b614414910"
+    },
+    {
+      "bytes": 27497,
+      "path": "tests/test_desktop.py",
+      "sha256": "e567cb2cfd97b0fa530f402b1bf4e09df412aa1a072ef24cbc9629a5ed7dc003"
+    },
+    {
+      "bytes": 25779,
+      "path": "tests/test_desktop_install.py",
+      "sha256": "1b9d8b589ef7e10619d8a3cac9518f7c428211457f1b432e225e20b6a9a47a7d"
+    },
+    {
+      "bytes": 7320,
+      "path": "tests/test_desktop_tool.py",
+      "sha256": "4c3cf0c4ac078a60782a8ed15631ce51b8b33584221fbc6cdf0544f257cb9c8d"
     },
     {
       "bytes": 3508,
@@ -464,6 +494,11 @@
       "bytes": 4495,
       "path": "tests/test_led_observation.py",
       "sha256": "b4f9740fb6448b2f14b8bd6ecf1049c4c1d2526ebfa8e3e867eedb8068ab053d"
+    },
+    {
+      "bytes": 7061,
+      "path": "tests/test_native_structure_sequence.py",
+      "sha256": "e3e1547fba46bd8a78ff52a1536ad9819b75e0329c7dda9139eb6a7bf0b0f797"
     },
     {
       "bytes": 7084,
@@ -536,14 +571,19 @@
       "sha256": "10d7d5d7bcc1ed8262078e51181543c67f10f6a5d63a7a0eff0e39dd03f6d10c"
     },
     {
-      "bytes": 1819,
+      "bytes": 2095,
       "path": "tools/demo_task_generic.txt",
-      "sha256": "6ec4dd41b371330b43281106f3ad826b7c54e9756cdcac3faf5808b56dcb8640"
+      "sha256": "ea7d93f22b687826cac61fcf517e89fded93539d30853fa3c4782803c6357531"
     },
     {
       "bytes": 2493,
       "path": "tools/design_gate.py",
       "sha256": "d4ffe3d66aa4137e8b427519edba66f2601efb5626472fc0804910c944196b05"
+    },
+    {
+      "bytes": 2042,
+      "path": "tools/desktop_gate.py",
+      "sha256": "c8cedbe6a4d98fe2323fe3b1549c4c6099256464a265e088b16c9a879309143d"
     },
     {
       "bytes": 5510,
@@ -556,9 +596,24 @@
       "sha256": "8b447aabf105c887ae304a476419baf73f1759877c5af809e891084a95c6094a"
     },
     {
+      "bytes": 513,
+      "path": "tools/dsh_desktop_bootstrap.mjs",
+      "sha256": "01f7369ed8c07be2466323aa47dfb9842b10da74829bdee1ca413138cb10d21e"
+    },
+    {
+      "bytes": 10324,
+      "path": "tools/dsh_desktop_tool.mjs",
+      "sha256": "cdb315e6762696ecdce02632a57f18ece0de5497cd2d1ce76cba68a655f309a8"
+    },
+    {
       "bytes": 26353,
       "path": "tools/dsh_headless.py",
       "sha256": "277701ab912ecbeaeaa84aca2a9a36758bc6bdb442935fc072a6d97e3d8dcca7"
+    },
+    {
+      "bytes": 31642,
+      "path": "tools/dsh_install_desktop.py",
+      "sha256": "07ec056f11f76f1af4e3aec33fb5d47dc34eb90eae0164a1c813ebd83017a613"
     },
     {
       "bytes": 3553,
@@ -592,5 +647,5 @@
     }
   ],
   "schema": "fish-proteus.public-manifest.v1",
-  "version": "0.2.2"
+  "version": "0.3.0"
 }

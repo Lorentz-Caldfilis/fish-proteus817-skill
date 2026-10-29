@@ -116,12 +116,13 @@ class NativeSessionDouble(RuntimeSession):
         self.calls = []
         self.closed = False
         self.normal_closed = False
-        self.logfile = Path(logfile)
+        self.logfile = Path(logfile) if logfile is not None else None
         self.final_logfile_sha256 = None
         self.log_metadata = {"complete": False, "finalized_after_process_close": False}
         self._final_log_text = None
         self.last_active_status = None
-        self.logfile.write_text("#T:[GPIO] drive PIO0.1 = 0\n%T=0\n", encoding="utf8")
+        if self.logfile is not None:
+            self.logfile.write_text("#T:[GPIO] drive PIO0.1 = 0\n%T=0\n", encoding="utf8")
         self.__class__.instances.append(self)
 
     def save(self):
@@ -132,17 +133,18 @@ class NativeSessionDouble(RuntimeSession):
         self.calls.append("close")
         self.closed = True
         self.normal_closed = not self.abnormal_close
-        if self.normal_closed:
+        if self.normal_closed and self.logfile is not None:
             # Original native-message syntax; metadata is incomplete while live
             # and final bytes appear only at close, like the real buffered file.
             self._final_log_text = "".join(
                 f"#T:[GPIO] drive PIO0.1 = {value}\n%T={seconds}\n%S=U1_SYSINTERFACE\n%E=00000001\n"
                 for value, seconds in ((0, 0), (1, .01), (0, .02)))
             self.logfile.write_text(self._final_log_text, encoding="utf8")
-        self.final_logfile_sha256 = hashlib.sha256(self.logfile.read_bytes()).hexdigest()
-        self.log_metadata = {"complete": self.normal_closed, "finalized_after_process_close": True,
-                             "sha256": self.final_logfile_sha256, "encoding": "utf-8",
-                             "last_active_status": self.last_active_status}
+        if self.logfile is not None:
+            self.final_logfile_sha256 = hashlib.sha256(self.logfile.read_bytes()).hexdigest()
+            self.log_metadata = {"complete": self.normal_closed, "finalized_after_process_close": True,
+                                 "sha256": self.final_logfile_sha256, "encoding": "utf-8",
+                                 "last_active_status": self.last_active_status}
         return 0 if self.normal_closed else 1
 
     def export_netlist(self, destination):

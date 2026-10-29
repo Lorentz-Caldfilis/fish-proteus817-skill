@@ -2,6 +2,14 @@
 
 Use `fish_proteus_design`; it calls the companion `fish_proteus.design_cli` module. Unknown fields are rejected at every action/operation/step/assertion boundary. Host paths, shell and arbitrary code are not arguments.
 
+In the normal desktop integration, [desktop task and resource actions](desktop-workflow.md)
+manage session identity, storage and input registration automatically. Desktop calls
+may omit `expected_revision`; an explicitly supplied stale value is still rejected.
+`resource_register.path` and `project_export.destination` are selected local files
+and output locations, not shell commands. The contracts below describe the shared
+design actions; fixed input manifests and operation allowlists under Host/CLI setup
+apply to the specialized standalone launcher.
+
 ## Identity and results
 
 Every request has `action` and optional `request_id`. Identical request-ID/payload replays return the recorded result; a changed payload with that ID is rejected. Responses contain request/task/circuit/session IDs, `status`, `current`, `data`, `side_effects`, and hashed `evidence_refs`. Copy `current.revision` into `expected_revision` for mutations, running and verification. Use returned artifact IDs and host-registered input IDs; do not invent paths.
@@ -77,7 +85,7 @@ Each `steps` item has `op`. A sequence always attempts stop/close and saves its 
 | `set_switch` | `ref`, `closed` boolean. |
 | `set_firmware` | `ref`, `firmware_id`; optional `clock`. Stopped state required. |
 | `log`, `errors` | Record the request clock; return complete final native LOGFILE text/diagnostics after normal process close, without clipboard operations. |
-| `gpio_events` | Optional `ref`, `port`, `pin`; record an active native request clock, then return final-log `events` whose timestamps are at most that clock, not voltages. |
+| `gpio_events` | Optional `ref`, `port`, `pin`; requires model GPIO tracing configured before session open (tested STM32F103R6: `TRACE_GPIO="3"`). Record an active native request clock, then return final-log `events` whose timestamps are at most that clock, not voltages. |
 | `netlist` | Actual SDF and parsed tables; stop before compiling. |
 | `set_properties` | `ref`, `properties`; stopped state and native read-back. |
 | `save` | Native save; stopped state required. |

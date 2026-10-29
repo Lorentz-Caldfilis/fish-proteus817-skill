@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fish-for-proteus817"
-version = "0.2.2"
+version = "0.3.0"
 description = "Composable circuit-design skill, native automation and 8086 workflows for Proteus 8.17 SP2"
 readme = "README.md"
 requires-python = ">=3.10"
