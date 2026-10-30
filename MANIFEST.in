@@ -3,11 +3,9 @@ include THIRD_PARTY_NOTICES.md CONTRIBUTING.md SECURITY.md CHANGELOG.md PUBLICAT
 include public-release.json MANIFEST.in
 include .gitattributes .gitignore .github/workflows/ci.yml
 include .github/ISSUE_TEMPLATE/*.yml
+include .github/PULL_REQUEST_TEMPLATE.md
 include .editorconfig
-include docs/DEVELOPMENT.md docs/VALIDATION.md docs/SKILL_FORMAT.md
-include docs/GENERIC_API.md
-include docs/RELEASE_STATUS.md
-recursive-include docs/design *.md
+recursive-include docs *.md
 recursive-include skills/fish-proteus817 *.md *.txt
 recursive-include tests *.py
 include tools/acceptance.py tools/bootstrap_nasm.py tools/demo_task_100khz.txt

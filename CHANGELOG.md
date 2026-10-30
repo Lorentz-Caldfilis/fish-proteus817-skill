@@ -2,13 +2,15 @@
 
 ## Unreleased
 
+- Rewrite the English and Chinese READMEs in a short, human voice, and move the lab record under `docs/release/`. Add a docs map: getting started, configuration, skill usage, CLI, architecture, and troubleshooting.
+- Tighten `skills/fish-proteus817/SKILL.md` so the description says when to use it. The skill path and `fish_proteus_design` are unchanged.
 - Document the repository layout and an unofficial-tool disclaimer in both READMEs. The Agent Skill remains `skills/fish-proteus817/SKILL.md`; Python packages stay at the repository root.
 - Add Ruff configuration, a `dev` extra, and a lint job for the offline tree. Vendored Proteus sources stay excluded so their provenance hashes do not change.
 - Ignore common Python, editor, Windows, and Proteus backup artifacts. Stop tracking generated `PUBLIC_MANIFEST.json`; `tools/public_release.py` still writes it into an export.
 - Drop unused imports and an unused validator binding. Circuit, simulation, and tool behavior are unchanged.
 - State in the publication guide that the current source version is 0.3.0.
 
-中文：补充仓库结构与非官方免责说明，加入 Ruff 检查，忽略常见 Python、Windows 和 Proteus 备份文件，不再提交导出工具生成的 `PUBLIC_MANIFEST.json`。Skill 路径和工具行为不变。
+中文：README 改成短的人话，中英文各一篇；实测记录挪到 `docs/release/`。Skill 路径和工具行为不变。另补充仓库结构与非官方免责说明，加入 Ruff 检查，忽略常见 Python、Windows 和 Proteus 备份文件，不再提交导出工具生成的 `PUBLIC_MANIFEST.json`。
 
 ## 0.3.0 — 2026-10-29
 
@@ -117,7 +119,7 @@ the exploratory attempt and failed time-index checks; the corrected seven-check
 mixed aggregate is native_verified, with runtime basis preserved per check.
 The documented local supported scope is reference-aligned; arbitrary formats,
 PCB and untested model behavior remain outside that claim. See
-[Validation](docs/VALIDATION.md) and the [roadmap](docs/design/ROADMAP.md).
+[Validation](docs/release/VALIDATION.md) and the [roadmap](docs/design/ROADMAP.md).
 
 中文：0.2.0 在本机受支持范围完成参考能力对齐，保留课程 recipes、输入调理和未测扩展限制。真实 DSH 分文件 17 请求与运行续段 19 请求完成，具体外发已授权；SDF/固件/时钟/GPIO/清理独立核验。失败与索引纠正过程保留，混合验证总状态不冒称 runtime_verified；每次发行另绑定实际包哈希与安装报告。
 
@@ -138,6 +140,6 @@ Simulator control, source generation and observation algorithms retain the 0.1.0
 
 - Initial DSH skill and local Proteus 8.17 SP2 adapter for the three 8086 course templates.
 - Protected course import, fresh NASM/MZ builds, waveform/LED observations and independent verification.
-- Maintainer-recorded desktop baseline: 70 tests, eight simulation scenarios and a real DSH end-to-end task; scope described in [Validation](docs/VALIDATION.md).
+- Maintainer-recorded desktop baseline: 70 tests, eight simulation scenarios and a real DSH end-to-end task; scope described in [Validation](docs/release/VALIDATION.md).
 
 中文：完成三个课程模板的 DSH Skill、构建、仿真观测和独立验证。完整原始实验材料保留在私有开发记录中。

@@ -1,5 +1,7 @@
 # Development and maintenance
 
+People looking for the install and the chat flow should start at [the docs map](README.md). This file is the maintainer note.
+
 ## Desktop integration target (2026-10-29)
 
 The next delivery must work in the installed DSH desktop after one setup.
@@ -41,7 +43,7 @@ The 0.2.0 baseline has completed its supported local acceptance, including the
 final installed wheel and real DSH task. Version 0.2.1 updates public
 documentation and release metadata for
 [fish-proteus817-skill](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill);
-the simulation implementation is unchanged. [Release status](RELEASE_STATUS.md)
+the simulation implementation is unchanged. [Release status](release/RELEASE_STATUS.md)
 separates the completed baseline from checks of each new distribution.
 
 The 2026-10-27 development target is a composable Proteus 8.17 SP2 Skill:
@@ -167,7 +169,7 @@ Installed libraries, official project containers/donors and user firmware are
 local read-only inputs. Public code can describe how to use them; do not export
 their definitions, compiled firmware, diagrams, native graphs or raw sessions.
 The pure file/firmware modules must remain importable without loading Windows
-desktop APIs. See [Validation](VALIDATION.md) for the current evidence boundary.
+desktop APIs. See [Validation](release/VALIDATION.md) for the current evidence boundary.
 
 ## Version and publication
 
@@ -179,7 +181,7 @@ the affected implementation identities to the accepted baseline when reusing
 behavioral evidence. Report any new native or DSH execution explicitly; unchanged
 code and an installation check do not establish that a new simulation ran.
 Keep new package hashes and CI results tied to the actual version/commit, and
-retain the earlier baseline separately in [release status](RELEASE_STATUS.md).
+retain the earlier baseline separately in [release status](release/RELEASE_STATUS.md).
 
 ## 中文维护约定
 

@@ -1,6 +1,6 @@
 # Validation and reproducibility
 
-[English README](../README.md) · [中文说明](../README.zh-CN.md)
+[English README](../../README.md) · [中文说明](../../README.zh-CN.md)
 
 The completed final 0.2.0 package baseline is recorded in
 [release status](RELEASE_STATUS.md). Version 0.2.1 changes public documentation
@@ -12,8 +12,8 @@ for their actual artifacts; the historical results below do not predeclare them.
 
 The 2026-10-27 target extends the public interface from three course recipes to
 composable `Library`, `Circuit`, `Session` and `Simulation` operations. The
-[architecture](design/ARCHITECTURE.md), [standard](design/DESIGN_STANDARD.md) and
-[G01–G14 roadmap](design/ROADMAP.md) define the required evidence. This section
+[architecture](../design/ARCHITECTURE.md), [standard](../design/DESIGN_STANDARD.md) and
+[G01–G14 roadmap](../design/ROADMAP.md) define the required evidence. This section
 records the 0.2.0 development and final acceptance. The **13-case native structural matrix has
 passed**. Six native GPIO sequences passed their functional/source/ownership
 checks on the documented topologies, with diagnostics retained. The final
@@ -294,7 +294,7 @@ python tools/generic_native_acceptance.py --queue .work/my-structure/acceptance.
 Local integration tests in `test_generic_acceptance.py` can also be enabled with
 the process environment variable `FISH_GENERIC_TEST_LOCAL=1`; they do not launch
 Proteus. Full runtime testing uses appropriate runnable projects, local models,
-firmware and fresh raw evidence. The [typed tool contract](../skills/fish-proteus817/references/generic-api.md)
+firmware and fresh raw evidence. The [typed tool contract](../../skills/fish-proteus817/references/generic-api.md)
 defines exact actions, one-session sequences and assertions. New work directories
 are required; generated project/model data and raw sessions remain private.
 

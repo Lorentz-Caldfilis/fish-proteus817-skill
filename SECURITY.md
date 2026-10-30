@@ -1,35 +1,30 @@
-# Security and private-data handling
+# Security
 
-## Supported scope
+[English](README.md) · [简体中文](README.zh-CN.md)
 
-Security fixes currently target the 0.3.x source line and the documented Windows/Proteus/DSH combination. Earlier source lines are historical and are not actively maintained security branches. Other runtime versions require separate compatibility testing. This Alpha project assumes a trusted local checkout, local manifests and an operator-authorized desktop session; no response-time or fix-delivery SLA is offered.
+Security fixes target the 0.3.x line on the documented Windows, Proteus 8.17 SP2, and DeepSeek Harness combination. Older lines are history, not maintained security branches. This is an Alpha project: a trusted local checkout, local job files, and a desktop session you chose to run. There is no response-time promise.
 
-The model-facing tool validates domain operations and uses managed work copies.
-Desktop resource registration accepts selected local project/firmware paths;
-export accepts a new output directory. The desktop plugin preserves other DSH
-tools and permissions. It is not an operating-system sandbox against a malicious
-host or repository. Review a skill and its companion code before granting it
-desktop or account access.
+The desktop tool checks its own operations and works on copies. It can register a project or a firmware file you point at, and it can export to a new directory. It does not try to be a sandbox against a hostile machine or a hostile checkout. Read the skill and this repo before you give them a desktop session or an account.
 
 ## Reporting
 
-If this repository's GitHub Security page offers private vulnerability reporting, use it. Otherwise open a minimal issue requesting a private reporting channel. Do not include exploit details, credentials, private course files or raw logs in that initial public issue. The maintainer can then arrange an appropriate channel. No guaranteed response-time service is offered.
+If this repository's GitHub Security page offers private vulnerability reporting, use it. Otherwise open a short issue that asks for a private channel. Leave out exploit detail, credentials, course files, and raw logs. The maintainer can arrange the channel.
 
-For ordinary compatibility bugs, use the bug-report template and include sanitized version information and the failing stage. A Proteus launch failure and an incorrect observed waveform are different reports.
+Ordinary bugs use the bug-report template: versions, the stage that failed, and a sanitized reproduction. A Proteus window that never opened is a different report from a waveform that is wrong.
 
-## Data boundaries
+## What to keep private
 
-- Keep DSH credential stores, tokens and account files outside Git. The account route may refresh its existing managed sign-in store.
-- Runtime outputs can contain full local paths, screenshots of course designs and native circuit graphs. Treat them as private until reviewed for contents and rights.
-- Preserve teacher originals; use separate imports/jobs. Do not run the generated 16-bit firmware as a Windows application.
-- The runtime should operate only on its owned Proteus PID. A blocked run must not be resolved by replacing software DLLs, disabling checks or changing global ACLs.
+- Credential stores, tokens, and account files stay outside Git. The Harness account route may refresh its own sign-in store.
+- Runtime output can contain full paths, screenshots of course designs, and native graphs. Treat it as private until you have looked at what is in it.
+- Keep teacher originals unchanged. Import and jobs use other directories. Do not run the generated 16-bit firmware as a Windows program.
+- The runtime should stay on the Proteus process it owns. A blocked run is not a reason to replace DLLs, turn checks off, or change global ACLs.
 
-The public exporter only copies an explicitly reviewed text-file allowlist and verifies file identities. It does not determine copyright ownership, detect every possible secret or erase earlier Git history. See [Publication](PUBLICATION.md).
+`tools/public_release.py` copies an allowlist of text files and checks their hashes. It does not decide copyright, find every secret, or erase old Git history. See [Publication](PUBLICATION.md).
 
-## 中文说明
+## 中文
 
-当前安全维护范围为 0.3.x 和文档列明的 Windows/Proteus/DSH 组合；更早源码线保留历史记录，不作为持续安全维护分支。本项目处于 Alpha 阶段，不承诺响应或修复时限。
+安全维护范围是 0.3.x，以及文档里写明的 Windows、Proteus 8.17 SP2 和 DeepSeek Harness。更早的版本只留作记录。本项目是 Alpha，不承诺回复或修复时限。
 
-安全问题优先使用仓库提供的私密报告入口；若没有该入口，先提交不含细节的 issue 请求安排私下沟通，不公开 token、漏洞利用细节、课程文件或原始日志。常规兼容问题请提供脱敏后的软件版本、失败阶段和可复现步骤。
+优先走 GitHub 的私密漏洞入口。没有这个入口时，先开一个不含细节的 issue，请维护者安排私下沟通。不要在公开 issue 里贴 token、利用细节、课程文件或原始日志。
 
-专用工具的参数/目录限制不是操作系统沙箱。课程截图、接线图、会话及本机路径默认私有；公开白名单和哈希检查不能代替权利核验、完整秘密扫描或 Git 历史处理。
+这个工具会限制自己的参数，但它不是操作系统沙箱。课程截图、接线图、会话和本机路径默认都是私有的。
