@@ -12,7 +12,10 @@ skills/
     ├── SKILL.md
     ├── LICENSE.txt
     └── references/
-        └── cases-and-evidence.md
+        ├── cases-and-evidence.md
+        ├── desktop-workflow.md
+        ├── generic-api.md
+        └── workflows-and-evidence.md
 ```
 
 The entrypoint declares `name`, `description`, `license`, `compatibility`, and string-valued `metadata`. This skill has specific requirements: Windows desktop access, the companion repository/Python backend, a compatible local Proteus installation, separately supplied course projects, and DeepSeek Harness for agent execution.

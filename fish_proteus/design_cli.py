@@ -340,7 +340,7 @@ def _validate_edit(item):
 
 
 def _validate_step(item):
-    op = _fields(item, "op", STEP_FIELDS)
+    _fields(item, "op", STEP_FIELDS)
     if "ref" in item:
         _text(item["ref"], "ref", 96)
     if "firmware_id" in item:

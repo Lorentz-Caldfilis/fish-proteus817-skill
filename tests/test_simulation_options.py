@@ -1,5 +1,4 @@
 """Bounded EOF option edits and archive/script integrity; no GUI in tests."""
-import json
 import os
 from pathlib import Path
 import struct

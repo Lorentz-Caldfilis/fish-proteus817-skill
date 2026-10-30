@@ -15,7 +15,7 @@ from pathlib import Path
 import threading
 import time
 
-from .profile817 import CompatibilityError,profile_for
+from .profile817 import profile_for
 from fish_proteus._vendor.proteus_auto.simulation import Simulation as _ReferenceSimulation
 
 

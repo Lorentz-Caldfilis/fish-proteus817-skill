@@ -26,13 +26,20 @@ class ProteusConfig:
     samples_root: Path
     template_project: Path
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         for name in ("executable", "library_root", "samples_root", "template_project"):
             object.__setattr__(self, name, _resolved(getattr(self, name)))
 
     @classmethod
-    def discover(cls, *, executable=None, library_root=None, samples_root=None,
-                 template_project=None) -> "ProteusConfig":
+    def discover(
+        cls,
+        *,
+        executable: str | Path | None = None,
+        library_root: str | Path | None = None,
+        samples_root: str | Path | None = None,
+        template_project: str | Path | None = None,
+    ) -> ProteusConfig:
+        """Resolve paths from arguments, ``FISH_PROTEUS_*`` variables, then a default install."""
         executable = executable or os.environ.get("FISH_PROTEUS_EXE") or shutil.which("PDS.EXE")
         if executable is None:
             roots = [os.environ.get("ProgramFiles(x86)"), os.environ.get("ProgramFiles")]

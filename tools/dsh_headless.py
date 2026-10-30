@@ -80,7 +80,7 @@ def credential_environment(path: Path | None) -> dict[str, str]:
         raise ValueError("Reading a YAML credential store requires PyYAML; alternatively set DEEPSEEK_API_KEY.") from exc
     try:
         document = yaml.safe_load(path.expanduser().resolve(strict=True).read_text(encoding="utf-8"))
-    except Exception as exc:
+    except Exception:
         # YAML parser diagnostics can quote secret source lines.
         raise ValueError("The selected credential store could not be read safely.") from None
     if not isinstance(document, dict) or document.get("version") != 1:

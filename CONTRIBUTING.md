@@ -9,8 +9,9 @@ Describe the problem, supported template and desired behavior in an issue or pul
 Use Python 3.10+ and a virtual environment:
 
 ```powershell
-python -m pip install -e ".[dsh]"
+python -m pip install -e ".[dsh,dev]"
 python -B -m unittest discover -s tests -v
+python -m ruff check .
 ```
 
 Offline tests use synthetic fixtures and require neither Proteus nor DSH authentication. Runtime changes need a fresh job and an interactive Windows desktop; report the exact tested versions and keep private course inputs and raw sessions outside the contribution.
@@ -31,6 +32,6 @@ Communicate respectfully, explain evidence and uncertainty, and review technical
 
 ## 中文说明
 
-提出修改时先说明具体问题、模板与预期行为；开始实现前先更新相应开发说明。离线测试使用原创合成数据，不需要 Proteus 或私有课程文件；运行适配改动需使用新任务副本在交互桌面验证，并如实写出版本、实测与限制。
+提出修改时先说明具体问题、模板与预期行为；开始实现前先更新相应开发说明。离线测试使用原创合成数据，不需要 Proteus 或私有课程文件；`python -m ruff check .` 检查离线源码，不改写已审阅的 vendor 目录。运行适配改动需使用新任务副本在交互桌面验证，并如实写出版本、实测与限制。
 
 新增公开文件需要进入 `public-release.json`，发行包从全新导出目录构建。不要提交课程原件、衍生电路图/截图/接线图、软件文件、凭据或个人会话。原创贡献使用 MIT，复用上游材料保留其归属与许可。文档修改检查链接和命令，不为匹配措辞而新增测试。

@@ -1,7 +1,5 @@
 """Shared Win32 window/menu helpers for PID-scoped Proteus sessions."""
-import argparse
 import ctypes as c
-import json
 from ctypes import wintypes as w
 
 u = c.WinDLL("user32", use_last_error=True)

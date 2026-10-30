@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Document the repository layout and an unofficial-tool disclaimer in both READMEs. The Agent Skill remains `skills/fish-proteus817/SKILL.md`; Python packages stay at the repository root.
+- Add Ruff configuration, a `dev` extra, and a lint job for the offline tree. Vendored Proteus sources stay excluded so their provenance hashes do not change.
+- Ignore common Python, editor, Windows, and Proteus backup artifacts. Stop tracking generated `PUBLIC_MANIFEST.json`; `tools/public_release.py` still writes it into an export.
+- Drop unused imports and an unused validator binding. Circuit, simulation, and tool behavior are unchanged.
+- State in the publication guide that the current source version is 0.3.0.
+
+中文：补充仓库结构与非官方免责说明，加入 Ruff 检查，忽略常见 Python、Windows 和 Proteus 备份文件，不再提交导出工具生成的 `PUBLIC_MANIFEST.json`。Skill 路径和工具行为不变。
+
 ## 0.3.0 — 2026-10-29
 
 - Add one-time installation of the Skill and persistent tool into the existing
