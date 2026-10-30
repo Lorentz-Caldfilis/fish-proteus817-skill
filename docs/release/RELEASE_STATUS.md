@@ -1,6 +1,6 @@
 # Release status and evidence identity
 
-[English README](../README.md) · [中文说明](../README.zh-CN.md)
+[English README](../../README.md) · [中文说明](../../README.zh-CN.md)
 
 ## Current desktop integration: 0.3.0
 

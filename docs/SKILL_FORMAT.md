@@ -1,6 +1,6 @@
 # Skill format and upstream references
 
-[English README](../README.md) · [中文说明](../README.zh-CN.md)
+[English README](../README.md) · [中文说明](../README.zh-CN.md) · [How the skill is used](skill-usage.md)
 
 ## Normative format
 
@@ -35,7 +35,7 @@ Release 0.1.1 passed the specification's [skills-ref reference validator](https:
 | [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) | The target harness and its host/plugin boundary. This project was locally tested with DSH 0.2.1-rc.3. |
 | [Teacher-referenced proteus-skills](https://github.com/kudoumakoto6523-design/proteus-skills) | Original workflow context. Upstream 8.16 observations are not treated as tests of this 8.17 adapter. |
 
-Using these conventions is not certification, endorsement, acceptance into an official catalog, or tested compatibility with every Agent Skills host. Only the DSH/local-runtime combinations described in [Validation](VALIDATION.md) have recorded desktop results.
+Using these conventions is not certification, endorsement, acceptance into an official catalog, or tested compatibility with every Agent Skills host. Only the DSH/local-runtime combinations described in [Validation](release/VALIDATION.md) have recorded desktop results.
 
 ## License structure
 

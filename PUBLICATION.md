@@ -5,7 +5,7 @@ This repository separates the reviewed public source distribution from private c
 ## Current distribution and completed 0.2.0 baseline
 
 The current source version is 0.3.0. Desktop integration for that version is
-recorded in [release status](docs/RELEASE_STATUS.md). Version 0.2.1 was the
+recorded in [release status](docs/release/RELEASE_STATUS.md). Version 0.2.1 was the
 previous documentation and release-metadata revision for the clean public
 repository
 [fish-proteus817-skill](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill).
@@ -25,8 +25,8 @@ are stored alongside the artifacts; this document does not embed its own
 archive's checksum or claim universal compatibility.
 The completed 0.2.0 supported scope and its limits are recorded against the
 G01–G14 gates in the
-[roadmap](docs/design/ROADMAP.md) and [validation record](docs/VALIDATION.md)
-and bound to the final artifact identities in [release status](docs/RELEASE_STATUS.md).
+[roadmap](docs/design/ROADMAP.md) and [validation record](docs/release/VALIDATION.md)
+and bound to the final artifact identities in [release status](docs/release/RELEASE_STATUS.md).
 Earlier 0.1.x source/package identities and runtime records remain historical evidence.
 
 Review the generic backend, adapted vendor source, Skill references and original
@@ -118,4 +118,4 @@ private development branches or merge their history into that repository.
 
 0.2.0 已有本机结构、六类 GPIO、隔离安装和真实 DSH 闭环证据，ADC+BUFFER、直连失败及诊断限制保留。G13 在具体外发授权后完成独立运行续段，17 次文件请求与 19 次运行阶段请求共享任务但不是同一 DSH 会话。每次发行按实际包哈希和安装报告记录，不继承旧包身份、不制造自包含 checksum 循环，也不预写未来包哈希或 CI。白名单只含原创源码与合法 MIT 改编，不含模型/器件定义、官方 donor、原生工程、编译固件、图像、原始导出、个人路径或会话。
 
-0.2.0 最终 wheel 已完成实际隔离安装原生验收，不再处于“仅候选包通过、最终包待验”的状态。0.2.1 修订公开入口、说明和发行元数据，仿真实现不变；公开目标为独立干净仓库 `fish-proteus817-skill`。本轮新包的实际检查、哈希及远端 CI 只在结果产生后登记，不能将 0.2.0 的包身份改名沿用，详见[发行状态](docs/RELEASE_STATUS.md)。
+0.2.0 最终 wheel 已完成实际隔离安装原生验收，不再处于“仅候选包通过、最终包待验”的状态。0.2.1 修订公开入口、说明和发行元数据，仿真实现不变；公开目标为独立干净仓库 `fish-proteus817-skill`。本轮新包的实际检查、哈希及远端 CI 只在结果产生后登记，不能将 0.2.0 的包身份改名沿用，详见[发行状态](docs/release/RELEASE_STATUS.md)。
