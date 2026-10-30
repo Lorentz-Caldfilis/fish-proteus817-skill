@@ -3,7 +3,7 @@ include THIRD_PARTY_NOTICES.md CONTRIBUTING.md SECURITY.md CHANGELOG.md PUBLICAT
 include public-release.json MANIFEST.in
 include .gitattributes .gitignore .github/workflows/ci.yml
 include .github/ISSUE_TEMPLATE/*.yml
-include PUBLIC_MANIFEST.json
+include .editorconfig
 include docs/DEVELOPMENT.md docs/VALIDATION.md docs/SKILL_FORMAT.md
 include docs/GENERIC_API.md
 include docs/RELEASE_STATUS.md

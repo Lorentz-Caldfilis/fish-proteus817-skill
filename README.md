@@ -364,6 +364,13 @@ Offline tests require neither Proteus nor private course files:
 & $FishPython -B -m unittest discover -s tests -v
 ```
 
+Optional lint, with the vendored Proteus sources excluded:
+
+```powershell
+& $FishPython -m pip install -e ".[dev]"
+& $FishPython -m ruff check .
+```
+
 For serial desktop acceptance with your imported templates:
 
 ```powershell
@@ -415,11 +422,50 @@ public distribution. These records do not establish 0.2.0 generic acceptance or
 compatibility across machines/builds. CI runs offline tests on Windows and
 Linux; it does not launch Proteus or authenticate to DSH.
 
+## Project structure
+
+The Python packages stay at the repository root so an editable install, the JSON
+CLI, and the DeepSeek Harness tools import `fish_proteus` and
+`runtime_adaptation` directly. The Agent Skill path is
+[`skills/fish-proteus817/SKILL.md`](skills/fish-proteus817/SKILL.md). Leave those
+directories in place unless you also update the desktop installer, the public
+allowlist, and the tests.
+
+```text
+.
+├── fish_proteus/                 # Python package and fish-proteus CLI
+│   └── _vendor/proteus_auto/     # Reviewed MIT format/runtime adaptation
+├── runtime_adaptation/           # Windows Proteus 8.17 session adapter
+├── skills/fish-proteus817/       # Agent Skill entrypoint and references
+├── tools/                        # DSH installers, headless launcher, acceptance
+├── examples/stm32_gpio_follow/   # Original PA0-to-PA5 firmware source
+├── tests/                        # Offline unittest suite (no Proteus required)
+└── docs/                         # API, validation, design notes, release status
+```
+
+`tools/public_release.py` writes `PUBLIC_MANIFEST.json` into an export directory.
+That inventory is generated; it is not source.
+
+## Limitations and disclaimer
+
+This is an unofficial, experimental Alpha tool. It is not affiliated with
+Labcenter Electronics or DeepSeek, and it is not a Proteus product.
+
+- Native sessions need your own Proteus **8.17 SP2** on an interactive Windows
+  desktop. Linux and CI run the offline tests only.
+- A saved file, an opened window, and a passed behavioral assertion are
+  different results. Unsupported formats, PCB layout, and creating new graphs
+  or probes are outside this implementation.
+- Proteus, device libraries, official samples, course projects, compilers, and
+  compiled firmware are not included. The MIT license covers this project's
+  original code and documentation. Upstream notices are in
+  [Third-party notices](THIRD_PARTY_NOTICES.md).
+
 ## Documentation and license
 
 | Document | Purpose |
 | --- | --- |
-| [Release status](docs/RELEASE_STATUS.md) | Completed 0.2.0 baseline, 0.2.1 change scope and artifact-specific evidence. |
+| [Release status](docs/RELEASE_STATUS.md) | Current 0.3.0 desktop evidence, earlier baselines, and artifact-specific checks. |
 | [Python API](docs/GENERIC_API.md) | Configuration, circuits, native sessions, firmware and measurements. |
 | [Typed tool API](skills/fish-proteus817/references/generic-api.md) | Domain actions, revisions, native steps and assertions. |
 | [Architecture](docs/design/ARCHITECTURE.md) / [standard](docs/design/DESIGN_STANDARD.md) / [roadmap](docs/design/ROADMAP.md) | Design sources, rules and G01–G14 acceptance gates. |

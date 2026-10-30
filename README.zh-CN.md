@@ -242,6 +242,13 @@ $CourseReference = Read-Host '课程参考目录的完整路径'
 & $FishPython -B -m unittest discover -s tests -v
 ```
 
+可选的静态检查会跳过已审阅的 Proteus 上游源码：
+
+```powershell
+& $FishPython -m pip install -e ".[dev]"
+& $FishPython -m ruff check .
+```
+
 使用自己的导入模板执行串行桌面验收：
 
 ```powershell
@@ -268,11 +275,37 @@ $CourseReference = Read-Host '课程参考目录的完整路径'
 
 最终适配器另经九次请求的真实 DSH 续段复核，七项断言首试通过，原生时钟为 0.3025 秒。超 JavaScript 安全范围的身份整数以原十进制字符串传输；完整 stdout 字节与哈希仅留本地，精度修复没有改变原生PID校验或验证判据。
 
+## 项目结构
+
+Python 包放在仓库根目录，便于可编辑安装、JSON 命令行和 DeepSeek Harness 直接导入 `fish_proteus` 与 `runtime_adaptation`。Agent Skill 路径固定为 [`skills/fish-proteus817/SKILL.md`](skills/fish-proteus817/SKILL.md)。移动这些目录前，必须同时更新桌面安装器、公开白名单和测试。
+
+```text
+.
+├── fish_proteus/                 # Python 包与 fish-proteus 命令行
+│   └── _vendor/proteus_auto/     # 已审阅的 MIT 格式/运行适配
+├── runtime_adaptation/           # Windows 上的 Proteus 8.17 会话适配
+├── skills/fish-proteus817/       # Agent Skill 入口与参考
+├── tools/                        # DSH 安装器、headless 启动器和验收脚本
+├── examples/stm32_gpio_follow/   # 原创 PA0 到 PA5 固件源码
+├── tests/                        # 离线 unittest（不需要 Proteus）
+└── docs/                         # API、验证、设计说明与发行状态
+```
+
+`tools/public_release.py` 把 `PUBLIC_MANIFEST.json` 写到导出目录。该清单是生成物，不是源码。
+
+## 限制与声明
+
+本项目是非官方的实验性 Alpha 工具，与 Labcenter Electronics 和 DeepSeek 没有隶属关系，也不是 Proteus 产品。
+
+- 原生会话需要你自行取得的 Proteus **8.17 SP2**，以及可交互的 Windows 桌面。Linux 与 CI 只运行离线测试。
+- 保存文件、打开窗口和通过行为断言是不同结果。不支持的格式、PCB 布局，以及新建图表或探针，都不在本实现范围内。
+- 发行内容不包含 Proteus、器件库、官方样例、课程工程、编译器或编译后的固件。MIT 许可覆盖本项目原创代码和文档；上游说明见[第三方说明](THIRD_PARTY_NOTICES.md)。
+
 ## 文档与许可
 
 | 文档 | 内容 |
 | --- | --- |
-| [发行状态](docs/RELEASE_STATUS.md) | 已完成的 0.2.0 基线、0.2.1 改动范围与逐包证据。 |
+| [发行状态](docs/RELEASE_STATUS.md) | 当前 0.3.0 桌面证据、此前基线与逐包检查。 |
 | [Python API](docs/GENERIC_API.md) | 配置、电路、原生会话、固件与测量。 |
 | [类型化工具 API](skills/fish-proteus817/references/generic-api.md) | 领域操作、revision、原生步骤与断言。 |
 | [架构](docs/design/ARCHITECTURE.md) / [规范](docs/design/DESIGN_STANDARD.md) / [路线](docs/design/ROADMAP.md) | 设计来源、规则与 G01–G14 完成门槛。 |

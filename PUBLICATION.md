@@ -4,12 +4,13 @@ This repository separates the reviewed public source distribution from private c
 
 ## Current distribution and completed 0.2.0 baseline
 
-The current source version is 0.2.1, a documentation and release-metadata
-revision for the clean public repository
+The current source version is 0.3.0. Desktop integration for that version is
+recorded in [release status](docs/RELEASE_STATUS.md). Version 0.2.1 was the
+previous documentation and release-metadata revision for the clean public
+repository
 [fish-proteus817-skill](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill).
-Its simulation implementation is unchanged from 0.2.0. The
-[release status](docs/RELEASE_STATUS.md) records that version's completed final
-acceptance and the evidence rules for the new distribution.
+The 0.2.1 simulation implementation is unchanged from 0.2.0. Release status
+keeps that completed 0.2.0 acceptance separate from later distributions.
 
 The 0.2.0 development evidence includes 13 native structural cases and six GPIO
 sequences on the documented input paths. Its **final wheel**, separately from
@@ -56,16 +57,16 @@ predeclare a future wheel hash or a CI result.
 From a trusted checkout with `.[dsh]` installed, choose a new output directory:
 
 ```powershell
-python tools/public_release.py --output .work/public-release-0.2.1
-python tools/public_release.py --check .work/public-release-0.2.1/repository
+python tools/public_release.py --output .work/public-release
+python tools/public_release.py --check .work/public-release/repository
 ```
 
 The output contains:
 
 | Item | Purpose |
 | --- | --- |
-| `repository/` | Clean source tree containing only `public-release.json` entries and a generated `PUBLIC_MANIFEST.json`. |
-| `fish-proteus817-0.2.1-source.zip` | Portable copy of that tree, with deterministic member ordering and timestamps. |
+| `repository/` | Clean source tree containing only `public-release.json` entries and a generated `PUBLIC_MANIFEST.json`. The manifest is created here; it is not a source file in Git. |
+| `fish-proteus817-<version>-source.zip` | Portable copy of that tree, with deterministic member ordering and timestamps. |
 | `SHA256SUMS` | SHA-256 of the source ZIP. |
 | `release.json` | Local export result and file/manifest identity. |
 
@@ -77,7 +78,7 @@ Build from the exported `repository/` in a separate environment with current bui
 
 ```powershell
 python -m pip install build
-python -m build .work/public-release-0.2.1/repository --outdir .work/public-release-0.2.1/python-dist
+python -m build .work/public-release/repository --outdir .work/public-release/python-dist
 ```
 
 Inspect wheel and sdist members against the public allowlist. The Python package carries the project license and included upstream notices; the full repository is still required for the Skill and DSH project tools. Creating these files does not publish them to PyPI.
@@ -112,6 +113,8 @@ private development branches or merge their history into that repository.
 使用显式白名单生成干净源码目录、可复现 ZIP 和哈希清单；打包工具不改变 GitHub 可见性、不上传包、不改写 Git 历史。Python 发行包应从该全新目录构建，避免私有工作区中的探测脚本或旧构建缓存混入。
 
 若旧私有仓库存过课程电路和会话，只删除当前文件不足以安全公开整个仓库。可以将干净目录推到新的公开仓库，同时保留原私有开发历史；也可先在私有库内用无父提交的 `public-release` 分支评审。该分支不会自动清除其他分支和旧提交，不能直接把原库一键设为公开。
+
+当前仓库源码版本为 0.3.0，桌面接入记录见发行状态。下文 0.2.0 / 0.2.1 仍是历史证据，不改写成 0.3.0 的验收结论。
 
 0.2.0 已有本机结构、六类 GPIO、隔离安装和真实 DSH 闭环证据，ADC+BUFFER、直连失败及诊断限制保留。G13 在具体外发授权后完成独立运行续段，17 次文件请求与 19 次运行阶段请求共享任务但不是同一 DSH 会话。每次发行按实际包哈希和安装报告记录，不继承旧包身份、不制造自包含 checksum 循环，也不预写未来包哈希或 CI。白名单只含原创源码与合法 MIT 改编，不含模型/器件定义、官方 donor、原生工程、编译固件、图像、原始导出、个人路径或会话。
 

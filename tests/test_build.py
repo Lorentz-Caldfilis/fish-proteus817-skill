@@ -1,12 +1,11 @@
 """Independent machine-code observations, not checks of generated prose."""
 from pathlib import Path
-import struct
 import tempfile
 import unittest
 
 from fish_proteus.artifacts import describe_mz, mz_code, mz_image
 from fish_proteus.build import BuildError, assemble_builtin, build_program, discover_nasm
-from fish_proteus.course import generated_source, normalize_parameters
+from fish_proteus.course import generated_source
 
 
 def observe_io(code, inputs=(), output_limit=None, max_steps=20000):

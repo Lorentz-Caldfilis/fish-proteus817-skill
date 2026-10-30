@@ -1,5 +1,6 @@
 {
   "files": [
+    ".editorconfig",
     ".gitattributes",
     ".github/ISSUE_TEMPLATE/bug_report.yml",
     ".github/ISSUE_TEMPLATE/feature_request.yml",
@@ -101,6 +102,7 @@
     "tests/test_led_observation.py",
     "tests/test_native_structure_sequence.py",
     "tests/test_pin_observation.py",
+    "tests/test_project_metadata.py",
     "tests/test_public_release.py",
     "tests/test_runtime.py",
     "tests/test_runtime_generic.py",

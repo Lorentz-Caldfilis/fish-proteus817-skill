@@ -13,7 +13,6 @@ import unittest
 from unittest.mock import patch
 
 from fish_proteus.desktop import execute_desktop_request, file_lock
-from fish_proteus.design_cli import ACTIONS
 from fish_proteus.firmware import firmware_info, gpio_events
 from fish_proteus._vendor.proteus_auto.measurements import parse_graph_csv, sample
 from test_design_tool import MemoryCircuit, MemoryLibrary, NativeSessionDouble, NativeSimulationDouble
