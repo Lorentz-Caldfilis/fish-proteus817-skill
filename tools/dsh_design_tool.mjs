@@ -5,6 +5,15 @@ import { createHash, randomUUID } from 'node:crypto';
 import { dirname, isAbsolute, join, relative } from 'node:path';
 import { StringDecoder } from 'node:string_decoder';
 
+// Preserve the original outer deadline at scale <= 1; larger backend waits need
+// a proportionally larger budget for the whole owned process tree.
+export function outerTimeout(baseMs, raw = process.env.FISH_PROTEUS_TIMEOUT_SCALE) {
+  const text = (raw ?? '').trim();
+  const scale = text ? Number(text) : 1;
+  const valid = Number.isFinite(scale) && scale > 0 && scale <= 30;
+  return baseMs * (valid ? Math.max(1, scale) : 1);
+}
+
 export const name = 'fish-proteus-design-tool';
 export const inject = ['tools'];
 const actions = ['capabilities', 'help', 'library_search', 'library_get', 'create', 'open', 'stage', 'inspect', 'edit', 'generators', 'generator_update', 'firmware_info', 'extract_firmware', 'graph_sample', 'run_sequence', 'verify'];
@@ -305,7 +314,7 @@ export async function apply(ctx, config) {
           } else child.kill();
         };
         const cancel = () => stop('aborted');
-        const timer = setTimeout(() => stop('timeout'), 360000);
+        const timer = setTimeout(() => stop('timeout'), outerTimeout(360000));
         exec.signal?.addEventListener('abort', cancel, { once: true });
         child.stderr.setEncoding('utf8');
         child.stdout.on('data', chunk => { stdoutChunks.push(chunk); stdoutCharacters += stdoutDecoder.write(chunk).length; if (stdoutCharacters > 2000000) stop('output_limit'); });

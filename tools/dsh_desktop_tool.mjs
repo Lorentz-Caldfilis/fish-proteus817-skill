@@ -3,7 +3,7 @@ import { spawn } from 'node:child_process';
 import { appendFile, mkdir, realpath, writeFile } from 'node:fs/promises';
 import { createHash, randomUUID } from 'node:crypto';
 import { dirname, isAbsolute, join, relative } from 'node:path';
-import { parameters, decodeCliStdout, projectModelResponse } from './dsh_design_tool.mjs';
+import { parameters, decodeCliStdout, projectModelResponse, outerTimeout } from './dsh_design_tool.mjs';
 
 export const name = 'fish-proteus-desktop-tool';
 export const inject = ['tools', 'workingDirectory'];
@@ -75,7 +75,7 @@ export function runDesktopGate(config, args, { sessionId, workingDirectory, sign
       } else child.kill('SIGTERM');
     };
     const cancel = () => stop('aborted');
-    const timer = setTimeout(() => stop('timeout'), 360000);
+    const timer = setTimeout(() => stop('timeout'), outerTimeout(360000));
     signal?.addEventListener('abort', cancel, { once: true });
     if (signal?.aborted) cancel();
     child.stdout.on('data', chunk => {

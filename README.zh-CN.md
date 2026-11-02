@@ -28,6 +28,8 @@ Proteus 的工程在你自己的 Windows 桌面上，软件也得你自己有授
 
 当前是 Alpha，版本 0.3.0。它不是 MCP 服务器，也不是 Labcenter 或 DeepSeek 的产品。
 
+**让桌面模型安装：** 把此仓库交给 DeepSeek Harness 读取并授权安装。模型应按 [AGENTS.md](AGENTS.md) 安装 skill 和配套桌面工具；它需要本机命令行和配置文件访问权限。
+
 ## 快速开始
 
 需要 Python 3.10 或更高版本、Git、你自己的 Proteus **8.17 SP2**，以及同一台 Windows 电脑上的 DeepSeek Harness。

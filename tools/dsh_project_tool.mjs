@@ -1,5 +1,6 @@
 /** DSH plugin exposing only the fixed fish_proteus workflow, without a shell. */
 import { spawn } from 'node:child_process';
+import { outerTimeout } from './dsh_design_tool.mjs';
 import { realpath, appendFile, mkdir } from 'node:fs/promises';
 import { dirname, relative, isAbsolute, join, resolve } from 'node:path';
 
@@ -63,7 +64,7 @@ export async function apply(ctx, config) {
         const child = spawn(python, argv, { cwd: workspace, env: environment, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
         let stdout = '', stderr = '', ended = false;
         const stop = () => { if (!ended) child.kill(); };
-        const timer = setTimeout(stop, 120000);
+        const timer = setTimeout(stop, outerTimeout(120000));
         exec.signal?.addEventListener('abort', stop, { once: true });
         child.stdout.setEncoding('utf8');
         child.stderr.setEncoding('utf8');

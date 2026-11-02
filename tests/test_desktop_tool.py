@@ -85,6 +85,21 @@ console.log(JSON.stringify({{name:tool.name,result}}));
         self.assertEqual(audit["source_identity"], "synthetic-tested-source")
         self.assertEqual(audit["implementation_module"], (ROOT / "tools/dsh_desktop_tool.mjs").as_uri())
 
+    def test_timeout_scale_reaches_the_real_desktop_child_deadline(self):
+        module = (ROOT / "tools/dsh_desktop_tool.mjs").as_uri()
+        config = {"workspace": str(self.root), "python": sys.executable,
+                  "gate": str(self.gate), "stateRoot": str(self.root / ".work/desktop")}
+        value = self.node(f"""
+import {{runDesktopGate}} from {json.dumps(module)};
+const config=JSON.parse(await new Promise(resolve=>{{let s='';process.stdin.on('data',x=>s+=x);process.stdin.on('end',()=>resolve(s));}}));
+process.env.FISH_PROTEUS_TIMEOUT_SCALE='10';
+const delays=[]; const original=globalThis.setTimeout;
+globalThis.setTimeout=(fn, ms, ...args)=>{{delays.push(ms);return original(fn, ms, ...args);}};
+const result=await runDesktopGate(config, {{action:'capabilities'}}, {{sessionId:'s', workingDirectory:config.workspace}});
+console.log(JSON.stringify({{timeout:delays[0], status:result.payload.status}}));
+""", config)
+        self.assertEqual(value, {"timeout": 3600000, "status": "prepared"})
+
     def test_missing_agent_does_not_create_shared_fallback_task(self):
         result = self.execute(missing=True)["result"]
         self.assertEqual(result["payload"]["error"]["type"], "MissingDesktopSession")
