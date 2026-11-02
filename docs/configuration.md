@@ -22,6 +22,8 @@ Installed files are read-only. A save into the Proteus install, the library tree
 
 `fish-proteus doctor` and `fish-proteus run` also take `--proteus`. `build` takes `--nasm`. Those flags set the same variables for that process.
 
+For desktop setup, the installer saves the four verified Proteus resource paths in its managed profile entry. They take precedence over the desktop process environment. To change them, set the relevant `FISH_PROTEUS_*` overrides in the installer shell and rerun setup; reinstall without overrides retains the saved paths. This also works when the model installs from an already-running Harness session.
+
 ## Slow PCs and a frozen C:
 
 Set `FISH_PROTEUS_TIMEOUT_SCALE` and `FISH_PROTEUS_WORKDIR` in the environment that starts DeepSeek Harness, not only in a shell you have already closed. If the installer wrote the task store under the workdir, Harness still needs that variable or the tool will not load. `doctor` prints `timeouts.effective_seconds`. A clone that sits on a frozen drive should be imported with `python -B` or `PYTHONDONTWRITEBYTECODE=1`, so Python does not try to write `.pyc` files beside the source. The desktop tool already passes `-B`.

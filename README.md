@@ -30,6 +30,8 @@ Alpha, version 0.3.0. It is not an MCP server, and it is not a Labcenter or Deep
 
 **Ask the desktop agent to install:** Give DeepSeek Harness access to this repository and authorize setup. It should follow [AGENTS.md](AGENTS.md) to install both the skill and its desktop tool. Local shell and profile access are required.
 
+The default `main` branch is for normal desktop use. For old school PCs, use the separate [demo/portable-lab branch](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/tree/demo/portable-lab), which includes the same setup workflow.
+
 ## Quick start
 
 You need Python 3.10 or newer, Git, your own Proteus **8.17 SP2**, and DeepSeek Harness on that same Windows desktop.

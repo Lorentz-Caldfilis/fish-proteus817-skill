@@ -42,7 +42,7 @@ function blocked(type, message) {
     error: { type, message } } };
 }
 
-function childEnvironment() {
+function childEnvironment(resourcePaths = {}) {
   const environment = {};
   for (const key of ['PATH', 'Path', 'SYSTEMROOT', 'SystemRoot', 'WINDIR', 'COMSPEC',
     'PATHEXT', 'TEMP', 'TMP', 'PROGRAMFILES', 'ProgramFiles', 'ProgramFiles(x86)',
@@ -50,6 +50,14 @@ function childEnvironment() {
     'FISH_PROTEUS_EXE', 'FISH_PROTEUS_LIBRARY', 'FISH_PROTEUS_SAMPLES', 'FISH_PROTEUS_TEMPLATE',
     'FISH_PROTEUS_NASM', 'FISH_PROTEUS_WORKDIR', 'FISH_PROTEUS_TIMEOUT_SCALE']) {
     if (process.env[key] !== undefined) environment[key] = process.env[key];
+  }
+  const names = { executable: 'FISH_PROTEUS_EXE', library_root: 'FISH_PROTEUS_LIBRARY',
+    samples_root: 'FISH_PROTEUS_SAMPLES', template_project: 'FISH_PROTEUS_TEMPLATE' };
+  for (const [key, value] of Object.entries(resourcePaths)) {
+    if (!Object.hasOwn(names, key) || typeof value !== 'string' || !isAbsolute(value) || value.includes('\0')) {
+      throw new Error('Invalid installed Proteus resource path: ' + key);
+    }
+    environment[names[key]] = value;
   }
   environment.PYTHONIOENCODING = 'utf-8';
   return environment;
@@ -61,7 +69,7 @@ export function runDesktopGate(config, args, { sessionId, workingDirectory, sign
     const child = spawn(config.python, ['-I', '-B', config.gate,
       '--workspace', config.workspace, '--store-root', config.stateRoot,
       '--session-id', sessionId, '--working-directory', workingDirectory],
-    { cwd: config.workspace, env: childEnvironment(), shell: false, windowsHide: true,
+    { cwd: config.workspace, env: childEnvironment(config.resourcePaths), shell: false, windowsHide: true,
       stdio: ['pipe', 'pipe', 'pipe'] });
     let ended = false, termination = null, byteCount = 0, stderr = '';
     const chunks = [];
@@ -176,7 +184,7 @@ export async function apply(ctx, config) {
   const python = await realpath(config.python);
   const gate = await realpath(config.gate);
   const checkedStateRoot = await prepareStateRoot(workspace, config.stateRoot, gate);
-  const fixed = { workspace, python, gate, stateRoot: checkedStateRoot };
+  const fixed = { workspace, python, gate, stateRoot: checkedStateRoot, resourcePaths: config.resourcePaths };
   const { defineTool } = await import(config.toolsModule);
   ctx.tools.register(defineTool({
     name: 'fish_proteus_design',
