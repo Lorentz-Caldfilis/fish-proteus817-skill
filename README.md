@@ -28,6 +28,8 @@ You want it if you have Proteus 8.17 SP2 on an interactive Windows desktop and y
 
 Alpha, version 0.3.0. It is not an MCP server, and it is not a Labcenter or DeepSeek product.
 
+**Ask the desktop agent to install:** Give DeepSeek Harness access to this repository and authorize setup. It should follow [AGENTS.md](AGENTS.md) to install both the skill and its desktop tool. Local shell and profile access are required.
+
 ## Quick start
 
 You need Python 3.10 or newer, Git, your own Proteus **8.17 SP2**, and DeepSeek Harness on that same Windows desktop.
