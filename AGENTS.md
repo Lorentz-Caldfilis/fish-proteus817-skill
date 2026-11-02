@@ -6,7 +6,7 @@ When a user asks you to install this repository's Proteus skill in DeepSeek Harn
 2. From the repository root, use Python 3.10 or newer and a repository-local virtual environment. In PowerShell:
 
    ```powershell
-   py -3 -m venv .venv
+   if (-not (Test-Path .venv)) { py -3 -m venv .venv }
    .\.venv\Scripts\python.exe -m pip install -e ".[dsh]"
    .\.venv\Scripts\python.exe tools/dsh_install_desktop.py --dry-run
    ```
