@@ -10,7 +10,7 @@ The console script is `fish-proteus`. `python -m fish_proteus` is the same progr
 
 | Command | What it does |
 | :-- | :-- |
-| `doctor` | Read-only report of Proteus and NASM. `--proteus` overrides the executable |
+| `doctor` | Read-only report: Proteus discovery, the 8.17 hash check, NASM, timeout scale, and whether the work folders are writable. `--proteus` overrides the executable |
 | `import-course --source --destination` | Copy and hash the original course tree into a private library |
 | `prepare --library --case --output` | Make one job from `divider`, `cascade`, or `switch` |
 | `build --manifest` | Assemble a new 8086 MZ executable for that job |

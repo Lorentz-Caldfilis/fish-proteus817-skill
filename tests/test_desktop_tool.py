@@ -45,7 +45,7 @@ print(json.dumps({'schema':'fish-proteus.design.v1','action':v['action'],'status
         self.assertEqual(result.returncode, 0, result.stderr)
         return json.loads(result.stdout)
 
-    def execute(self, *, missing=False, abort=False, action="capabilities"):
+    def execute(self, *, missing=False, abort=False, action="capabilities", workdir=None):
         module = (ROOT / "tools/dsh_desktop_tool.mjs").as_uri()
         config = {"workspace": str(self.root), "python": sys.executable,
             "gate": str(self.gate), "stateRoot": str(self.root / ".work/desktop"),
@@ -57,6 +57,9 @@ const config=JSON.parse(await new Promise(resolve=>{{let s='';process.stdin.on('
 let tool;const ctx={{tools:{{register:t=>tool=t,guard:()=>{{throw Error('global guard called')}}}},
  workingDirectory:{{get:s=>config.workspace}}}};
 process.env.DEEPSEEK_API_KEY='synthetic-value-must-not-be-inherited';
+delete process.env.FISH_PROTEUS_WORKDIR;
+const redirected = {json.dumps(str(workdir) if workdir else "")};
+if (redirected) process.env.FISH_PROTEUS_WORKDIR = redirected;
 await apply(ctx,config);
 const control=new AbortController();
 if ({str(abort).lower()}) setTimeout(()=>control.abort(),150);
@@ -134,6 +137,60 @@ await apply(ctx,{{implementationModule:{json.dumps(new.as_uri())}}});
 console.log(JSON.stringify(ctx.loaded));
 """)
         self.assertEqual(value, ["old", "new"])
+
+    def test_workdir_redirects_task_storage_off_the_clone(self):
+        workdir = self.root / "other-drive" / "fish"
+        value = self.execute(workdir=workdir)
+        result = value["result"]
+        self.assertEqual(result["delivery"]["project_path"], str(workdir / "desktop/tasks/one/new.pdsprj"))
+        records = list((workdir / "desktop/observations").rglob("audit.jsonl"))
+        self.assertEqual(len(records), 1)
+        self.assertFalse((self.root / ".work/desktop/observations").exists())
+
+    def test_unwritable_workdir_names_the_path(self):
+        blocked = self.root / "not-a-directory"
+        blocked.write_text("x", encoding="utf8")
+        module = (ROOT / "tools/dsh_desktop_tool.mjs").as_uri()
+        config = {"workspace": str(self.root), "python": sys.executable,
+                  "gate": str(self.gate), "stateRoot": str(self.root / ".work/desktop"),
+                  "toolsModule": self.sdk.as_uri()}
+        value = self.node(f"""
+import {{apply}} from {json.dumps(module)};
+const config=JSON.parse(await new Promise(resolve=>{{let s='';process.stdin.on('data',x=>s+=x);process.stdin.on('end',()=>resolve(s));}}));
+process.env.FISH_PROTEUS_WORKDIR = {json.dumps(str(blocked))};
+const ctx={{tools:{{register:()=>{{}},guard:()=>{{}}}},workingDirectory:{{get:()=>config.workspace}}}};
+try {{
+  await apply(ctx, config);
+  console.log(JSON.stringify({{ok:true}}));
+}} catch (error) {{
+  console.log(JSON.stringify({{ok:false, message:error.message}}));
+}}
+""", config)
+        self.assertFalse(value["ok"])
+        self.assertIn(str(blocked), value["message"])
+        self.assertIn("FISH_PROTEUS_WORKDIR", value["message"])
+
+    def test_state_root_outside_the_clone_names_the_workdir_variable(self):
+        outside = self.root / "outside-store"
+        module = (ROOT / "tools/dsh_desktop_tool.mjs").as_uri()
+        config = {"workspace": str(self.root), "python": sys.executable,
+                  "gate": str(self.gate), "stateRoot": str(outside),
+                  "toolsModule": self.sdk.as_uri()}
+        value = self.node(f"""
+import {{apply}} from {json.dumps(module)};
+const config=JSON.parse(await new Promise(resolve=>{{let s='';process.stdin.on('data',x=>s+=x);process.stdin.on('end',()=>resolve(s));}}));
+delete process.env.FISH_PROTEUS_WORKDIR;
+const ctx={{tools:{{register:()=>{{}},guard:()=>{{}}}},workingDirectory:{{get:()=>config.workspace}}}};
+try {{
+  await apply(ctx, config);
+  console.log(JSON.stringify({{ok:true}}));
+}} catch (error) {{
+  console.log(JSON.stringify({{ok:false, message:error.message}}));
+}}
+""", config)
+        self.assertFalse(value["ok"])
+        self.assertIn(str(outside), value["message"])
+        self.assertIn("FISH_PROTEUS_WORKDIR", value["message"])
 
 
 if __name__ == "__main__":

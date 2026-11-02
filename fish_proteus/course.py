@@ -274,7 +274,13 @@ def generate_variant(imported: str | Path | dict[str, Any], case_id: str,
     # The switch project originally stores a 29-byte absolute PROGRAM path.
     # This 29-byte relative replacement preserves the unknown binary format.
     executable_relative = "8086/Debug/generated-8086.exe" if case_id == "switch" else "8086/Debug/Debug.exe"
-    output.mkdir(parents=True)
+    try:
+        output.mkdir(parents=True)
+    except OSError as exc:
+        raise CourseError(
+            f"Course output directory is not writable: {output}. "
+            f"Choose a path on a writable drive. {type(exc).__name__}: {exc}"
+        ) from exc
     project = output / Path(case["project"]).name
     source = output / "8086/main.asm"
     executable = output / executable_relative

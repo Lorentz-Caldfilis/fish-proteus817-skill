@@ -47,7 +47,8 @@ function childEnvironment() {
   for (const key of ['PATH', 'Path', 'SYSTEMROOT', 'SystemRoot', 'WINDIR', 'COMSPEC',
     'PATHEXT', 'TEMP', 'TMP', 'PROGRAMFILES', 'ProgramFiles', 'ProgramFiles(x86)',
     'PROGRAMDATA', 'ProgramData', 'USERPROFILE', 'LOCALAPPDATA', 'APPDATA',
-    'FISH_PROTEUS_EXE', 'FISH_PROTEUS_LIBRARY', 'FISH_PROTEUS_SAMPLES', 'FISH_PROTEUS_TEMPLATE']) {
+    'FISH_PROTEUS_EXE', 'FISH_PROTEUS_LIBRARY', 'FISH_PROTEUS_SAMPLES', 'FISH_PROTEUS_TEMPLATE',
+    'FISH_PROTEUS_NASM', 'FISH_PROTEUS_WORKDIR', 'FISH_PROTEUS_TIMEOUT_SCALE']) {
     if (process.env[key] !== undefined) environment[key] = process.env[key];
   }
   environment.PYTHONIOENCODING = 'utf-8';
@@ -128,20 +129,53 @@ export function desktopProjection(result, context) {
   return projected;
 }
 
+async function prepareStateRoot(workspace, configuredRoot, gate) {
+  if (!inside(gate, join(workspace, 'tools'))) {
+    throw new Error('Desktop plugin paths must belong to its installed companion repository.');
+  }
+  const requested = process.env.FISH_PROTEUS_WORKDIR;
+  let parent;
+  let stateRoot;
+  if (requested !== undefined && requested.trim() !== '') {
+    const workdir = requested.trim();
+    if (!isAbsolute(workdir)) {
+      throw new Error(`FISH_PROTEUS_WORKDIR must be an absolute path: ${workdir}`);
+    }
+    try {
+      await mkdir(workdir, { recursive: true });
+    } catch (error) {
+      throw new Error(`FISH_PROTEUS_WORKDIR is not writable: ${workdir}. ${error.message}`);
+    }
+    parent = await realpath(workdir);
+    stateRoot = join(parent, 'desktop');
+  } else {
+    if (!isAbsolute(configuredRoot) || !inside(configuredRoot, join(workspace, '.work'))) {
+      throw new Error(
+        'Desktop plugin paths must belong to its installed companion repository. '
+        + 'If task storage was installed under FISH_PROTEUS_WORKDIR, set that variable before starting Harness. '
+        + `Configured state root: ${configuredRoot}`);
+    }
+    parent = join(workspace, '.work');
+    stateRoot = configuredRoot;
+  }
+  try {
+    await mkdir(stateRoot, { recursive: true });
+  } catch (error) {
+    throw new Error(
+      `Desktop task storage is not writable: ${stateRoot}. Set FISH_PROTEUS_WORKDIR to a folder on a writable drive. ${error.message}`);
+  }
+  const checked = await realpath(stateRoot);
+  if (!inside(checked, parent)) {
+    throw new Error('Desktop task storage cannot escape through a link.');
+  }
+  return checked;
+}
+
 export async function apply(ctx, config) {
   const workspace = await realpath(config.workspace);
   const python = await realpath(config.python);
   const gate = await realpath(config.gate);
-  const stateRoot = config.stateRoot;
-  if (!isAbsolute(stateRoot) || !inside(stateRoot, join(workspace, '.work'))
-      || !inside(gate, join(workspace, 'tools'))) {
-    throw new Error('Desktop plugin paths must belong to its installed companion repository.');
-  }
-  await mkdir(stateRoot, { recursive: true });
-  const checkedStateRoot = await realpath(stateRoot);
-  if (!inside(checkedStateRoot, join(workspace, '.work'))) {
-    throw new Error('Desktop task storage cannot escape through a link.');
-  }
+  const checkedStateRoot = await prepareStateRoot(workspace, config.stateRoot, gate);
   const fixed = { workspace, python, gate, stateRoot: checkedStateRoot };
   const { defineTool } = await import(config.toolsModule);
   ctx.tools.register(defineTool({
@@ -178,8 +212,10 @@ export async function apply(ctx, config) {
           source_identity: config.sourceIdentity ?? null,
           ended_utc: new Date().toISOString(),
         }) + '\n', 'utf8');
-      } catch {
-        return blocked('LocalEvidenceWriteError', 'The complete local tool result could not be preserved; no success is claimed.');
+      } catch (error) {
+        return blocked('LocalEvidenceWriteError',
+          `The complete local tool result could not be preserved at ${reportDirectory}. `
+          + `Set FISH_PROTEUS_WORKDIR to a writable drive if C: is frozen. ${error.message}`);
       }
       try {
         return desktopProjection(result, { workspace, stateRoot: checkedStateRoot,

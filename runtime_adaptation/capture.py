@@ -35,7 +35,11 @@ def capture_window(hwnd, destination):
             rows.append(b'\0'+rgb)
         def chunk(kind,payload):return struct.pack('>I',len(payload))+kind+payload+struct.pack('>I',zlib.crc32(kind+payload)&0xffffffff)
         png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',width,height,8,2,0,0,0))+chunk(b'IDAT',zlib.compress(b''.join(rows)))+chunk(b'IEND',b'')
-        destination=Path(destination);destination.parent.mkdir(parents=True,exist_ok=True);destination.write_bytes(png)
+        destination=Path(destination)
+        try:
+            destination.parent.mkdir(parents=True,exist_ok=True);destination.write_bytes(png)
+        except OSError as exc:
+            raise OSError(f'Could not write the capture image: {destination}. {type(exc).__name__}: {exc}') from exc
         return str(destination)
     finally:
         g.SelectObject(mem,old);g.DeleteObject(bmp);g.DeleteDC(mem);u.ReleaseDC(hwnd,hdc)

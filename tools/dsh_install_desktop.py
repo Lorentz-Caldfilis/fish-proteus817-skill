@@ -55,10 +55,16 @@ def _atomic_write(path: Path, data: bytes, *, expected: bytes | None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(f".{path.name}.fish-{uuid.uuid4().hex}.tmp")
     try:
-        with temporary.open("xb") as stream:
-            stream.write(data)
-            stream.flush()
-            os.fsync(stream.fileno())
+        try:
+            with temporary.open("xb") as stream:
+                stream.write(data)
+                stream.flush()
+                os.fsync(stream.fileno())
+        except OSError as exc:
+            raise OSError(
+                f"Cannot write {path}. The Harness profile lives in its own home (default ~/.dsh). "
+                f"Pass --dsh-home only when Harness uses that same home. {type(exc).__name__}: {exc}"
+            ) from exc
         if _read(path) != expected:
             raise ValueError(f"File changed while preparing installation: {path}")
         os.replace(temporary, path)
@@ -275,9 +281,38 @@ def _project_skill_diagnostics(repository: Path, expected: dict[str, str]) -> di
                                if differs else None)}
 
 
+def _install_layout(repository: Path) -> dict[str, Path]:
+    """Skill-owned directories. FISH_PROTEUS_WORKDIR moves them off a frozen clone."""
+    from fish_proteus.workdir import desktop_layout
+    layout = desktop_layout(repository)
+    return layout
+
+
+def _workdir_errors(confine: Path, *, create: bool) -> list[str]:
+    """Complain only when FISH_PROTEUS_WORKDIR is set and cannot be used."""
+    from fish_proteus.workdir import ENV, probe_directory, require_writable, resolve_workdir
+    if resolve_workdir() is None:
+        return []
+    if create:
+        try:
+            require_writable(confine, purpose=ENV)
+        except OSError as exc:
+            return [str(exc)]
+        return []
+    if not confine.exists():
+        return []
+    if not confine.is_dir():
+        return [f"{ENV} is not a directory: {confine}"]
+    report = probe_directory(confine)
+    if not report["writable"]:
+        return [f"{ENV} is not writable: {confine}. {report['error']}"]
+    return []
+
+
 def _plugin_cache_plan(repository: Path, identity: dict) -> dict:
     """ESM source URLs must change when the reviewed implementation changes."""
-    directory = _below(repository / ".work" / "desktop" / "plugins" / identity["sha256"], repository)
+    layout = _install_layout(repository)
+    directory = _below(layout["plugins"] / identity["sha256"], layout["confine"])
     files = {name: identity["files"].get("tools/" + name)
              for name in ("dsh_desktop_tool.mjs", "dsh_design_tool.mjs")}
     ready = False
@@ -286,6 +321,7 @@ def _plugin_cache_plan(repository: Path, identity: dict) -> dict:
             raise ValueError("The existing content-addressed plugin cache differs; it was not overwritten")
         ready = True
     return {"directory": str(directory), "files": files, "ready": ready,
+            "confine": str(layout["confine"]),
             "module": (directory / "dsh_desktop_tool.mjs").as_uri()}
 
 
@@ -296,7 +332,8 @@ def _materialize_plugin_cache(repository: Path, identity: dict, plan: dict) -> N
     becomes visible at its final address only after both original byte streams
     have been verified; no source rewriting or URL-query loader assumptions.
     """
-    directory = _below(Path(plan["directory"]), repository)
+    confine = Path(plan.get("confine") or repository)
+    directory = _below(Path(plan["directory"]), confine)
     expected = plan["files"]
     if directory.exists():
         if _inventory(directory) != expected:
@@ -310,9 +347,15 @@ def _materialize_plugin_cache(repository: Path, identity: dict, plan: dict) -> N
         if digest is None or hashlib.sha256(value).hexdigest() != digest:
             raise ValueError("Plugin source changed while preparing its content-addressed cache")
         data[name] = value
-    parent = _below(directory.parent, repository)
-    parent.mkdir(parents=True, exist_ok=True)
-    staging = _below(parent / (".stage-" + uuid.uuid4().hex), repository)
+    parent = _below(directory.parent, confine)
+    try:
+        parent.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        raise OSError(
+            f"Plugin cache directory is not writable: {parent}. "
+            f"Set FISH_PROTEUS_WORKDIR to a writable drive. {type(exc).__name__}: {exc}"
+        ) from exc
+    staging = _below(parent / (".stage-" + uuid.uuid4().hex), confine)
     staging.mkdir()
     try:
         for name, value in data.items():
@@ -378,11 +421,13 @@ def install_desktop(*, repository: Path = REPOSITORY, dsh_home: Path | None = No
     bootstrap_migration = bool(bounds and prior and prior.get("plugin_id") != BOOTSTRAP_ID)
     bootstrap_protocol_update = bool(bounds and prior and prior.get("plugin_id") == BOOTSTRAP_ID
                                      and prior.get("bootstrap_sha256") != bootstrap_sha)
+    layout = _install_layout(repository)
+    workdir_errors = _workdir_errors(layout["confine"], create=not dry_run)
     plugin_cache = _plugin_cache_plan(repository, identity)
     config = {"plugin": bootstrap.as_uri(), "implementationModule": plugin_cache["module"],
               "workspace": str(repository), "python": str(Path(sys.executable).resolve()),
               "gate": str(repository / "tools" / "desktop_gate.py"),
-              "stateRoot": str(repository / ".work" / "desktop"),
+              "stateRoot": str(layout["state_root"]),
               "sourceIdentity": identity["sha256"],
               "toolsModule": (archive / "dsh" / "node_modules" / "@deepseek-ai" / "dsh-tools" / "lib" / "index.js").as_uri()}
     source = repository / "skills" / "fish-proteus817"
@@ -399,7 +444,7 @@ def install_desktop(*, repository: Path = REPOSITORY, dsh_home: Path | None = No
     append_content = content if empty_flow_converted is None else empty_flow_converted
     separator = b"" if not append_content or append_content.endswith(b"\n") else newline
     after = (content[:bounds[0]] + block + content[bounds[1]:]) if bounds else append_content + separator + block
-    errors = runtime["errors"] + [f"Repository file missing: {name}" for name in missing]
+    errors = runtime["errors"] + workdir_errors + [f"Repository file missing: {name}" for name in missing]
     if bootstrap_migration:
         errors.append("Existing direct-plugin entry requires migration: uninstall it, wait for DSH to unload "
                       "that tool, then install the stable bootstrap")
@@ -428,7 +473,14 @@ def install_desktop(*, repository: Path = REPOSITORY, dsh_home: Path | None = No
         raise ValueError("; ".join(errors))
     if before == after and present == wanted and prior and plugin_cache["ready"]:
         return {**report, "status": "unchanged", "manifest": str(manifest_path)}
-    managed.mkdir(parents=True, exist_ok=True)
+    try:
+        managed.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        raise OSError(
+            f"Harness skill directory is not writable: {managed}. "
+            f"The default home is ~/.dsh, often on C:. Pass --dsh-home only when Harness uses that same home. "
+            f"{type(exc).__name__}: {exc}"
+        ) from exc
     lock = managed / "install.lock"
     with lock.open("x", encoding="ascii") as stream:
         stream.write(str(os.getpid()))

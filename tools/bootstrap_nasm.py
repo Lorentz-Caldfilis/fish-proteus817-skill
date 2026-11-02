@@ -17,14 +17,22 @@ ARCHIVE_SHA256 = "161d0bfaff53c2f9e9f3e69fd0672323ebabafd1268976a5cec11be92a19ae
 
 def install(directory: str | Path, archive: str | Path | None = None) -> dict:
     target = Path(directory).resolve()
-    target.mkdir(parents=True, exist_ok=True)
+    try:
+        target.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        raise OSError(
+            f"NASM directory is not writable: {target}. "
+            f"Set FISH_PROTEUS_WORKDIR to a writable drive, or pass --directory. "
+            f"{type(exc).__name__}: {exc}"
+        ) from exc
     if archive:
         archive_path = Path(archive).resolve()
     else:
         archive_path = target / f"nasm-{VERSION}-win64.zip"
         if not archive_path.is_file():
             request = urllib.request.Request(URL, headers={"User-Agent": "FishForProteus8.17sp2-bootstrap/1"})
-            with urllib.request.urlopen(request, timeout=30) as response:
+            from fish_proteus.timeouts import scaled
+            with urllib.request.urlopen(request, timeout=scaled(30)) as response:
                 payload = response.read(32 * 1024 * 1024 + 1)
                 if len(payload) > 32 * 1024 * 1024:
                     raise ValueError("NASM archive exceeds the expected maximum size")
@@ -45,8 +53,9 @@ def install(directory: str | Path, archive: str | Path | None = None) -> dict:
                 raise ValueError(f"Refusing to replace a different local file: {destination}")
             destination.write_bytes(data)
             installed.append({"name": name, "sha256": hashlib.sha256(data).hexdigest()})
+    from fish_proteus.timeouts import scaled
     version = subprocess.run([str(target / "nasm.exe"), "-v"], shell=False, capture_output=True,
-                             text=True, errors="replace", timeout=15, check=True).stdout.strip()
+                             text=True, errors="replace", timeout=scaled(15), check=True).stdout.strip()
     result = {"status": "installed", "version": version, "url": URL,
               "archive_sha256": digest, "directory": str(target), "files": installed,
               "nasm": str(target / "nasm.exe"), "global_changes": False}
@@ -56,11 +65,16 @@ def install(directory: str | Path, archive: str | Path | None = None) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--directory", default=str(Path(__file__).resolve().parents[1] / ".tools/nasm"))
+    parser.add_argument("--directory", default=None,
+                        help="Install directory. Default is <repo>/.tools/nasm, or FISH_PROTEUS_WORKDIR/nasm when that variable is set.")
     parser.add_argument("--archive", help="Use an already downloaded official ZIP, checked against the pinned hash")
     arguments = parser.parse_args()
+    directory = arguments.directory
+    if directory is None:
+        from fish_proteus.workdir import default_nasm_directory
+        directory = default_nasm_directory()
     try:
-        result = install(arguments.directory, arguments.archive)
+        result = install(directory, arguments.archive)
     except (OSError, ValueError, subprocess.SubprocessError, zipfile.BadZipFile) as error:
         print(json.dumps({"status": "error", "error": str(error)}, ensure_ascii=False))
         return 1

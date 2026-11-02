@@ -108,14 +108,27 @@ The map of files, and what each directory is for, is in [Architecture](docs/arch
 | `FISH_PROTEUS_LIBRARY` | Device libraries live somewhere else |
 | `FISH_PROTEUS_SAMPLES` | Samples live somewhere else |
 | `FISH_PROTEUS_TEMPLATE` | You want a different blank-project template |
+| `FISH_PROTEUS_TIMEOUT_SCALE` | The PC is slow. `3` triples the waits. Unset means `1` |
+| `FISH_PROTEUS_WORKDIR` | C: is frozen. Skill-owned files go to this folder |
 | `DSH_DESKTOP_EXE` | The installer cannot find DeepSeek Harness |
 | `DEEPSEEK_API_KEY` | Only for the optional headless API-key route |
 
 Installed Proteus files stay read-only. The full list, including the course and test variables, is in [Configuration](docs/configuration.md).
 
+## Before a demo on a new machine
+
+Run this on the PC you will actually use. A skill that worked on one computer can sit there after the move: Proteus is hidden while it starts, and a dialog you cannot see uses up the wait.
+
+1. `python -m fish_proteus doctor`. Proteus should be present, `native_profile.ok` should be true, and `work.temp` plus `work.desktop_store` should be writable.
+2. In the chat, let the agent call `capabilities`. `fingerprint_matched` is the same hash check.
+3. Open Proteus yourself once. Dismiss every license, update, and first-run dialog. Then close it.
+4. The UI has to be English Proteus **8.17 SP2**, build 8.17.37159. Another build is refused on purpose.
+5. On a slow PC, set `$env:FISH_PROTEUS_TIMEOUT_SCALE = '3'` before you start Harness. `1` is the normal speed.
+6. If C: does not accept writes, put the clone and the venv on D:, set `$env:FISH_PROTEUS_WORKDIR = 'D:\fish-proteus'`, and set `TEMP` and `TMP` there too. Start Harness from that same environment.
+
 ## Limits
 
-- Native simulation needs an interactive Windows desktop and Proteus **8.17 SP2** (build 8.17.37159 is the one this was written against). CI runs the offline tests on Linux and Windows. It does not launch Proteus.
+- Native simulation needs an interactive Windows desktop and English Proteus **8.17 SP2** (build 8.17.37159, exact file hashes). CI runs the offline tests on Linux and Windows. It does not launch Proteus.
 - PCB layout, unfamiliar project formats, and creating new graphs or probes are outside what this does.
 - A successful command is not a working circuit. If a measurement was not taken, the behavior is unverified.
 - This Alpha build has no support promise and no fix-time promise.

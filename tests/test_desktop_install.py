@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -50,6 +51,10 @@ class DesktopInstallTests(unittest.TestCase):
             "python": "fixture-python", "pyyaml": True, "proteus": {}, "errors": []})
         self.runtime_patch.start()
         self.addCleanup(self.runtime_patch.stop)
+        # A lab workdir in the environment must not move the default install.
+        self.workdir_guard = patch.dict(os.environ, {"FISH_PROTEUS_WORKDIR": "", "FISH_PROTEUS_TIMEOUT_SCALE": ""})
+        self.workdir_guard.start()
+        self.addCleanup(self.workdir_guard.stop)
 
     @property
     def installed_skill(self):
@@ -438,6 +443,27 @@ class DesktopInstallTests(unittest.TestCase):
         self.assertEqual(self.profile.read_bytes(), original)
 
     @unittest.skipUnless(HAS_YAML, "DSH desktop setup uses the optional PyYAML dependency")
+    def test_workdir_receives_the_plugin_cache_and_task_store(self):
+        work = self.root / "other-drive" / "fish"
+        with patch.dict(os.environ, {"FISH_PROTEUS_WORKDIR": str(work)}):
+            result = self.run_install()
+        self.assertEqual(result["status"], "installed")
+        self.assertEqual(Path(result["plugin"]["stateRoot"]), (work / "desktop").resolve())
+        cache = Path(result["plugin_cache"]["directory"])
+        self.assertTrue(cache.is_relative_to(work.resolve()))
+        self.assertTrue((cache / "dsh_desktop_tool.mjs").is_file())
+        self.assertFalse((self.repo / ".work").exists())
+
+    def test_unwritable_workdir_is_named_and_does_not_touch_the_profile(self):
+        blocked = self.root / "not-a-directory"
+        blocked.write_text("x", encoding="utf-8")
+        with patch.dict(os.environ, {"FISH_PROTEUS_WORKDIR": str(blocked)}):
+            with self.assertRaises(ValueError) as caught:
+                self.run_install()
+        self.assertIn(str(blocked.resolve()), str(caught.exception))
+        self.assertIn("FISH_PROTEUS_WORKDIR", str(caught.exception))
+        self.assertEqual(self.profile.read_bytes(), self.original)
+
     def test_changed_empty_flow_backup_refuses_uninstall_without_mutation(self):
         self.profile.write_bytes(b"[]\n")
         installed = self.run_install()

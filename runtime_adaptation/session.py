@@ -8,7 +8,10 @@ import subprocess
 import time
 import uuid
 
+from fish_proteus.timeouts import scaled
+
 from . import native
+from .diagnostics import launch_blocked_message
 
 native.u.SendMessageTimeoutW.argtypes = (w.HWND, w.UINT, w.WPARAM, w.LPARAM,
                                        w.UINT, w.UINT, c.POINTER(c.c_size_t))
@@ -102,7 +105,10 @@ def parse_sdf(text):
 class Session:
     """Owns one Proteus process. Pass a disposable project copy, not an original."""
 
-    def __init__(self, project, executable=r"D:\Proteus\BIN\PDS.EXE"):
+    def __init__(self, project, executable=None):
+        if executable is None:
+            from fish_proteus.config import ProteusConfig
+            executable = ProteusConfig.discover().executable
         self.project = Path(project).resolve(strict=True)
         executable = Path(executable).resolve(strict=True)
         if self.project.suffix.lower() != ".pdsprj" or executable.name.upper() != "PDS.EXE":
@@ -121,16 +127,30 @@ class Session:
             return self._ready()
         try:
             self._wait(launched, timeout=45)
+        except TimeoutError:
+            rows = []
+            try:
+                rows = native.windows(self.pid)
+            except Exception:
+                rows = []
+            self._abandon_launch()
+            raise TimeoutError(launch_blocked_message(
+                pid=self.pid, project_stem=self.project.stem, windows=rows,
+                budget_seconds=scaled(45))) from None
         except Exception:
             # No mutation has been requested yet; clean up this newly launched process only.
-            if self.process.poll() is None:
-                self.process.terminate()
-                self.process.wait(timeout=5)
+            self._abandon_launch()
             raise
         # Allow native child views to settle; no documented application-ready event exists.
         time.sleep(1)
 
+    def _abandon_launch(self):
+        if self.process.poll() is None:
+            self.process.terminate()
+            self.process.wait(timeout=scaled(5))
+
     def _wait(self, condition, timeout=15):
+        timeout = scaled(timeout)
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             if self.process.poll() is not None:
@@ -181,7 +201,7 @@ class Session:
         buffer, result = c.create_unicode_buffer(str(path)), c.c_size_t()
         # Cross-process Edit text needs WM_SETTEXT; SetWindowText only changed the cached caption.
         if not native.u.SendMessageTimeoutW(edits[0]["hwnd"], 0xC, 0, c.addressof(buffer),
-                                           2, 3000, c.byref(result)) or not result.value:
+                                           2, int(scaled(3) * 1000), c.byref(result)) or not result.value:
             raise RuntimeError("Could not set native filename")
         buttons=[row for row in dialog['children'] if row['cls']=='Button' and row['control_id']==1 and row['enabled']]
         if len(buttons)!=1:raise RuntimeError('Expected one native file-dialog confirmation button')
@@ -261,14 +281,14 @@ class Session:
         time.sleep(1)
         self.menu("File/Exit Application")
         # Do not dismiss an unexpected unsaved-changes dialog or terminate another process.
-        deadline = time.monotonic() + 20
+        deadline = time.monotonic() + scaled(20)
         while time.monotonic() < deadline:
             if self.process.poll() is not None:
                 return self.process.returncode
             for dialog in native.windows(self.pid):
                 if dialog["title"] == "Fatal Error":
                     self.process.terminate()
-                    self.process.wait(timeout=5)
+                    self.process.wait(timeout=scaled(5))
                     raise RuntimeError(f"Proteus crashed during exit: {json.dumps(dialog)}")
             time.sleep(.1)
         raise TimeoutError(f"Proteus PID {self.pid} did not exit: {json.dumps(native.windows(self.pid))}")

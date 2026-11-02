@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Make a move to another Windows PC easier to diagnose. `doctor` uses the same Proteus discovery as a run and reports the 8.17 SP2 hash check, the timeout scale, and whether the work folders are writable. Launch timeouts name the blocking windows. `FISH_PROTEUS_TIMEOUT_SCALE` stretches waits without changing the defaults. `FISH_PROTEUS_WORKDIR` redirects skill-owned writes off a frozen C:.
 - Rewrite the English and Chinese READMEs in a short, human voice, and move the lab record under `docs/release/`. Add a docs map: getting started, configuration, skill usage, CLI, architecture, and troubleshooting.
 - Tighten `skills/fish-proteus817/SKILL.md` so the description says when to use it. The skill path and `fish_proteus_design` are unchanged.
 - Document the repository layout and an unofficial-tool disclaimer in both READMEs. The Agent Skill remains `skills/fish-proteus817/SKILL.md`; Python packages stay at the repository root.
@@ -10,7 +11,7 @@
 - Drop unused imports and an unused validator binding. Circuit, simulation, and tool behavior are unchanged.
 - State in the publication guide that the current source version is 0.3.0.
 
-中文：README 改成短的人话，中英文各一篇；实测记录挪到 `docs/release/`。Skill 路径和工具行为不变。另补充仓库结构与非官方免责说明，加入 Ruff 检查，忽略常见 Python、Windows 和 Proteus 备份文件，不再提交导出工具生成的 `PUBLIC_MANIFEST.json`。
+中文：换机器前用 `doctor` 看哈希、超时倍数和工作目录能不能写。`FISH_PROTEUS_TIMEOUT_SCALE` 放宽等待，默认不变。`FISH_PROTEUS_WORKDIR` 把技能自己的文件挪到可写的盘。README 改成短的人话，中英文各一篇；实测记录挪到 `docs/release/`。Skill 路径和工具行为不变。另补充仓库结构与非官方免责说明，加入 Ruff 检查，忽略常见 Python、Windows 和 Proteus 备份文件，不再提交导出工具生成的 `PUBLIC_MANIFEST.json`。
 
 ## 0.3.0 — 2026-10-29
 

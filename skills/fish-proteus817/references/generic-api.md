@@ -79,7 +79,7 @@ Each `steps` item has `op`. A sequence always attempts stop/close and saves its 
 | op | Arguments / observation |
 | --- | --- |
 | `status`, `start`, `pause`, `stop`, `reset` | None; native acknowledgements/state/time. |
-| `run_for` | `seconds` (>0..60); optional `timeout` (wall budget 1..120), `tolerance_seconds` (0..1, default .003). |
+| `run_for` | `seconds` (>0..60); optional `timeout` (wall budget 1..120, then multiplied by `FISH_PROTEUS_TIMEOUT_SCALE` when that variable is set), `tolerance_seconds` (0..1, default .003). |
 | `controls` | Actual supported binary controls/positions/bindings. |
 | `control_state`, `press`, `release` | `ref`; mechanical state, not downstream response. |
 | `set_switch` | `ref`, `closed` boolean. |

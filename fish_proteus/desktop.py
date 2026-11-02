@@ -60,7 +60,11 @@ def _sha(path):
 def _write(path, value):
     """Replace one complete manifest on its own filesystem."""
     path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        from .workdir import write_error
+        raise OSError(write_error(path, exc, purpose="Desktop task storage")) from exc
     descriptor, temporary = tempfile.mkstemp(prefix=".desktop-", suffix=".tmp", dir=path.parent)
     try:
         with os.fdopen(descriptor, "w", encoding="utf8", newline="\n") as stream:

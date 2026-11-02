@@ -15,6 +15,8 @@ does not establish device import or simulation compatibility.
 `fish_proteus.config.ProteusConfig` is immutable. `discover()` checks explicit
 arguments, `FISH_PROTEUS_EXE`, `FISH_PROTEUS_LIBRARY`, `FISH_PROTEUS_SAMPLES`,
 `FISH_PROTEUS_TEMPLATE`, and the installed executable's `DATA` directory.
+`FISH_PROTEUS_TIMEOUT_SCALE` multiplies wall-clock waits only.
+`FISH_PROTEUS_WORKDIR`, when set, redirects skill-owned temporary files and the desktop task store.
 Resource discovery never launches an application or changes its configuration.
 Pass separate configurations to use separate installations. Installed resources
 are read-only inputs; saves beneath the installation or resource roots fail.

@@ -55,7 +55,7 @@ export async function apply(ctx, config) {
       // The child does not inherit the harness's model credentials or arbitrary
       // Python import settings. No shell parses this argv or the JSON input.
       const environment = {};
-      for (const key of ['SystemRoot', 'WINDIR', 'PATH', 'PATHEXT', 'TEMP', 'TMP', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA', 'ProgramData', 'PROGRAMFILES', 'PROGRAMFILES(X86)']) {
+      for (const key of ['SystemRoot', 'WINDIR', 'PATH', 'PATHEXT', 'TEMP', 'TMP', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA', 'ProgramData', 'PROGRAMFILES', 'PROGRAMFILES(X86)', 'ProgramFiles', 'ProgramFiles(x86)', 'FISH_PROTEUS_EXE', 'FISH_PROTEUS_LIBRARY', 'FISH_PROTEUS_SAMPLES', 'FISH_PROTEUS_TEMPLATE', 'FISH_PROTEUS_NASM', 'FISH_PROTEUS_WORKDIR', 'FISH_PROTEUS_TIMEOUT_SCALE']) {
         if (process.env[key] !== undefined) environment[key] = process.env[key];
       }
       const argv = ['-I', '-B', gate, '--workspace', workspace, '--library', library, '--job-directory', config.jobDirectory, '--allowed', ...allowed];
@@ -86,8 +86,14 @@ export async function apply(ctx, config) {
         child.stdin.on('error', () => {});
         child.stdin.end(JSON.stringify(args));
       });
-      await mkdir(dirname(config.auditPath), { recursive: true });
-      await appendFile(config.auditPath, JSON.stringify({ operation: args.operation, input: args, exit_code: result.exit_code, payload_status: result.payload?.status ?? null }) + '\n', 'utf8');
+      try {
+        await mkdir(dirname(config.auditPath), { recursive: true });
+        await appendFile(config.auditPath, JSON.stringify({ operation: args.operation, input: args, exit_code: result.exit_code, payload_status: result.payload?.status ?? null }) + '\n', 'utf8');
+      } catch (error) {
+        return { exit_code: result.exit_code, signal: result.signal, payload: { status: 'blocked',
+          error: { type: 'LocalEvidenceWriteError', message: `The audit file is not writable: ${config.auditPath}. ${error.message}` } },
+          stderr: result.stderr };
+      }
       return result;
     },
   });

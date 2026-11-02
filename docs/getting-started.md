@@ -6,7 +6,7 @@ The short path is also on the [README](../README.md). This page is what each ste
 
 ## What you need
 
-- Windows, an interactive desktop, and your own Proteus **8.17 SP2**. The build this code was written against is 8.17.37159.
+- Windows, an interactive desktop, and your own Proteus **8.17 SP2** with the English UI. The build this code was written against is 8.17.37159. `python -m fish_proteus doctor` checks the file hashes and whether this PC can write its working folders. The short list for a new machine is on the [README](../README.md).
 - Python 3.10 or newer, and Git.
 - DeepSeek Harness, already able to sign in or call its model.
 - For the optional 8086 recipes: the course's original projects and `main.asm`, plus NASM.

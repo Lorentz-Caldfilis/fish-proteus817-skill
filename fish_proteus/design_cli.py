@@ -391,27 +391,73 @@ def _json_default(value):
 
 def _write(path, value):
     path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(path.name + ".tmp-" + uuid.uuid4().hex)
-    temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2, default=_json_default, allow_nan=False) + "\n", encoding="utf8")
-    temporary.replace(path)
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_name(path.name + ".tmp-" + uuid.uuid4().hex)
+        temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2, default=_json_default, allow_nan=False) + "\n", encoding="utf8")
+        temporary.replace(path)
+    except OSError as exc:
+        raise OSError(
+            f"Could not write {path}. Set FISH_PROTEUS_WORKDIR to a writable drive if this path is frozen. "
+            f"{type(exc).__name__}: {exc}"
+        ) from exc
+
+
+def _log_directory_in(base):
+    """Create one ASCII log directory under base, or raise an error that names that path."""
+    if not str(base).isascii():
+        raise ValueError(
+            f"FISH_PROTEUS_WORKDIR is not ASCII, so native LOGFILE cannot use it: {base}. "
+            "Choose an ASCII folder, such as D:\\fish-proteus."
+        )
+    try:
+        base.mkdir(parents=True, exist_ok=True)
+        directory = Path(tempfile.mkdtemp(prefix="fish-proteus-log-", dir=base)).resolve()
+        probe = directory / "write-probe"
+        probe.write_bytes(b"")
+        probe.unlink()
+        return directory
+    except OSError as exc:
+        if "directory" in locals() and directory is not None:
+            try:
+                _remove_log_directory(directory)
+            except OSError:
+                pass
+        raise OSError(
+            f"Native-log staging is not writable: {base}. "
+            f"Set FISH_PROTEUS_WORKDIR to an ASCII folder on a writable drive. "
+            f"{type(exc).__name__}: {exc}"
+        ) from exc
 
 
 def _make_log_directory(task_root):
-    """Host-owned ASCII staging, preferably within an ancestor of this task.
+    """Host-owned ASCII staging for the native LOGFILE.
 
     Windows sandbox TEMP may permit directory creation but deny child-file I/O.
-    Use a fixed staging name under a writable ASCII task ancestor, then try the
-    OS temp directory. No model-supplied field selects either base or filename.
+    ``FISH_PROTEUS_WORKDIR``, when set, is the only base. Otherwise use a
+    writable ASCII ancestor of the task, then the process temporary directory.
+    No model-supplied field selects either base or filename. A Chinese
+    username often makes the profile path unusable for this file.
     """
+    from .workdir import configured_workdir
+    configured = configured_workdir()
+    if configured is not None:
+        return _log_directory_in(configured.expanduser().resolve())
     task_root = Path(task_root).resolve()
     bases = [parent / ".work" / "fish-proteus-log-staging"
              for parent in (task_root, *task_root.parents)
              if str(parent).isascii() and parent != Path(parent.anchor)]
     bases.append(Path(tempfile.gettempdir()))
+    tried = []
+    seen = set()
     for base in bases:
         if not str(base).isascii():
+            tried.append(f"{base} (path is not ASCII)")
             continue
+        key = str(base)
+        if key in seen:
+            continue
+        seen.add(key)
         directory = None
         try:
             base.mkdir(parents=True, exist_ok=True)
@@ -420,13 +466,19 @@ def _make_log_directory(task_root):
             probe.write_bytes(b"")
             probe.unlink()
             return directory
-        except OSError:
+        except OSError as exc:
+            tried.append(f"{base} ({type(exc).__name__}: {exc})")
             if directory is not None:
                 try:
                     _remove_log_directory(directory)
                 except OSError:
                     pass
-    raise ValueError("No writable ASCII native-log staging directory is available")
+    detail = "; ".join(tried) if tried else "(no candidate directories)"
+    raise ValueError(
+        "No writable ASCII native-log staging directory is available. "
+        f"Tried: {detail}. A Chinese username often makes the profile and TEMP paths unusable. "
+        "Set FISH_PROTEUS_WORKDIR to an ASCII folder on a writable drive."
+    )
 
 
 def _remove_log_directory(directory):
@@ -884,7 +936,8 @@ class DesignTask:
                     if process is not None:
                         try:
                             if process.poll() is None:
-                                process.terminate(); process.wait(timeout=10)
+                                from .timeouts import scaled
+                                process.terminate(); process.wait(timeout=scaled(10))
                                 result["cleanup"]["forced_owned_process_termination"] = True
                             result["cleanup"]["owned_process_closed"] = process.poll() is not None
                         except (OSError, RuntimeError, TimeoutError) as cleanup_error:

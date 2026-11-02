@@ -15,6 +15,8 @@ from pathlib import Path
 import threading
 import time
 
+from fish_proteus.timeouts import scaled
+
 from .profile817 import profile_for
 from fish_proteus._vendor.proteus_auto.simulation import Simulation as _ReferenceSimulation
 
@@ -57,7 +59,7 @@ class Session:
         except BaseException as error:
             process=getattr(self._desktop,'process',None)
             if process is not None:
-                if process.poll() is None:process.terminate();process.wait(timeout=10)
+                if process.poll() is None:process.terminate();process.wait(timeout=scaled(10))
                 error.owned_pid=process.pid
                 error.owned_process_closed=process.poll() is not None
             if self._log_option_changed:
@@ -202,7 +204,7 @@ class Session:
     def __exit__(self,kind,value,traceback):
         try:self.close()
         except Exception:
-            if self.process.poll() is None:self.process.terminate();self.process.wait(timeout=10)
+            if self.process.poll() is None:self.process.terminate();self.process.wait(timeout=scaled(10))
             if self._log_option_changed:self._finish_logfile(False)
             if kind is None:raise
 

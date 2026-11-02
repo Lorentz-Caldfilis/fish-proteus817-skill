@@ -285,7 +285,7 @@ export async function apply(ctx, config) {
     async execute(args, exec) {
       if (!allowed.includes(args.action)) throw new Error('Design action is not enabled for this task.');
       const environment = {};
-      for (const key of ['SystemRoot', 'WINDIR', 'PATH', 'PATHEXT', 'TEMP', 'TMP', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA', 'ProgramData', 'PROGRAMFILES', 'PROGRAMFILES(X86)']) {
+      for (const key of ['SystemRoot', 'WINDIR', 'PATH', 'PATHEXT', 'TEMP', 'TMP', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA', 'ProgramData', 'PROGRAMFILES', 'PROGRAMFILES(X86)', 'ProgramFiles', 'ProgramFiles(x86)', 'FISH_PROTEUS_EXE', 'FISH_PROTEUS_LIBRARY', 'FISH_PROTEUS_SAMPLES', 'FISH_PROTEUS_TEMPLATE', 'FISH_PROTEUS_NASM', 'FISH_PROTEUS_WORKDIR', 'FISH_PROTEUS_TIMEOUT_SCALE']) {
         if (process.env[key] !== undefined) environment[key] = process.env[key];
       }
       const argv = ['-I', '-B', gate, '--workspace', workspace, '--task-root', config.taskRoot, '--inputs-file', inputsFile, '--allow', ...allowed];
@@ -334,7 +334,7 @@ export async function apply(ctx, config) {
         await writeFile(join(reportDirectory, `${reportId}.json`), full, { encoding: 'utf8', flag: 'wx' });
       } catch (error) {
         return closedModelResponse({ exit_code: result.exit_code, payload: { status: 'blocked',
-          error: { type: 'LocalEvidenceWriteError', message: 'The complete local tool report could not be persisted.' },
+          error: { type: 'LocalEvidenceWriteError', message: `The complete local tool report could not be persisted at ${reportDirectory}. ${error.message}` },
           original_status: result.payload?.status ?? null, side_effects: result.payload?.side_effects ?? {} } },
         { workspace, taskRoot: config.taskRoot, inputs: hostInputs });
       }

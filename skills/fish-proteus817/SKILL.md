@@ -58,3 +58,7 @@ User: "Open this project, change the resistor to 4.7k, save a copy, and do not s
 - Sample projects may donate a format container, a device definition, or an instrument. Say so. Do not present a copied sample as a circuit you designed.
 - Verify against a check chosen before the measurement. Unavailable measurements stay unverified.
 - Headless deployments that already pin their own operations are a separate setup. Do not apply those launch rules to a normal desktop chat.
+- Menus, dialogs, and buttons are the English labels. A Chinese Proteus UI will not drive. Say so. Do not invent translations.
+- Native simulation accepts only Proteus 8.17 SP2 build 8.17.37159. `doctor` and `capabilities` report that hash check. Do not bypass it.
+- If launch times out, Proteus was started hidden. Tell the user to open it once, dismiss license or first-run dialogs, and on a slow PC set `FISH_PROTEUS_TIMEOUT_SCALE` (for example `3`) before starting Harness.
+- If a write fails, the error names the path. A frozen C: needs `FISH_PROTEUS_WORKDIR` on a writable drive, plus `TEMP` and `TMP`. Do not invent another install location.

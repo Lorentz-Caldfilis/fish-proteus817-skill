@@ -8,6 +8,8 @@ from pathlib import Path
 import ctypes as c
 from ctypes import wintypes as w
 import json, math, re, subprocess, time, unicodedata, uuid
+from fish_proteus.timeouts import scaled
+
 from . import native
 from .capture import capture_window
 from .session import Session
@@ -120,12 +122,14 @@ class Controller(Session):
         seconds=float(seconds)
         if not math.isfinite(seconds) or not 1e-6<=seconds<=60:
             raise ValueError('Requested simulation duration must be between 1 microsecond and 60 seconds')
-        timeout=float(timeout)
+        timeout=scaled(timeout)
         if not math.isfinite(timeout) or timeout<=0:
             raise ValueError('Capture timeout must be finite and positive')
         # This wall-time budget only bounds waiting for a capture. It is never
         # substituted for the simulator's clock or for measured waveform data.
-        wait_budget=min(timeout,max(2.0,min(8.0,seconds*2+1.0)))
+        # The 2s floor and 8s ceiling are wall-clock caps, so the same scale
+        # applies. The seconds*2+1 term follows the requested simulation time.
+        wait_budget=min(timeout,max(scaled(2.0),min(scaled(8.0),seconds*2+1.0)))
         diagnostics=[];clock_readings={}
         self.pause()
         try:
@@ -245,22 +249,30 @@ class Controller(Session):
 def read_ocr(image_path, output_path):
     script=Path(__file__).with_name('ocr.ps1')
     command=['powershell.exe','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',str(script),'-ImagePath',str(Path(image_path).resolve())]
-    result=subprocess.run(command,capture_output=True,timeout=40)
+    budget=scaled(40)
+    try:
+        result=subprocess.run(command,capture_output=True,timeout=budget)
+    except subprocess.TimeoutExpired as exc:
+        raise TimeoutError(
+            f'Windows OCR timed out after {budget:g}s for {image_path}. '
+            'On a slow PC set FISH_PROTEUS_TIMEOUT_SCALE. OCR starts powershell.exe '
+            '-ExecutionPolicy Bypass, which a locked-down lab policy can block.'
+        ) from exc
     stdout=result.stdout.decode('utf-8-sig',errors='replace')
     stderr=result.stderr.decode('utf-8-sig',errors='replace')
-    if result.returncode:raise RuntimeError(f'Windows OCR failed: {stderr[:1200]}')
+    if result.returncode:
+        policy = 'PSSecurityException' in stderr or 'ExecutionPolicy' in stderr or 'unauthorized' in stderr.lower()
+        hint = (' OCR starts powershell.exe -ExecutionPolicy Bypass. A lab policy that ignores Bypass '
+                'will block it.' if policy else '')
+        raise RuntimeError(f'Windows OCR failed: {stderr[:1200]}{hint}')
     data=json.loads(stdout)
     Path(output_path).write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf-8')
     return data
 
 
-def scope_timebase(ocr):
-    words=[word for line in ocr.get('Lines',[]) for word in line.get('Words',[])]
-    selected=sorted((word for word in words if 866<=word['X']<=947 and 850<=word['Y']<=880),key=lambda w:w['X'])
-    text=unicodedata.normalize('NFKC',''.join(word['Text'] for word in selected)).replace(' ','').replace(',','.')
-    if not re.fullmatch(r'(?:\d+(?:\.\d*)?|\.\d+)(?:[munpµμ]?s?)?',text):
-        raise RuntimeError(f'Oscilloscope timebase could not be read reliably: {text!r}')
-    return text
+def scope_timebase(ocr, image_size=None):
+    from .scope_ocr import scope_timebase as read_timebase
+    return read_timebase(ocr, image_size)
 
 
 def read_8255_ocr(image_path,output_directory):

@@ -4,7 +4,7 @@ These are optional 8086 course recipes, not the generic API's capability ceiling
 
 ## Recipe commands
 
-Start with `python -m fish_proteus doctor`. Import references using `import-course --source '<originals>' --destination '<unused-library>'`. Prepare with `prepare --library '<library>' --case divider --divisor N --output '<new-job>'`; alternatively use `--case cascade --divisor0 N0 --divisor1 N1` or `--case switch --on-value V --off-value W [--invert]`. Then use `build`, `run --seconds N`, and `verify`, each with the returned `--manifest '<job.json>'`.
+Start with `python -m fish_proteus doctor` and read `native_profile.ok`, `timeouts`, and `work` before a demo on a new or slow PC. Import references using `import-course --source '<originals>' --destination '<unused-library>'`. Put that destination on a writable drive when C: is frozen (`FISH_PROTEUS_WORKDIR` does not move a path you pass). Prepare with `prepare --library '<library>' --case divider --divisor N --output '<new-job>'`; alternatively use `--case cascade --divisor0 N0 --divisor1 N1` or `--case switch --on-value V --off-value W [--invert]`. Then use `build`, `run --seconds N`, and `verify`, each with the returned `--manifest '<job.json>'`.
 
 The legacy tool uses `operation` doctor/prepare/build/run/verify, `case` divider/cascade/switch and numerical divisor/divisor0/divisor1/on_value/off_value/invert fields. Its library/job paths are host-fixed. Enable runtime operations explicitly; choose an observation interval appropriate to the expected period.
 

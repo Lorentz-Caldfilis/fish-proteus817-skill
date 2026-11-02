@@ -108,14 +108,27 @@ $env:FISH_PROTEUS_EXE = 'C:\path\to\BIN\PDS.EXE'
 | `FISH_PROTEUS_LIBRARY` | 器件库在别处 |
 | `FISH_PROTEUS_SAMPLES` | 示例工程在别处 |
 | `FISH_PROTEUS_TEMPLATE` | 你想换一张空白工程模板 |
+| `FISH_PROTEUS_TIMEOUT_SCALE` | 电脑慢。`3` 把等待时间乘三。不设就是 `1` |
+| `FISH_PROTEUS_WORKDIR` | C: 被冻结。这个目录收技能自己写的文件 |
 | `DSH_DESKTOP_EXE` | 安装器找不到 DeepSeek Harness |
 | `DEEPSEEK_API_KEY` | 只用在可选的 headless API-key 路线 |
 
 安装好的 Proteus 文件保持只读。课程和测试用到的其余变量在[配置](docs/configuration.md)。
 
+## 换一台机器演示之前
+
+在真正要演示的那台电脑上做。换机器之后，技能可能一直停在那里：Proteus 启动时是隐藏的，你看不见的对话框会把等待时间耗光。
+
+1. `python -m fish_proteus doctor`。Proteus 要在，`native_profile.ok` 要是 true，`work.temp` 和 `work.desktop_store` 要能写。
+2. 在对话里让 agent 调 `capabilities`。`fingerprint_matched` 就是同一次哈希检查。
+3. 自己打开一次 Proteus。关掉许可、更新和第一次运行的每一个对话框，再退出。
+4. 界面必须是英文版 Proteus **8.17 SP2**，构建 8.17.37159。别的构建会按设计被拒绝。
+5. 机器慢的话，启动 Harness 之前设 `$env:FISH_PROTEUS_TIMEOUT_SCALE = '3'`。正常速度是 `1`。
+6. C: 不能写的话，把克隆和 venv 放在 D:，设 `$env:FISH_PROTEUS_WORKDIR = 'D:\fish-proteus'`，并把 `TEMP` 和 `TMP` 也指到那里。从同一个环境启动 Harness。
+
 ## 做不到的事
 
-- 原生仿真需要可交互的 Windows 桌面，以及 Proteus **8.17 SP2**（这份代码对着的构建是 8.17.37159）。CI 在 Linux 和 Windows 上跑离线测试，不会启动 Proteus。
+- 原生仿真需要可交互的 Windows 桌面，以及英文界面的 Proteus **8.17 SP2**（构建 8.17.37159，文件哈希必须一致）。CI 在 Linux 和 Windows 上跑离线测试，不会启动 Proteus。
 - PCB 布局、不认识的工程格式、新建图表或探针，都不在范围内。
 - 命令成功不等于电路是对的。没做测量，行为就还没被验证。
 - Alpha 版本不承诺支持和修复时限。

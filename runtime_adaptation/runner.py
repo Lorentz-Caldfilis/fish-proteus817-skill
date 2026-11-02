@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-import hashlib, json, math, os, re, shutil, tempfile, uuid, zipfile
+import hashlib, json, math, os, re, shutil, uuid, zipfile
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -26,8 +26,9 @@ def _finish(output,job_root,result):
 
 
 def _cleanup_stage(stage):
+    from fish_proteus.workdir import staging_parent
     stage=Path(stage)
-    temporary_root=Path(tempfile.gettempdir()).resolve()
+    temporary_root=staging_parent()
     if stage.is_symlink() or stage.resolve().parent!=temporary_root or not stage.name.startswith('fish-pds-'):
         raise RuntimeError('Refusing cleanup outside the exact temporary staging directory')
     shutil.rmtree(stage)
@@ -35,8 +36,9 @@ def _cleanup_stage(stage):
 
 def _stage(job):
     """Copy only this job's files into an ASCII-friendly private temporary tree."""
+    from fish_proteus.workdir import make_temp_directory
     root=Path(job['job_root']).resolve()
-    stage=Path(tempfile.mkdtemp(prefix='fish-pds-')).resolve()
+    stage=make_temp_directory('fish-pds-', purpose='Proteus project staging')
     paths={}
     for key in ('project','source','executable'):
         original=Path(job[key]).resolve(strict=True)
@@ -171,6 +173,22 @@ def _observe_switch(session,output,bindings,artifact):
             'observation_kind':'rendered-LED-display','simulation_seconds':None,'actual_time_verified':False}
 
 
+def resolve_proteus_executable(explicit: str | Path | None=None) -> Path:
+    """Same discovery as ProteusConfig: argument, FISH_PROTEUS_EXE, PATH, Program Files."""
+    from fish_proteus.config import ProteusConfig
+    try:
+        exe=ProteusConfig.discover(executable=explicit).executable
+    except (OSError, ValueError) as exc:
+        raise FileNotFoundError(
+            'Proteus PDS.EXE was not found. Pass an executable, set FISH_PROTEUS_EXE, '
+            'or install Proteus 8.17 SP2 where discovery looks '
+            f'(PATH, then Labcenter under Program Files). {type(exc).__name__}: {exc}'
+        ) from exc
+    if not exe.is_file() or exe.name.upper()!='PDS.EXE':
+        raise FileNotFoundError(f'Configured Proteus PDS.EXE does not exist: {exe}')
+    return exe
+
+
 def run_job(manifest_path: str | Path, seconds: float=0.05,
             proteus_executable: str | Path | None=None) -> dict:
     """Collect observations, never derive observed values from job.expected.
@@ -187,7 +205,12 @@ def run_job(manifest_path: str | Path, seconds: float=0.05,
     job_root=Path(job['job_root']).resolve(strict=True)
     if job_file.parent!=job_root:
         raise ValueError('Manifest parent must match the prepared job_root')
-    output=job_root/'runtime'/uuid.uuid4().hex[:12];output.mkdir(parents=True)
+    output=job_root/'runtime'/uuid.uuid4().hex[:12]
+    try:
+        output.mkdir(parents=True)
+    except OSError as exc:
+        from fish_proteus.workdir import write_error
+        raise OSError(write_error(output, exc, purpose='Course runtime output')) from exc
     result={'schema':'fish-proteus.runtime.v1','status':'blocked','case_id':job['case_id'],
             'recorded_at':datetime.now(timezone.utc).isoformat(),'observed':{},'diagnostics':[],
             'raw_artifacts':[],'requested_seconds':duration,'states':[],'errors':[],
@@ -203,10 +226,10 @@ def run_job(manifest_path: str | Path, seconds: float=0.05,
     if os.name!='nt':
         result['diagnostics'].append('Proteus desktop runtime is available only on Windows')
         return _finish(output,job_root,result)
-    exe=Path(proteus_executable or os.environ.get('FISH_PROTEUS_EXE') or
-             r'C:\Program Files (x86)\Labcenter Electronics\Proteus 8 Professional\BIN\PDS.EXE')
-    if not exe.is_file() or exe.name.upper()!='PDS.EXE':
-        result['diagnostics'].append('Configured Proteus PDS.EXE does not exist')
+    try:
+        exe=resolve_proteus_executable(proteus_executable)
+    except FileNotFoundError as exc:
+        result['diagnostics'].append(str(exc))
         return _finish(output,job_root,result)
     result['proteus_executable']=str(exe.resolve());result['proteus_executable_sha256']=_sha(exe)
     session=None;stage=None
@@ -252,7 +275,9 @@ def run_job(manifest_path: str | Path, seconds: float=0.05,
             for attempt in range(4):
                 image=output/f'oscilloscope-{attempt}.png';capture_window(scope['hwnd'],image);artifact(image)
                 ocr_path=output/f'oscilloscope-{attempt}-ocr.json';ocr=read_ocr(image,ocr_path);artifact(ocr_path)
-                raw_timebase=scope_timebase(ocr)
+                from fish_proteus.waveform import _png_rgb
+                image_size=_png_rgb(Path(image).read_bytes())[:2]
+                raw_timebase=scope_timebase(ocr, image_size)
                 timebase=raw_timebase if re.search(r'[a-zA-Zµμ]',raw_timebase) else raw_timebase+'s'
                 try:
                     measured=measure_scope(image,timebase,channel='A')

@@ -17,8 +17,18 @@ Installed files are read-only. A save into the Proteus install, the library tree
 | `FISH_PROTEUS_SAMPLES` | Samples root |
 | `FISH_PROTEUS_TEMPLATE` | Project used as an empty format container. The usual default is the installed `Rescap.pdsprj` under Graph Based Simulation |
 | `FISH_PROTEUS_NASM` | `nasm.exe` for the 8086 recipes, if it is not on `PATH` and you did not run `tools/bootstrap_nasm.py` |
+| `FISH_PROTEUS_TIMEOUT_SCALE` | Multiplier for launch, menu, timed-run, OCR, and NASM waits. Unset or `1` keeps the built-in deadlines (45s, 15s, 60–120s, 40s, 30s). It does not change simulated seconds. At most 30 |
+| `FISH_PROTEUS_WORKDIR` | Folder for skill-owned writes: staging, native logs, the desktop task store, the plugin cache, and portable NASM. Unset keeps the system temp directory and `<repo>/.work/desktop` |
 
 `fish-proteus doctor` and `fish-proteus run` also take `--proteus`. `build` takes `--nasm`. Those flags set the same variables for that process.
+
+## Slow PCs and a frozen C:
+
+Set `FISH_PROTEUS_TIMEOUT_SCALE` and `FISH_PROTEUS_WORKDIR` in the environment that starts DeepSeek Harness, not only in a shell you have already closed. If the installer wrote the task store under the workdir, Harness still needs that variable or the tool will not load. `doctor` prints `timeouts.effective_seconds`. A clone that sits on a frozen drive should be imported with `python -B` or `PYTHONDONTWRITEBYTECODE=1`, so Python does not try to write `.pyc` files beside the source. The desktop tool already passes `-B`.
+
+`FISH_PROTEUS_WORKDIR` does not move a path you typed: a saved project, a course `--output`, or an export stays there, so choose D: yourself. It also does not move the Harness profile. That profile defaults to `~/.dsh`. Pass `--dsh-home` only when Harness is already using that home.
+
+Python, pip, and many Windows APIs still use `TEMP` and `TMP`. Point those at the same writable drive. Create the virtualenv there too. A Chinese username often makes the profile path unusable for a native log or a firmware `PROGRAM` path. Use an ASCII workdir, such as `D:\fish-proteus`. The log staging falls back to an ASCII ancestor or to temp when the workdir is unset; if none of those can be written, the error names each path it tried.
 
 ## DeepSeek Harness
 
@@ -46,4 +56,4 @@ These are for the offline suite and local acceptance. Leaving them unset is the 
 
 ## 中文
 
-日常只用在发现失败时设 `FISH_PROTEUS_EXE` 和 `DSH_DESKTOP_EXE`。`DEEPSEEK_API_KEY` 只给可选的 headless API-key 路线。安装目录里的 Proteus 文件保持只读。
+日常只用在发现失败时设 `FISH_PROTEUS_EXE` 和 `DSH_DESKTOP_EXE`。机器慢设 `FISH_PROTEUS_TIMEOUT_SCALE`。C: 不能写时设 `FISH_PROTEUS_WORKDIR`，并把 `TEMP` 和 `TMP` 指到同一块盘。`DEEPSEEK_API_KEY` 只给可选的 headless API-key 路线。安装目录里的 Proteus 文件保持只读。
