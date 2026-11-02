@@ -20,6 +20,8 @@ Installed files are read-only. A save into the Proteus install, the library tree
 
 `fish-proteus doctor` and `fish-proteus run` also take `--proteus`. `build` takes `--nasm`. Those flags set the same variables for that process.
 
+For desktop setup, the installer saves the four verified Proteus resource paths in its managed profile entry. They take precedence over the desktop process environment. To change them, set the relevant `FISH_PROTEUS_*` overrides in the installer shell and rerun setup; reinstall without overrides retains the saved paths. This also works when the model installs from an already-running Harness session.
+
 ## DeepSeek Harness
 
 | Variable | Meaning |

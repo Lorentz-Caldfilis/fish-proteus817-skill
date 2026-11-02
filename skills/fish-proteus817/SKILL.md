@@ -13,7 +13,7 @@ metadata:
 
 Use `fish_proteus_design` for the user's circuit. Work from the devices, pins, and models on this machine. Answer in the user's language.
 
-The companion repository supplies the backend. Copying this folder does not register the tool. If `fish_proteus_design` is missing, say the desktop integration is not installed and point to the repository setup. Do not invent tool results. The skill is [MIT](LICENSE.txt). Proteus itself is separate.
+The companion repository supplies the backend. Copying this folder does not register the tool. If `fish_proteus_design` is missing, explain that desktop setup is required. When the user authorizes installation and local shell access is available, follow the companion repository's root `AGENTS.md` to install both the skill and tool; otherwise give the setup instructions. Do not invent tool results. The skill is [MIT](LICENSE.txt). Proteus itself is separate.
 
 ## When to use it
 

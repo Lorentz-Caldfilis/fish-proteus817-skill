@@ -200,7 +200,13 @@ def find_dsh(executable: Path | None = None) -> Path:
     raise FileNotFoundError("DSH desktop not found; pass --dsh-executable to its existing executable once")
 
 
-def _runtime_diagnostics(repository: Path) -> dict:
+RESOURCE_ENV = {
+    "executable": "FISH_PROTEUS_EXE", "library_root": "FISH_PROTEUS_LIBRARY",
+    "samples_root": "FISH_PROTEUS_SAMPLES", "template_project": "FISH_PROTEUS_TEMPLATE",
+}
+
+
+def _runtime_diagnostics(repository: Path, saved_paths: dict | None = None) -> dict:
     errors = []
     if sys.version_info < (3, 10):
         errors.append("Python 3.10 or newer is required")
@@ -211,7 +217,11 @@ def _runtime_diagnostics(repository: Path) -> dict:
     try:
         sys.path.insert(0, str(repository))
         from fish_proteus.config import ProteusConfig
-        config = ProteusConfig.discover()
+        # A setup shell cannot change the already-running desktop's environment.
+        # Retain the last verified paths on reinstall; explicit setup overrides win.
+        paths = {key: os.environ.get(env) or (saved_paths or {}).get(key)
+                 for key, env in RESOURCE_ENV.items()}
+        config = ProteusConfig.discover(**paths)
         resources = config.describe()
         config.require("executable", "library_root", "samples_root", "template_project")
     except (OSError, ValueError, ImportError) as exc:
@@ -361,7 +371,7 @@ def install_desktop(*, repository: Path = REPOSITORY, dsh_home: Path | None = No
         raise ValueError("A separate desktop registration already uses this plugin ID")
     if uninstall:
         return _uninstall(home, profile, managed, manifest_path, skill, before, bounds, prior, dry_run)
-    runtime = _runtime_diagnostics(repository)
+    runtime = _runtime_diagnostics(repository, (prior or {}).get("config", {}).get("resourcePaths"))
     missing = [str(path.relative_to(repository)) for path in
                (repository / "tools" / "dsh_desktop_tool.mjs", repository / "tools" / "dsh_design_tool.mjs",
                 repository / "tools" / "dsh_desktop_bootstrap.mjs", repository / "tools" / "desktop_gate.py")
@@ -384,6 +394,8 @@ def install_desktop(*, repository: Path = REPOSITORY, dsh_home: Path | None = No
               "gate": str(repository / "tools" / "desktop_gate.py"),
               "stateRoot": str(repository / ".work" / "desktop"),
               "sourceIdentity": identity["sha256"],
+              "resourcePaths": {key: runtime["proteus"][key]["path"]
+                                for key in RESOURCE_ENV if key in (runtime["proteus"] or {})},
               "toolsModule": (archive / "dsh" / "node_modules" / "@deepseek-ai" / "dsh-tools" / "lib" / "index.js").as_uri()}
     source = repository / "skills" / "fish-proteus817"
     wanted = _inventory(source)

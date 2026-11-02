@@ -1,4 +1,4 @@
-include README.md README.zh-CN.md LICENSE LICENSE.zh-CN.md
+include AGENTS.md README.md README.zh-CN.md LICENSE LICENSE.zh-CN.md
 include THIRD_PARTY_NOTICES.md CONTRIBUTING.md SECURITY.md CHANGELOG.md PUBLICATION.md
 include public-release.json MANIFEST.in
 include .gitattributes .gitignore .github/workflows/ci.yml
