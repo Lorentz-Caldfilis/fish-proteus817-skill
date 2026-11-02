@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -84,6 +85,29 @@ class DesktopInstallTests(unittest.TestCase):
         self.assertIn((cache / "dsh_desktop_tool.mjs").as_uri().encode(), content)
         for name in ("dsh_desktop_tool.mjs", "dsh_design_tool.mjs"):
             self.assertEqual((cache / name).read_bytes(), (self.repo / "tools" / name).read_bytes())
+
+    def test_verified_paths_are_saved_and_reused_without_setup_environment(self):
+        self.runtime_patch.stop()
+        paths = {"executable": self.root / "Proteus portable/BIN/PDS.EXE",
+                 "library_root": self.root / "device libraries",
+                 "samples_root": self.root / "samples",
+                 "template_project": self.root / "templates/blank.pdsprj"}
+        for key, path in paths.items():
+            if key.endswith("_root"):
+                path.mkdir(parents=True)
+            else:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b"synthetic resource, never executed")
+        with patch.dict(os.environ, {env: str(paths[key]) for key, env in installer.RESOURCE_ENV.items()}):
+            first = self.run_install()
+        expected = {key: str(path) for key, path in paths.items()}
+        self.assertEqual(first["plugin"]["resourcePaths"], expected)
+        saved = json.loads(Path(first["manifest"]).read_text(encoding="utf8"))
+        self.assertEqual(saved["config"]["resourcePaths"], expected)
+        with patch.dict(os.environ, {env: "" for env in installer.RESOURCE_ENV.values()}):
+            second = self.run_install()
+        self.assertEqual(second["status"], "unchanged")
+        self.assertEqual(second["plugin"]["resourcePaths"], expected)
 
     def test_dry_run_has_no_writes_and_reports_missing_repo_files(self):
         (self.repo / "tools/desktop_gate.py").unlink()

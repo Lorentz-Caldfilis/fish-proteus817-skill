@@ -45,11 +45,11 @@ print(json.dumps({'schema':'fish-proteus.design.v1','action':v['action'],'status
         self.assertEqual(result.returncode, 0, result.stderr)
         return json.loads(result.stdout)
 
-    def execute(self, *, missing=False, abort=False, action="capabilities"):
+    def execute(self, *, missing=False, abort=False, action="capabilities", resource_paths=None):
         module = (ROOT / "tools/dsh_desktop_tool.mjs").as_uri()
         config = {"workspace": str(self.root), "python": sys.executable,
             "gate": str(self.gate), "stateRoot": str(self.root / ".work/desktop"),
-            "sourceIdentity": "synthetic-tested-source",
+            "sourceIdentity": "synthetic-tested-source", "resourcePaths": resource_paths or {},
             "toolsModule": self.sdk.as_uri()}
         code = f"""
 import {{apply}} from {json.dumps(module)};
@@ -81,6 +81,19 @@ console.log(JSON.stringify({{name:tool.name,result}}));
         self.assertEqual(audit["action"], "capabilities")
         self.assertEqual(audit["source_identity"], "synthetic-tested-source")
         self.assertEqual(audit["implementation_module"], (ROOT / "tools/dsh_desktop_tool.mjs").as_uri())
+
+    def test_installed_paths_reach_the_backend_without_parent_environment(self):
+        paths = {"executable": str(self.root / "Proteus portable/BIN/PDS.EXE"),
+                 "library_root": str(self.root / "libs"),
+                 "samples_root": str(self.root / "samples"),
+                 "template_project": str(self.root / "blank.pdsprj")}
+        expected = dict(zip(["FISH_PROTEUS_EXE", "FISH_PROTEUS_LIBRARY", "FISH_PROTEUS_SAMPLES", "FISH_PROTEUS_TEMPLATE"], paths.values()))
+        self.gate.write_text("import json, os, sys\njson.load(sys.stdin)\n"
+                            + "expected = " + repr(expected) + "\n"
+                            + "print(json.dumps({'status':'prepared','data':{'paths_match':all(os.environ.get(k)==v for k,v in expected.items())}}))\n",
+                            encoding="utf8")
+        value = self.execute(resource_paths=paths)
+        self.assertTrue(value["result"]["payload"]["data"]["paths_match"])
 
     def test_missing_agent_does_not_create_shared_fallback_task(self):
         result = self.execute(missing=True)["result"]
