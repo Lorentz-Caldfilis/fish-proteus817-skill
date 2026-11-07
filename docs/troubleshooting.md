@@ -2,6 +2,10 @@
 
 [Docs](README.md) · [Getting started](getting-started.md) · [Configuration](configuration.md)
 
+The school-specific write restrictions below apply to `codex/school-non-system-paths`. Ordinary main users should follow [main's troubleshooting guide](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/blob/main/docs/troubleshooting.md); these restrictions are not main's installation requirements.
+
+下方禁止写系统盘的要求仅适用于可选学校分支，不能作为 main 的安装要求；普通用户请按 main 自己的排错文档处理。
+
 ## The chat says the Proteus tool is missing
 
 The skill file is not enough. Run `python -B tools/dsh_install_desktop.py` from this clone, with the same interpreter you installed the package into. If Harness was not found, pass `--dsh-executable`. Then start a new conversation.

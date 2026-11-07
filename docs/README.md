@@ -1,5 +1,9 @@
 # Documentation
 
+This documentation belongs to the optional `codex/school-non-system-paths` branch for users who cannot write to the system drive. For ordinary use, start with [main's documentation](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/blob/main/docs/README.md). Main prioritizes the skill's circuit-design, editing and verification workflow; it does not require this branch's school-specific write policy.
+
+这是可选学校分支的文档。日常使用选择 main，优先完成 skill 的核心用途；禁止写系统盘的特殊要求只针对本分支。
+
 Start with [Getting started](getting-started.md) if you want the install to work. The pages below are the rest of the map. Recorded lab results live under [release/](release/README.md), not in the README.
 
 | | |

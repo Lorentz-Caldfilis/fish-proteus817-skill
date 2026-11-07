@@ -178,6 +178,12 @@ class DesktopInstallTests(unittest.TestCase):
         self.run_install(uninstall=True)
         self.assertEqual(installer._inventory(self.installed_skill), before)
 
+    def test_uninstall_does_not_require_runtime_temporary_directory(self):
+        self.run_install()
+        with patch.dict(os.environ, {"FISH_PROTEUS_TEMP_DIR": str(self.root / "临时目录")}):
+            self.assertEqual(self.run_install(uninstall=True)["status"], "uninstalled")
+        self.assertEqual(self.profile.read_bytes(), self.original)
+
     def test_new_global_skill_is_preserved_in_uninstall_backup(self):
         self.run_install()
         before = installer._inventory(self.installed_skill)

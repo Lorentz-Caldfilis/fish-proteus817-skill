@@ -13,6 +13,8 @@ metadata:
 
 Use `fish_proteus_design` for the user's circuit. Work from the devices, pins, and models on this machine. Answer in the user's language.
 
+This copy belongs to the optional `codex/school-non-system-paths` branch for users who cannot write to the system drive. For ordinary installations, use main and its own skill/setup instructions. Do not apply this branch's school-specific write restrictions as requirements for main; main prioritizes the core circuit workflow.
+
 The companion repository supplies the backend. Copying this folder does not register the tool. If `fish_proteus_design` is missing, explain that desktop setup is required. When the user authorizes installation and local shell access is available, follow the companion repository's root `AGENTS.md` to install both the skill and tool; otherwise give the setup instructions. Do not invent tool results. The skill is [MIT](LICENSE.txt). Proteus itself is separate.
 
 ## When to use it

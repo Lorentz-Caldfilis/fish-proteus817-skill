@@ -4,6 +4,10 @@
 
 The short path is also on the [README](../README.md). This page is what each step is doing, and what to do when the circuit is one of the course examples.
 
+This guide installs the optional `codex/school-non-system-paths` branch for no-system-drive-write environments. For ordinary use, follow [main's getting-started guide](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/blob/main/docs/getting-started.md); main prioritizes the skill's core purpose and does not impose this branch's school-specific requirements.
+
+本页安装可选学校分支。只有需要禁止写系统盘时才选择它；日常使用 main，按 main 的入门文档安装，不必套用本分支的特殊要求。
+
 ## What you need
 
 - Windows, an interactive desktop, and your own Proteus **8.17 SP2**. The build this code was written against is 8.17.37159.
@@ -16,14 +20,14 @@ File-level Python imports work without Windows. Simulation does not.
 
 ## Install and register
 
-On Windows, first follow [School computers / no system-drive writes](configuration.md#school-computers-no-system-drive-writes). Use a non-system-drive repository and virtual environment, a verified ASCII temporary directory, and the actual initialized Harness home. Set TEMP/TMP, `FISH_PROTEUS_TEMP_DIR` and pip cache policy **before starting Harness**. `--dsh-home` selects an existing home; it never migrates one. Repository placement on D alone is insufficient. For ordinary machines only, the documented strict-mode opt-out is available.
+When using this branch on Windows, first follow [School computers / no system-drive writes](configuration.md#school-computers-no-system-drive-writes). Use a non-system-drive repository and virtual environment, a verified ASCII temporary directory, and the actual initialized Harness home. Set TEMP/TMP, `FISH_PROTEUS_TEMP_DIR` and pip cache policy **before starting Harness**. `--dsh-home` selects an existing home; it never migrates one. Repository placement on D alone is insufficient. The documented strict-mode opt-out is available for testing this branch on ordinary machines; main remains the normal choice for everyday use.
 
 学校机先读[写入配置与边界](configuration.md#学校机禁止向系统盘写数据)：在启动 Harness 前设置 TEMP/TMP、`FISH_PROTEUS_TEMP_DIR`、pip 缓存；仓库和虚拟环境放非系统盘。`--dsh-home` 不是搬家工具。外部 Proteus/Harness/Windows 的全部写入无法由本 skill 保证。
 
 From PowerShell:
 
 ```powershell
-git clone https://github.com/Lorentz-Caldfilis/fish-proteus817-skill.git
+git clone --branch codex/school-non-system-paths https://github.com/Lorentz-Caldfilis/fish-proteus817-skill.git
 Set-Location fish-proteus817-skill
 py -3 -B -m venv .venv
 .\.venv\Scripts\python.exe -B -m pip install --no-cache-dir -e ".[dsh]"

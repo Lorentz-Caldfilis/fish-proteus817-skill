@@ -367,7 +367,6 @@ def install_desktop(*, repository: Path = REPOSITORY, dsh_home: Path | None = No
     content = before or b""
     bounds = _bounds(content)
     prior = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else None
-    temporary_root = temp_root(repository, configured=(prior or {}).get("config", {}).get("tempRoot"), probe=False)
     if prior and (prior.get("schema") != SCHEMA or prior.get("profile") != str(profile)):
         raise ValueError("The desktop installation manifest does not match this selected profile")
     if bounds:
@@ -383,6 +382,7 @@ def install_desktop(*, repository: Path = REPOSITORY, dsh_home: Path | None = No
         if not dry_run:
             writable_directory(home)
         return _uninstall(home, profile, managed, manifest_path, skill, before, bounds, prior, dry_run)
+    temporary_root = temp_root(repository, configured=(prior or {}).get("config", {}).get("tempRoot"), probe=False)
     runtime = _runtime_diagnostics(repository, (prior or {}).get("config", {}).get("resourcePaths"))
     missing = [str(path.relative_to(repository)) for path in
                (repository / "tools" / "dsh_desktop_tool.mjs", repository / "tools" / "dsh_design_tool.mjs", repository / "tools" / "host_paths.mjs",

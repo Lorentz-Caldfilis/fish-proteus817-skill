@@ -30,7 +30,7 @@ Alpha, version 0.3.0. It is not an MCP server, and it is not a Labcenter or Deep
 
 ## School computers: no system-drive writes
 
-Windows now defaults to `FISH_PROTEUS_STRICT_NON_SYSTEM_DRIVE=1`. Keep the repository, virtual environment and actual initialized Harness home on a writable non-system drive. Set `FISH_PROTEUS_TEMP_DIR` to a verified writable ASCII non-system directory, and set TEMP/TMP to it **before starting Harness**. Use `PIP_CACHE_DIR` on that drive or `--no-cache-dir` for installation; pip still needs TEMP/TMP. Use `python -B` for manual commands. Installer `--dsh-home` (or `DSH_HOME`) selects the home Harness actually uses; it does not migrate data. A repository on D alone is not enough.
+On this optional school branch, Windows defaults to `FISH_PROTEUS_STRICT_NON_SYSTEM_DRIVE=1`. Keep the repository, virtual environment and actual initialized Harness home on a writable non-system drive. Set `FISH_PROTEUS_TEMP_DIR` to a verified writable ASCII non-system directory, and set TEMP/TMP to it **before starting Harness**. Use `PIP_CACHE_DIR` on that drive or `--no-cache-dir` for installation; pip still needs TEMP/TMP. Use `python -B` for manual commands. Installer `--dsh-home` (or `DSH_HOME`) selects the home Harness actually uses; it does not migrate data. A repository on D alone is not enough.
 
 Invalid destinations block instead of falling back to system TEMP or HOME. Read-only Proteus installs on C are still supported. The skill validates its own outputs and sets child-process temporary paths, but cannot guarantee that Proteus, Harness or Windows never write preferences, crash reports or licensing data on C. This remains a bounded Alpha, not a universal zero-write claim; no school-machine I/O trace has been run. See [configuration, precedence and bilingual setup](docs/configuration.md#school-computers-no-system-drive-writes).
 
@@ -38,7 +38,7 @@ Invalid destinations block instead of falling back to system TEMP or HOME. Read-
 
 **Ask the desktop agent to install:** Give DeepSeek Harness access to this repository and authorize setup. It should follow [AGENTS.md](AGENTS.md) to install both the skill and its desktop tool. Local shell and profile access are required.
 
-Use the default `main` branch for the writable-path policy documented here. The separate [demo/portable-lab branch](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/tree/demo/portable-lab) is a historical demo; do not assume it includes this policy without checking its code.
+Use [main](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/tree/main) for ordinary use: its priority is fulfilling the skill's circuit-design, editing and verification purposes, without requiring this school-specific no-system-drive policy. Choose [codex/school-non-system-paths](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/tree/codex/school-non-system-paths) only when you need that restriction. The setup below is for this optional branch, not a change to main's requirements. The historical [demo/portable-lab branch](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/tree/demo/portable-lab) is separate; do not assume it includes this policy.
 
 ## Quick start
 
@@ -47,7 +47,7 @@ You need Python 3.10 or newer, Git, your own Proteus **8.17 SP2**, and DeepSeek 
 **1 · Install.** In PowerShell, from the folder where you want the repo:
 
 ```powershell
-git clone https://github.com/Lorentz-Caldfilis/fish-proteus817-skill.git
+git clone --branch codex/school-non-system-paths https://github.com/Lorentz-Caldfilis/fish-proteus817-skill.git
 Set-Location fish-proteus817-skill
 py -3 -B -m venv .venv
 .\.venv\Scripts\python.exe -B -m pip install --no-cache-dir -e ".[dsh]"

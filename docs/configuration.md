@@ -2,6 +2,10 @@
 
 [Docs](README.md) · [Getting started](getting-started.md)
 
+These settings describe the optional `codex/school-non-system-paths` branch for users who cannot write to the system drive. For ordinary use, choose [main](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/tree/main) and its configuration documentation. Main prioritizes the skill's core circuit workflow; the school-specific restrictions here are not requirements for main.
+
+本文针对可选的 `codex/school-non-system-paths` 分支。普通使用选择 main 并阅读 main 的配置文档；main 优先实现 skill 的核心用途，不承担这里禁止写系统盘的特殊要求。
+
 Resource paths point at software you installed. Discovery can find those read-only resources; writable paths have a separate policy below.
 
 Discovery order for Proteus is: the argument you passed, then the environment variable, then `PDS.EXE` on `PATH`, then `Program Files` and `Program Files (x86)` under `Labcenter Electronics\Proteus 8 Professional\BIN\PDS.EXE`. Libraries, samples, and the blank template then come from that install's `DATA` directory unless you override them.
@@ -37,7 +41,7 @@ Desktop setup requires `--dsh-home`, or `DSH_HOME` if that argument is absent. I
 
 ## School computers: no system-drive writes
 
-Windows defaults to `FISH_PROTEUS_STRICT_NON_SYSTEM_DRIVE=1`. Before creating a writable root or probing it, the tool resolves existing links/junctions and compares its drive with `%SystemDrive%` (default `C:`). UNC/device paths are not writable roots. Allowed roots are created if needed and tested with a private file **inside that root**, then the probe is removed. Invalid or unwritable roots cause `blocked`/a nonzero exit; the tool never falls back to system TEMP or the user home. Read-only Proteus resources on C remain allowed.
+This branch defaults to `FISH_PROTEUS_STRICT_NON_SYSTEM_DRIVE=1` on Windows. Before creating a writable root or probing it, the tool resolves existing links/junctions and compares its drive with `%SystemDrive%` (default `C:`). UNC/device paths are not writable roots. Allowed roots are created if needed and tested with a private file **inside that root**, then the probe is removed. Invalid or unwritable roots cause `blocked`/a nonzero exit; the tool never falls back to system TEMP or the user home. Read-only Proteus resources on C remain allowed.
 
 | Variable | Meaning and priority |
 | :-- | :-- |
