@@ -86,6 +86,15 @@ class DesktopInstallTests(unittest.TestCase):
         for name in ("dsh_desktop_tool.mjs", "dsh_design_tool.mjs"):
             self.assertEqual((cache / name).read_bytes(), (self.repo / "tools" / name).read_bytes())
 
+    def test_environment_selects_initialized_home_and_explicit_home_wins(self):
+        with patch.dict(os.environ, {"DSH_HOME": str(self.home)}), patch.object(Path, "home", return_value=self.root / "unused"):
+            result = installer.install_desktop(repository=self.repo, dsh_executable=self.exe)
+        self.assertEqual(result["status"], "installed")
+        self.assertTrue(self.installed_skill.is_dir())
+        self.assertFalse((self.root / "unused").exists())
+        with patch.dict(os.environ, {"DSH_HOME": str(self.root / "wrong-home")}):
+            self.assertEqual(self.run_install()["status"], "unchanged")
+
     def test_verified_paths_are_saved_and_reused_without_setup_environment(self):
         self.runtime_patch.stop()
         paths = {"executable": self.root / "Proteus portable/BIN/PDS.EXE",

@@ -55,7 +55,8 @@ export async function apply(ctx, config) {
       // The child does not inherit the harness's model credentials or arbitrary
       // Python import settings. No shell parses this argv or the JSON input.
       const environment = {};
-      for (const key of ['SystemRoot', 'WINDIR', 'PATH', 'PATHEXT', 'TEMP', 'TMP', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA', 'ProgramData', 'PROGRAMFILES', 'PROGRAMFILES(X86)']) {
+      for (const key of ['SystemRoot', 'WINDIR', 'PATH', 'PATHEXT', 'TEMP', 'TMP', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA', 'ProgramData', 'PROGRAMFILES', 'PROGRAMFILES(X86)',
+        'FISH_PROTEUS_EXE', 'FISH_PROTEUS_LIBRARY', 'FISH_PROTEUS_SAMPLES', 'FISH_PROTEUS_TEMPLATE', 'FISH_PROTEUS_NASM']) {
         if (process.env[key] !== undefined) environment[key] = process.env[key];
       }
       const argv = ['-I', '-B', gate, '--workspace', workspace, '--library', library, '--job-directory', config.jobDirectory, '--allowed', ...allowed];

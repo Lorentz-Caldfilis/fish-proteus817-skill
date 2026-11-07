@@ -29,7 +29,7 @@ For desktop setup, the installer saves the four verified Proteus resource paths 
 | `DSH_DESKTOP_EXE` | Full path to `DeepSeek Harness.exe` when the installer or the headless probe cannot find it |
 | `DEEPSEEK_API_KEY` | API key for the optional headless route `--provider deepseek-official` only |
 
-The desktop installer can take `--dsh-executable` once instead of `DSH_DESKTOP_EXE`.
+The desktop installer can take `--dsh-executable` once instead of `DSH_DESKTOP_EXE`. It selects the initialized Harness home from `--dsh-home`, then `DSH_HOME`, then the normal `~/.dsh` default.
 
 A normal desktop chat uses Harness's own sign-in. It does not read `DEEPSEEK_API_KEY`. The headless account route uses `--credential-store` and Harness's own credential file. Point that flag at a store you already have. Do not commit it.
 

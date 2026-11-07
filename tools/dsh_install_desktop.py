@@ -349,7 +349,7 @@ def install_desktop(*, repository: Path = REPOSITORY, dsh_home: Path | None = No
                     dsh_executable: Path | None = None, dry_run: bool = False,
                     uninstall: bool = False) -> dict:
     repository = repository.expanduser().resolve(strict=True)
-    home = (dsh_home or Path.home() / ".dsh").expanduser().resolve()
+    home = Path(dsh_home or os.environ.get("DSH_HOME") or Path.home() / ".dsh").expanduser().resolve()
     profile = _below(home / "profiles" / "desktop" / "cordis.patch.yml", home)
     managed = _below(home / ".fish-proteus817", home)
     manifest_path = _below(managed / "install.json", home)

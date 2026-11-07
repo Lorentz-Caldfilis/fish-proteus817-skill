@@ -24,7 +24,7 @@ Retain the selected natural-language request and the actual DSH skill/tool calls
 
 Compare observations against a precomputed numerical expectation or truth table. A screenshot can help explain the run, but it cannot establish a precise frequency or the complete switch truth table on its own. An existing teacher screenshot is reference material, not evidence from the current run.
 
-For counters, the documented pixel reader estimates frequency from same-direction edges, actual grid spacing and the read-back oscilloscope timebase. Retain the screenshot, OCR, parser details and hashes, and report its image-resolution limits. The result is independent of whether the timer's requested duration was verified.
+For counters, the documented pixel reader estimates frequency from same-direction edges, actual grid spacing and the read-back oscilloscope timebase. Retain the screenshot, OCR, parser details and hashes, and report its image-resolution limits. The result is independent of whether the timer's requested duration was verified. Verification requires both measured `input_hz` (within 1% of the supplied 1 MHz clock) and `output_hz` (within 1% of the expected output), and checks their measured division ratio within 2% of the programmed divisor or cascade product. Output frequency alone leaves verification blocked.
 
 ## Switch-display evidence
 
