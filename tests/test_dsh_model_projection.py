@@ -3,14 +3,55 @@ import copy
 import base64
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
+import tempfile
 import unittest
 
 
 @unittest.skipUnless(shutil.which("node"), "Node is required for the actual model projection")
 class ModelProjectionTests(unittest.TestCase):
+    def test_bridges_forward_runtime_paths_without_model_credentials(self):
+        repository = Path(__file__).resolve().parents[1]
+        for bridge in ("project", "design"):
+            with self.subTest(bridge=bridge), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory).resolve()
+                (root / ".work").mkdir()
+                gate = root / "gate.py"
+                gate.write_text("import json,os,sys\njson.load(sys.stdin)\nprint(json.dumps(dict(os.environ)))\n", encoding="utf8")
+                sdk = root / "sdk.mjs"
+                sdk.write_text("export const defineTool = value => value;", encoding="utf8")
+                inputs = root / ".work/inputs.json"
+                inputs.write_text("{}", encoding="utf8")
+                config = dict(workspace=str(root), python=sys.executable, gate=str(gate),
+                              library=str(root / "library"), jobDirectory=str(root / ".work/job"),
+                              inputsFile=str(inputs), taskRoot=str(root / ".work/task"),
+                              auditPath=str(root / ".work/audit.jsonl"), toolsModule=sdk.as_uri(),
+                              allowedOperations=["doctor"], allowedActions=["help"])
+                module = (repository / f"tools/dsh_{bridge}_tool.mjs").as_uri()
+                args = {"operation": "doctor"} if bridge == "project" else {"action": "help"}
+                code = ("import {apply} from " + json.dumps(module) + ";let tool;"
+                        "await apply({tools:{register:t=>tool=t,guard:()=>{}}}," + json.dumps(config) + ");"
+                        "console.log(JSON.stringify(await tool.execute(" + json.dumps(args) + ",{})));")
+                env = {**os.environ, "DEEPSEEK_API_KEY": "synthetic-private", "PYTHONPATH": "synthetic-private"}
+                for suffix in ("EXE", "LIBRARY", "SAMPLES", "TEMPLATE", "NASM"):
+                    env["FISH_PROTEUS_" + suffix] = str(root / suffix)
+                result = subprocess.run([shutil.which("node"), "--input-type=module", "-e", code],
+                                        capture_output=True, text=True, env=env, check=True, timeout=15)
+                observed = json.loads(result.stdout)["payload"]
+                if bridge == "design":
+                    # The outbound model projection hides paths; check the local canonical result.
+                    report = next((root / ".work/local-tool-results").glob("*.json"))
+                    observed = json.loads(report.read_text(encoding="utf8"))["payload"]
+                for suffix in ("EXE", "LIBRARY", "SAMPLES", "TEMPLATE", "NASM"):
+                    key = "FISH_PROTEUS_" + suffix
+                    self.assertEqual(observed.get(key), env[key])
+                self.assertNotIn("DEEPSEEK_API_KEY", observed)
+                self.assertNotIn("PYTHONPATH", observed)
+
     def node_from_raw(self, raw, body):
         """Keep original integer tokens until the production decoder sees them."""
         script = ("import {parseCliJSON,decodeCliStdout,projectModelResponse} from './tools/dsh_design_tool.mjs';"
