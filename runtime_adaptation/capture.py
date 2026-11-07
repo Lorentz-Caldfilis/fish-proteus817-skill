@@ -5,6 +5,8 @@ from pathlib import Path
 import struct, zlib
 
 def capture_window(hwnd, destination):
+    from fish_proteus.host_paths import writable_file
+    writable_file(destination)
     u,g=c.WinDLL('user32',use_last_error=True),c.WinDLL('gdi32',use_last_error=True)
     u.GetWindowRect.argtypes=(w.HWND,c.POINTER(w.RECT))
     u.GetDC.argtypes=(w.HWND,);u.GetDC.restype=w.HDC

@@ -190,7 +190,8 @@ def run_acceptance(output, config=None):
     output = config.check_destination(output)
     if output.exists():
         raise ValueError("Choose an unused output directory; acceptance evidence is immutable")
-    output.mkdir(parents=True)
+    from fish_proteus.host_paths import writable_directory
+    writable_directory(output)
     sources = {str(config.template_project): sha256(config.template_project)}
     results, native_queue = [], []
 

@@ -1,6 +1,7 @@
 /** Composable Proteus tool: closed domain schemas and a host-fixed task root. */
 import { spawn } from 'node:child_process';
-import { appendFile, mkdir, realpath, readFile, writeFile } from 'node:fs/promises';
+import { childEnvironment, writableDirectory, checkWritablePath, timeoutScale } from './host_paths.mjs';
+import { appendFile, realpath, readFile, writeFile } from 'node:fs/promises';
 import { createHash, randomUUID } from 'node:crypto';
 import { dirname, isAbsolute, join, relative } from 'node:path';
 import { StringDecoder } from 'node:string_decoder';
@@ -277,6 +278,9 @@ export async function apply(ctx, config) {
     throw new Error('A nonempty domain-action allowlist is required.');
   }
   const { defineTool } = await import(config.toolsModule);
+  writableDirectory(config.taskRoot);
+  writableDirectory(dirname(config.auditPath));
+  childEnvironment(workspace, config.tempRoot);
   ctx.tools.register(defineTool({
     name: 'fish_proteus_design',
     description: `Compose Proteus 8.17 SP2 circuits and native runs in one fixed task workspace. Enabled actions: ${allowed.join(', ')}. The host registers inputs/configuration; no code, shell, executable or arbitrary host path is accepted. Read the fish-proteus817 skill's generic-api reference.`,
@@ -284,10 +288,7 @@ export async function apply(ctx, config) {
     output: { schema: { type: 'json' }, render: (_args, value) => [{ type: 'text', text: JSON.stringify(value, null, 2) }] },
     async execute(args, exec) {
       if (!allowed.includes(args.action)) throw new Error('Design action is not enabled for this task.');
-      const environment = {};
-      for (const key of ['SystemRoot', 'WINDIR', 'PATH', 'PATHEXT', 'TEMP', 'TMP', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA', 'ProgramData', 'PROGRAMFILES', 'PROGRAMFILES(X86)']) {
-        if (process.env[key] !== undefined) environment[key] = process.env[key];
-      }
+      const environment = childEnvironment(workspace, config.tempRoot);
       const argv = ['-I', '-B', gate, '--workspace', workspace, '--task-root', config.taskRoot, '--inputs-file', inputsFile, '--allow', ...allowed];
       let result;
       try { result = await new Promise((resolve, reject) => {
@@ -305,7 +306,7 @@ export async function apply(ctx, config) {
           } else child.kill();
         };
         const cancel = () => stop('aborted');
-        const timer = setTimeout(() => stop('timeout'), 360000);
+        const timer = setTimeout(() => stop('timeout'), 600000 * timeoutScale());
         exec.signal?.addEventListener('abort', cancel, { once: true });
         child.stderr.setEncoding('utf8');
         child.stdout.on('data', chunk => { stdoutChunks.push(chunk); stdoutCharacters += stdoutDecoder.write(chunk).length; if (stdoutCharacters > 2000000) stop('output_limit'); });
@@ -328,9 +329,9 @@ export async function apply(ctx, config) {
       const reportDirectory = join(dirname(config.auditPath), 'local-tool-results');
       const full = JSON.stringify(result, null, 2) + '\n';
       try {
-        await mkdir(dirname(config.auditPath), { recursive: true });
-        await appendFile(config.auditPath, JSON.stringify({ action: args.action, input: args, exit_code: result.exit_code, payload_status: result.payload?.status ?? null, termination: result.termination }) + '\n', 'utf8');
-        await mkdir(reportDirectory, { recursive: true });
+        writableDirectory(dirname(config.auditPath));
+        await appendFile(checkWritablePath(config.auditPath), JSON.stringify({ action: args.action, input: args, exit_code: result.exit_code, payload_status: result.payload?.status ?? null, termination: result.termination }) + '\n', 'utf8');
+        writableDirectory(reportDirectory);
         await writeFile(join(reportDirectory, `${reportId}.json`), full, { encoding: 'utf8', flag: 'wx' });
       } catch (error) {
         return closedModelResponse({ exit_code: result.exit_code, payload: { status: 'blocked',

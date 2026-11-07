@@ -42,9 +42,21 @@ class VerificationTests(unittest.TestCase):
 
     def test_frequency_fixture_checks_expected_and_actual(self):
         job = self.job()
-        self.runtime(job, {"output_hz": 200000.0})
+        self.runtime(job, {"output_hz": 200000.0, "input_hz": 1000000.0})
         self.assertEqual(verify_job(self.root / "job.json")["status"], "passed")
         self.runtime(job, {"output_hz": 100000.0})
+        self.assertEqual(verify_job(self.root / "job.json")["status"], "failed")
+
+    def test_output_without_input_cannot_pass_division_claim(self):
+        job = self.job()
+        self.runtime(job, {"output_hz": 200000.0})
+        report = verify_job(self.root / "job.json")
+        self.assertEqual(report["status"], "blocked")
+        self.assertEqual(next(c for c in report["checks"] if c["name"] == "input_frequency_matches")["status"], "blocked")
+
+    def test_incorrect_input_cannot_pass_matching_output(self):
+        job = self.job()
+        self.runtime(job, {"output_hz": 200000.0, "input_hz": 500000.0})
         self.assertEqual(verify_job(self.root / "job.json")["status"], "failed")
 
     def test_modified_executable_invalidates_matching_observation(self):

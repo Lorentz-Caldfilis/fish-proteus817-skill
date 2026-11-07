@@ -53,6 +53,10 @@ User: "Open this project, change the resistor to 4.7k, save a copy, and do not s
 
 ## Rules
 
+- On school computers, follow the companion repository's `docs/configuration.md` writable-path policy before setup. Require a validated ASCII non-system `FISH_PROTEUS_TEMP_DIR` and actual initialized Harness home; never propose HOME/system-TEMP fallback or treat `--dsh-home` as migration. Set TEMP/TMP before starting Harness. Read-only Proteus on C remains allowed. Report external Proteus/Harness/Windows writes as outside the skill's complete control.
+- Treat slow-machine timeouts and unsupported scope geometry as blocked/unverified. Use the documented `FISH_PROTEUS_TIMEOUT_SCALE` when needed. Fixed-pixel scope OCR requires fully visible 1380×900 at 96 DPI; do not infer arbitrary DPI compatibility.
+- For divider/cascade claims, keep A=yellow output and B=cyan input. Require input observation and the measured ratio before calling verification passed. Require all three private course material sets for import. Keep exact PDS/DLL hash and unknown-layout rejection; do not promise every 8.17 SP2 installation or legal count can be measured.
+
 - Desktop calls may omit `expected_revision`. A revision you do supply is still rejected when it is stale.
 - Edits touch managed copies. Originals stay as they were. `project_export` is how a deliverable leaves managed storage.
 - Sample projects may donate a format container, a device definition, or an instrument. Say so. Do not present a copied sample as a circuit you designed.

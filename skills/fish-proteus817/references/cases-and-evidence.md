@@ -1,10 +1,10 @@
 # Cases and evidence
 
-These are optional 8086 course recipes, not the generic API's capability ceiling. Use the legacy `fish_proteus` tool or `python -m fish_proteus` for them; use `fish_proteus_design` for new circuit composition.
+These are optional 8086 course recipes, not the generic API's capability ceiling. Use the legacy `fish_proteus` tool or `python -B -m fish_proteus` for them; use `fish_proteus_design` for new circuit composition.
 
 ## Recipe commands
 
-Start with `python -m fish_proteus doctor`. Import references using `import-course --source '<originals>' --destination '<unused-library>'`. Prepare with `prepare --library '<library>' --case divider --divisor N --output '<new-job>'`; alternatively use `--case cascade --divisor0 N0 --divisor1 N1` or `--case switch --on-value V --off-value W [--invert]`. Then use `build`, `run --seconds N`, and `verify`, each with the returned `--manifest '<job.json>'`.
+Start with `python -B -m fish_proteus doctor`. Import references using `import-course --source '<originals>' --destination '<unused-library>'`. Prepare with `prepare --library '<library>' --case divider --divisor N --output '<new-job>'`; alternatively use `--case cascade --divisor0 N0 --divisor1 N1` or `--case switch --on-value V --off-value W [--invert]`. Then use `build`, `run --seconds N`, and `verify`, each with the returned `--manifest '<job.json>'`.
 
 The legacy tool uses `operation` doctor/prepare/build/run/verify, `case` divider/cascade/switch and numerical divisor/divisor0/divisor1/on_value/off_value/invert fields. Its library/job paths are host-fixed. Enable runtime operations explicitly; choose an observation interval appropriate to the expected period.
 
@@ -19,6 +19,8 @@ The original examples are supplied locally by the course. Import them using the 
 Counter values and 8255 output bytes have different ranges. The supported mode-3 counter domain is 2 through 65536; 65536 is intentionally encoded as the hardware's 16-bit zero count. Output bytes range from 0 through 255. Do not silently change a requested value to fit the representation.
 
 ## Evidence required for a behavioral claim
+
+Keep channel A as yellow output and B as cyan input. Divider/cascade verification requires the input near 1 MHz and the measured input/output ratio, not just a matching output. Missing input observation blocks `verify`. All three private course material sets are required by import, even for a divider-only job. Fixed timebases (divider 1 µs/div, cascade 0.1 s/div) do not guarantee observable edges for every legal count.
 
 Retain the selected natural-language request and the actual DSH skill/tool calls. The job should bind its source, build output and project copy to the original inputs through hashes and explicit paths. The runtime evidence should identify the installed Proteus build, the fresh process/run, the loaded executable and the observed signal values or transitions.
 

@@ -90,7 +90,7 @@ Before implementation, record the requested scope and acceptance criteria in the
 2. Check the precise [Python API](GENERIC_API.md) and [typed tool contract](../skills/fish-proteus817/references/generic-api.md); update their contract when an operation changes.
    Keep the tool's read-only `help` responses aligned with the bundled contract:
    the bounded DSH workflow disables general filesystem access.
-3. Run `python -B -m unittest discover -s tests -v` for offline behavior, and `python -m ruff check .` after installing the `dev` extra. Licensed-local tests are explicit; public tests must not depend on installed proprietary definitions. Ruff does not reformat the vendored Proteus sources.
+3. Run `python -B -m unittest discover -s tests -v` for offline behavior, and `python -B -m ruff check .` after installing the `dev` extra. Licensed-local tests are explicit; public tests must not depend on installed proprietary definitions. Ruff does not reformat the vendored Proteus sources.
 4. Use `tools/generic_structure_acceptance.py` to generate new local projects and authored expectations. Its `file_verified` status does not establish native SDF acceptance. `tools/generic_native_acceptance.py` launches serial owned sessions for a separate check.
 5. For runtime changes, create new work copies and test the affected scenarios on an interactive Windows desktop. Serialize native edits, file edits and GUI access. Preserve failed runs; do not relabel them as passes.
 6. Retain the course recipes as regression coverage. Widen testing when a change or unresolved risk warrants it, and preserve source/import identities.

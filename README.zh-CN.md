@@ -18,6 +18,14 @@
 
 ## 这东西适合你吗？
 
+### 学校机：禁止写系统盘
+
+Windows 默认 `FISH_PROTEUS_STRICT_NON_SYSTEM_DRIVE=1`。仓库、虚拟环境和 Harness 实际使用且已初始化的 home 须位于可写非系统盘。把 `FISH_PROTEUS_TEMP_DIR` 设为已核验可写的 ASCII 非系统盘目录，并在**启动 Harness 前**同时设置 TEMP/TMP。安装时另设 `PIP_CACHE_DIR` 或使用 `--no-cache-dir`，后者不能代替临时目录设置。手工命令用 `python -B`。安装器 `--dsh-home` 优先于 `DSH_HOME`，只是选真实 home，不会搬家；仓库放 D 盘不等于所有路径已解决。
+
+路径不合法就 blocked，不回退系统 TEMP 或用户主目录；C 盘上的只读 Proteus 仍可用。skill 校验自己的输出并控制子进程临时目录，但不能保证 Proteus、Harness、Windows 的配置、授权、AppData、崩溃报告等完全不写 C。仍是 0.3.0 Alpha，不承诺任意学校机零写入、免调试；尚未在目标学校机做 I/O 跟踪。详见[配置、优先级和操作示例](docs/configuration.md#学校机禁止向系统盘写数据)。
+
+慢机可设 `FISH_PROTEUS_TIMEOUT_SCALE=1..20` 同时放大 UI/OCR/捕获/桥接/headless 预算。固定像素示波器测量须为完整可见的 1380×900、96 DPI 布局，不支持的布局会 blocked。通用原生读数仍要求精确 PDS/DLL 哈希、英文 Proteus 菜单、可运行的 PowerShell 和 Windows OCR，详见[排错边界](docs/troubleshooting.md)。不虚构最低内存或 CPU 指标。
+
 Proteus 的工程在你自己的 Windows 桌面上，软件也得你自己有授权。这个仓库教 Agent 怎么用那套安装，它不附带 Proteus、器件库，也不附带你的课程文件。
 
 - **在对话里把电路说清楚。** Skill 会放器件、连引脚，并存成还能继续改的 `.pdsprj`。
@@ -30,7 +38,7 @@ Proteus 的工程在你自己的 Windows 桌面上，软件也得你自己有授
 
 **让桌面模型安装：** 把此仓库交给 DeepSeek Harness 读取并授权安装。模型应按 [AGENTS.md](AGENTS.md) 安装 skill 和配套桌面工具；它需要本机命令行和配置文件访问权限。
 
-日常安装用 `main`。学校老电脑演示用独立的 [demo/portable-lab 分支](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/tree/demo/portable-lab)，该分支也包含相同的安装流程。
+本文的写入策略适用于 `main`。独立的 [demo/portable-lab 分支](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/tree/demo/portable-lab) 是历史演示分支，未经源码核对不能假定它包含本次学校机策略。
 
 ## 快速开始
 
@@ -41,21 +49,21 @@ Proteus 的工程在你自己的 Windows 桌面上，软件也得你自己有授
 ```powershell
 git clone https://github.com/Lorentz-Caldfilis/fish-proteus817-skill.git
 Set-Location fish-proteus817-skill
-py -3 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e ".[dsh]"
+py -3 -B -m venv .venv
+.\.venv\Scripts\python.exe -B -m pip install --no-cache-dir -e ".[dsh]"
 ```
 
 **2 · 注册一次 Skill。**
 
 ```powershell
-.\.venv\Scripts\python.exe tools/dsh_install_desktop.py
+.\.venv\Scripts\python.exe -B tools/dsh_install_desktop.py --dsh-home $ActualInitializedHarnessHome
 ```
 
 Proteus 或 Harness 不在默认位置时，先把路径设上。说明在[配置](docs/configuration.md)。
 
 ```powershell
 $env:FISH_PROTEUS_EXE = 'C:\path\to\BIN\PDS.EXE'
-.\.venv\Scripts\python.exe tools/dsh_install_desktop.py --dsh-executable 'C:\path\to\DeepSeek Harness.exe'
+.\.venv\Scripts\python.exe -B tools/dsh_install_desktop.py --dsh-home $ActualInitializedHarnessHome --dsh-executable 'C:\path\to\DeepSeek Harness.exe'
 ```
 
 `--dry-run` 只检查，不写入。`--uninstall` 卸掉这个 Skill，并恢复上一次的全局 Skill。仓库留在安装器记下的那个位置。
@@ -145,9 +153,9 @@ $env:FISH_PROTEUS_EXE = 'C:\path\to\BIN\PDS.EXE'
 离线测试不需要 Proteus：
 
 ```powershell
-python -m pip install -e ".[dsh,dev]"
+python -B -m pip install --no-cache-dir -e ".[dsh,dev]"
 python -B -m unittest discover -s tests -v
-python -m ruff check .
+python -B -m ruff check .
 ```
 
 其余约定在[贡献说明](CONTRIBUTING.md)。安全问题走[安全说明](SECURITY.md)。

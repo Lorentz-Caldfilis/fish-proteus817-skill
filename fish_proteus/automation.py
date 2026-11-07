@@ -180,6 +180,8 @@ class Circuit(_Circuit):
 
     def save(self, destination, title=None, *, overwrite=False):
         destination = self.config.check_destination(destination)
+        from .host_paths import writable_file
+        writable_file(destination)
         if hashlib.sha256(self.source.read_bytes()).digest() != self._source_digest:
             raise UnsupportedFormat("Source changed outside this Circuit; reopen it before saving")
         return super().save(destination, title, overwrite=overwrite)

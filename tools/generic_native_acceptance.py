@@ -40,7 +40,8 @@ def run(queue: Path, output: Path) -> dict:
     items = json.loads(queue.read_text(encoding="utf-8"))["native_queue"]
     if not isinstance(items, list) or not 1 <= len(items) <= 100:
         raise ValueError("Invalid native acceptance queue")
-    output.mkdir(parents=True)
+    from fish_proteus.host_paths import writable_directory
+    writable_directory(output)
     result = {"schema": "fish-proteus.native-structure.v1", "queue_sha256": digest(queue),
               "status": "incomplete", "runtime_status": "not_run", "cases": []}
     for index, item in enumerate(items):

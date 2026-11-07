@@ -1,6 +1,7 @@
 /** DSH plugin exposing only the fixed fish_proteus workflow, without a shell. */
 import { spawn } from 'node:child_process';
-import { realpath, appendFile, mkdir } from 'node:fs/promises';
+import { childEnvironment, writableDirectory, checkWritablePath, timeoutScale } from './host_paths.mjs';
+import { realpath, appendFile } from 'node:fs/promises';
 import { dirname, relative, isAbsolute, join, resolve } from 'node:path';
 
 export const name = 'fish-proteus-project-tool';
@@ -32,6 +33,10 @@ export async function apply(ctx, config) {
     throw new Error('The audit path must be beneath this workspace/.work.');
   }
   const { defineTool } = await import(config.toolsModule);
+  checkWritablePath(config.jobDirectory);
+  writableDirectory(dirname(config.jobDirectory));
+  writableDirectory(dirname(config.auditPath));
+  childEnvironment(workspace, config.tempRoot);
   const tool = defineTool({
     name: 'fish_proteus',
     description: `Run the fixed local 8086 Proteus workflow. Enabled operations: ${allowed.join(', ')}. The course library and one job directory are fixed by the supervisor; no arbitrary commands or paths are accepted.`,
@@ -54,16 +59,13 @@ export async function apply(ctx, config) {
       if (!allowed.includes(args.operation)) throw new Error('Operation not enabled for this task.');
       // The child does not inherit the harness's model credentials or arbitrary
       // Python import settings. No shell parses this argv or the JSON input.
-      const environment = {};
-      for (const key of ['SystemRoot', 'WINDIR', 'PATH', 'PATHEXT', 'TEMP', 'TMP', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA', 'ProgramData', 'PROGRAMFILES', 'PROGRAMFILES(X86)']) {
-        if (process.env[key] !== undefined) environment[key] = process.env[key];
-      }
+      const environment = childEnvironment(workspace, config.tempRoot);
       const argv = ['-I', '-B', gate, '--workspace', workspace, '--library', library, '--job-directory', config.jobDirectory, '--allowed', ...allowed];
       const result = await new Promise((resolve, reject) => {
         const child = spawn(python, argv, { cwd: workspace, env: environment, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
         let stdout = '', stderr = '', ended = false;
         const stop = () => { if (!ended) child.kill(); };
-        const timer = setTimeout(stop, 120000);
+        const timer = setTimeout(stop, 600000 * timeoutScale());
         exec.signal?.addEventListener('abort', stop, { once: true });
         child.stdout.setEncoding('utf8');
         child.stderr.setEncoding('utf8');
@@ -86,8 +88,8 @@ export async function apply(ctx, config) {
         child.stdin.on('error', () => {});
         child.stdin.end(JSON.stringify(args));
       });
-      await mkdir(dirname(config.auditPath), { recursive: true });
-      await appendFile(config.auditPath, JSON.stringify({ operation: args.operation, input: args, exit_code: result.exit_code, payload_status: result.payload?.status ?? null }) + '\n', 'utf8');
+      writableDirectory(dirname(config.auditPath));
+      await appendFile(checkWritablePath(config.auditPath), JSON.stringify({ operation: args.operation, input: args, exit_code: result.exit_code, payload_status: result.payload?.status ?? null }) + '\n', 'utf8');
       return result;
     },
   });

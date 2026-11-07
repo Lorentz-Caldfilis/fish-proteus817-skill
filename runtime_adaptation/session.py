@@ -103,14 +103,18 @@ class Session:
     """Owns one Proteus process. Pass a disposable project copy, not an original."""
 
     def __init__(self, project, executable=r"D:\Proteus\BIN\PDS.EXE"):
+        from fish_proteus.host_paths import writable_file, child_environment
         self.project = Path(project).resolve(strict=True)
+        writable_file(self.project)
         executable = Path(executable).resolve(strict=True)
         if self.project.suffix.lower() != ".pdsprj" or executable.name.upper() != "PDS.EXE":
             raise ValueError("Expected a .pdsprj project and PDS.EXE")
         startup = subprocess.STARTUPINFO()
         startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         startup.wShowWindow = 0
-        self.process = subprocess.Popen([str(executable), str(self.project)], startupinfo=startup, cwd=executable.parent)
+        environment = child_environment(self.project.parent)
+        self.process = subprocess.Popen([str(executable), str(self.project)], startupinfo=startup,
+                                        cwd=self.project.parent, env=environment)
         self.pid = self.process.pid
         def launched():
             for row in native.windows(self.pid):
@@ -131,6 +135,8 @@ class Session:
         time.sleep(1)
 
     def _wait(self, condition, timeout=15):
+        from fish_proteus.host_paths import timeout_scale
+        timeout *= timeout_scale()
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             if self.process.poll() is not None:
@@ -194,7 +200,8 @@ class Session:
         destination = Path(destination).resolve()
         if destination.exists():
             raise FileExistsError(destination)
-        destination.parent.mkdir(parents=True, exist_ok=True)
+        from fish_proteus.host_paths import writable_file
+        writable_file(destination)
         self.menu("Tool/Netlist Compiler")
         dialog = self._dialog("Netlist Compiler")
         for label in ["File(s)", "Logical", "Whole Design", "Flatten", "SDF"]:
@@ -226,6 +233,8 @@ class Session:
             value.encode("ascii")
             lines.append(f' {key}="{value}"')
         path = self.project.parent / f"api-{uuid.uuid4().hex}.adi"
+        from fish_proteus.host_paths import writable_file
+        writable_file(path)
         path.write_text("\n".join(lines + ["END", ""]), encoding="ascii")
         try:
             self.menu("Tool/ASCII Data Import Tool")
@@ -256,12 +265,13 @@ class Session:
         return self.project
 
     def close(self):
+        from fish_proteus.host_paths import timeout_scale
         if self.process.poll() is not None:
             return self.process.returncode
         time.sleep(1)
         self.menu("File/Exit Application")
         # Do not dismiss an unexpected unsaved-changes dialog or terminate another process.
-        deadline = time.monotonic() + 20
+        deadline = time.monotonic() + 20 * timeout_scale()
         while time.monotonic() < deadline:
             if self.process.poll() is not None:
                 return self.process.returncode

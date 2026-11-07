@@ -23,6 +23,7 @@ import time
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from dsh_install_skill import REPOSITORY, install_skill
 sys.path.insert(0, str(REPOSITORY))
+from fish_proteus.host_paths import writable_directory, child_environment, timeout_scale
 
 
 def find_command(explicit: Path | None = None) -> tuple[list[str], dict[str, str], str]:
@@ -57,7 +58,7 @@ def probe(explicit: Path | None = None) -> dict:
     command, extra, route = find_command(explicit)
     process = subprocess.run(
         command + ["--version"], capture_output=True, text=True, encoding="utf-8",
-        errors="replace", timeout=30, env={**os.environ, **extra},
+        errors="replace", timeout=30, env=child_environment(REPOSITORY, base={**os.environ, **extra}),
         creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
     )
     return {
@@ -275,7 +276,7 @@ def run(args: argparse.Namespace) -> dict:
         raise ValueError("--output must be an evidence directory inside this workspace/.work.")
     if output.exists() and any(output.iterdir()):
         raise ValueError("Use a new or empty output directory to preserve previous evidence.")
-    output.mkdir(parents=True, exist_ok=True)
+    writable_directory(output)
     installation = install_skill(workspace, update=args.update_skill)
     task = args.task_file.read_text(encoding="utf-8-sig") if args.task_file else args.task
     if not task or not task.strip():
@@ -299,7 +300,7 @@ def run(args: argparse.Namespace) -> dict:
     original_fingerprint = credential_fingerprint(credential_store)
     redactions = credential_redactions(credential_store)
     secret_env = credential_environment(credential_store) if args.provider == "deepseek-official" else {}
-    launch_env = {**os.environ, **extra_env, **secret_env, "DSH_HOME": str(output / "home")}
+    launch_env = child_environment(workspace, base={**os.environ, **extra_env, **secret_env, "DSH_HOME": str(output / "home")})
     # The shipped headless profile ignores the user's credential store. The
     # optional account route restores its native provider and normal token
     # lifecycle through a temporary overlay, never editing saved profiles.
@@ -387,7 +388,7 @@ def run(args: argparse.Namespace) -> dict:
     timed_out = cancelled = False
     try:
         stdout, stderr = communicate_with_progress(
-            process, task, timeout=args.timeout, audit_path=Path(plugin["config"]["auditPath"]),
+            process, task, timeout=args.timeout * timeout_scale(), audit_path=Path(plugin["config"]["auditPath"]),
             allowed_actions=set(enabled))
     except subprocess.TimeoutExpired:
         timed_out = True
@@ -455,7 +456,7 @@ def main() -> int:
     parser.add_argument("--input-firmware", action="append", default=[], metavar="ID=PATH", help="Host-register a read-only ELF/HEX firmware input for design workflows.")
     parser.add_argument("--design-config", type=Path, help="Host configuration JSON containing executable/library_root/samples_root/template_project paths.")
     parser.add_argument("--tools-module", type=Path, help="Installed @deepseek-ai/dsh-tools/lib/index.js when not discoverable from the launcher.")
-    parser.add_argument("--timeout", type=float, default=300)
+    parser.add_argument("--timeout", type=float, default=900)
     parser.add_argument("--update-skill", action="store_true")
     args = parser.parse_args()
     if args.list_actions:

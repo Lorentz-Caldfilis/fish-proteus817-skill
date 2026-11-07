@@ -5,6 +5,8 @@ from fish_proteus.waveform import _png_rgb
 
 
 def crop_scaled_png(source,destination,box,scale=3):
+    from fish_proteus.host_paths import writable_file
+    writable_file(destination)
     width,height,rows=_png_rgb(Path(source).read_bytes())
     x0,y0,x1,y1=map(int,box)
     if not (0<=x0<x1<=width and 0<=y0<y1<=height and 1<=scale<=4):

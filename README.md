@@ -28,9 +28,17 @@ You want it if you have Proteus 8.17 SP2 on an interactive Windows desktop and y
 
 Alpha, version 0.3.0. It is not an MCP server, and it is not a Labcenter or DeepSeek product.
 
+## School computers: no system-drive writes
+
+Windows now defaults to `FISH_PROTEUS_STRICT_NON_SYSTEM_DRIVE=1`. Keep the repository, virtual environment and actual initialized Harness home on a writable non-system drive. Set `FISH_PROTEUS_TEMP_DIR` to a verified writable ASCII non-system directory, and set TEMP/TMP to it **before starting Harness**. Use `PIP_CACHE_DIR` on that drive or `--no-cache-dir` for installation; pip still needs TEMP/TMP. Use `python -B` for manual commands. Installer `--dsh-home` (or `DSH_HOME`) selects the home Harness actually uses; it does not migrate data. A repository on D alone is not enough.
+
+Invalid destinations block instead of falling back to system TEMP or HOME. Read-only Proteus installs on C are still supported. The skill validates its own outputs and sets child-process temporary paths, but cannot guarantee that Proteus, Harness or Windows never write preferences, crash reports or licensing data on C. This remains a bounded Alpha, not a universal zero-write claim; no school-machine I/O trace has been run. See [configuration, precedence and bilingual setup](docs/configuration.md#school-computers-no-system-drive-writes).
+
+`FISH_PROTEUS_TIMEOUT_SCALE=1..20` extends UI/OCR/capture/bridge/headless waits together. Fixed-pixel scope measurement requires a fully visible 1380×900 window at 96 DPI; unsupported layouts block. Native reads require the exact reviewed PDS/DLL hashes, English Proteus menus and working PowerShell/Windows OCR. See [runtime limits](docs/troubleshooting.md#runtime-compatibility-and-measurement-limits). No minimum RAM/CPU guarantee is made.
+
 **Ask the desktop agent to install:** Give DeepSeek Harness access to this repository and authorize setup. It should follow [AGENTS.md](AGENTS.md) to install both the skill and its desktop tool. Local shell and profile access are required.
 
-The default `main` branch is for normal desktop use. For old school PCs, use the separate [demo/portable-lab branch](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/tree/demo/portable-lab), which includes the same setup workflow.
+Use the default `main` branch for the writable-path policy documented here. The separate [demo/portable-lab branch](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/tree/demo/portable-lab) is a historical demo; do not assume it includes this policy without checking its code.
 
 ## Quick start
 
@@ -41,21 +49,21 @@ You need Python 3.10 or newer, Git, your own Proteus **8.17 SP2**, and DeepSeek 
 ```powershell
 git clone https://github.com/Lorentz-Caldfilis/fish-proteus817-skill.git
 Set-Location fish-proteus817-skill
-py -3 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e ".[dsh]"
+py -3 -B -m venv .venv
+.\.venv\Scripts\python.exe -B -m pip install --no-cache-dir -e ".[dsh]"
 ```
 
 **2 · Register the skill once.**
 
 ```powershell
-.\.venv\Scripts\python.exe tools/dsh_install_desktop.py
+.\.venv\Scripts\python.exe -B tools/dsh_install_desktop.py --dsh-home $ActualInitializedHarnessHome
 ```
 
 If Proteus or Harness is not in the usual place, set the path before you install. Details are in [Configuration](docs/configuration.md).
 
 ```powershell
 $env:FISH_PROTEUS_EXE = 'C:\path\to\BIN\PDS.EXE'
-.\.venv\Scripts\python.exe tools/dsh_install_desktop.py --dsh-executable 'C:\path\to\DeepSeek Harness.exe'
+.\.venv\Scripts\python.exe -B tools/dsh_install_desktop.py --dsh-home $ActualInitializedHarnessHome --dsh-executable 'C:\path\to\DeepSeek Harness.exe'
 ```
 
 `--dry-run` only checks. `--uninstall` removes this skill and restores the previous one. Leave the clone where the installer found it.
@@ -145,9 +153,9 @@ Issues and pull requests are welcome. Describe the circuit, the Proteus build, a
 Offline tests need no Proteus:
 
 ```powershell
-python -m pip install -e ".[dsh,dev]"
+python -B -m pip install --no-cache-dir -e ".[dsh,dev]"
 python -B -m unittest discover -s tests -v
-python -m ruff check .
+python -B -m ruff check .
 ```
 
 The rest is in [Contributing](CONTRIBUTING.md). Security reports go through [Security](SECURITY.md).

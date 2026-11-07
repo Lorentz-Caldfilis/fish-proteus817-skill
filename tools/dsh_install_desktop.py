@@ -20,6 +20,8 @@ import uuid
 
 
 REPOSITORY = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPOSITORY))
+from fish_proteus.host_paths import check_path, writable_directory, temp_root, child_environment
 PLUGIN_ID = "fish-proteus-desktop-tool"
 BOOTSTRAP_ID = PLUGIN_ID + "-bootstrap-v1"
 BEGIN = b"# >>> fish-proteus817 desktop integration >>>"
@@ -140,7 +142,7 @@ def _convert_empty_flow_profile(content: bytes) -> bytes | None:
     return converted
 
 
-def _dsh_candidates() -> list[Path]:
+def _dsh_candidates(*, query_processes=True, temporary_root=None) -> list[Path]:
     candidates = []
     if os.environ.get("DSH_DESKTOP_EXE"):
         candidates.append(Path(os.environ["DSH_DESKTOP_EXE"]))
@@ -179,20 +181,23 @@ def _dsh_candidates() -> list[Path]:
                     pass
         # Read executable paths only; command lines can contain unrelated data.
         try:
+            if not query_processes:
+                return candidates
             query = ("[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false); "
                      "Get-CimInstance Win32_Process -Filter \"Name = 'DeepSeek Harness.exe'\" "
                      "| Select-Object -ExpandProperty ExecutablePath")
             result = subprocess.run(["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", query],
                                     capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15,
-                                    creationflags=subprocess.CREATE_NO_WINDOW)
+                                    creationflags=subprocess.CREATE_NO_WINDOW,
+                                    env=child_environment(REPOSITORY, configured=temporary_root))
             candidates += [Path(line.strip()) for line in result.stdout.splitlines() if line.strip()]
         except (OSError, subprocess.SubprocessError):
             pass
     return candidates
 
 
-def find_dsh(executable: Path | None = None) -> Path:
-    candidates = [executable] if executable else _dsh_candidates()
+def find_dsh(executable: Path | None = None, *, query_processes=True, temporary_root=None) -> Path:
+    candidates = [executable] if executable else _dsh_candidates(query_processes=query_processes, temporary_root=temporary_root)
     for candidate in candidates:
         path = candidate.expanduser().resolve()
         if path.is_file() and (path.parent / "resources" / "app.asar").is_file():
@@ -246,7 +251,7 @@ def _source_identity(repository: Path) -> dict:
     loaded external plugin even when its source path remains the same.
     """
     explicit = {
-        "tools/dsh_desktop_tool.mjs", "tools/dsh_design_tool.mjs", "tools/desktop_gate.py",
+        "tools/dsh_desktop_tool.mjs", "tools/dsh_design_tool.mjs", "tools/host_paths.mjs", "tools/desktop_gate.py",
         "fish_proteus/desktop.py", "skills/fish-proteus817/SKILL.md",
         "skills/fish-proteus817/references/desktop-workflow.md",
     }
@@ -289,7 +294,7 @@ def _plugin_cache_plan(repository: Path, identity: dict) -> dict:
     """ESM source URLs must change when the reviewed implementation changes."""
     directory = _below(repository / ".work" / "desktop" / "plugins" / identity["sha256"], repository)
     files = {name: identity["files"].get("tools/" + name)
-             for name in ("dsh_desktop_tool.mjs", "dsh_design_tool.mjs")}
+             for name in ("dsh_desktop_tool.mjs", "dsh_design_tool.mjs", "host_paths.mjs")}
     ready = False
     if directory.exists():
         if not directory.is_dir() or _inventory(directory) != files:
@@ -300,10 +305,10 @@ def _plugin_cache_plan(repository: Path, identity: dict) -> dict:
 
 
 def _materialize_plugin_cache(repository: Path, identity: dict, plan: dict) -> None:
-    """Publish a verified two-module directory before changing DSH configuration.
+    """Publish the verified bridge modules and path policy before configuration.
 
     Old addresses are immutable and retained for rollback. A staging directory
-    becomes visible at its final address only after both original byte streams
+    becomes visible at its final address only after all original byte streams
     have been verified; no source rewriting or URL-query loader assumptions.
     """
     directory = _below(Path(plan["directory"]), repository)
@@ -349,7 +354,11 @@ def install_desktop(*, repository: Path = REPOSITORY, dsh_home: Path | None = No
                     dsh_executable: Path | None = None, dry_run: bool = False,
                     uninstall: bool = False) -> dict:
     repository = repository.expanduser().resolve(strict=True)
-    home = (dsh_home or Path.home() / ".dsh").expanduser().resolve()
+    selected_home = dsh_home or os.environ.get("DSH_HOME")
+    if not selected_home:
+        raise ValueError("Specify --dsh-home or DSH_HOME for the actual initialized Harness home; no HOME fallback")
+    home = check_path(Path(selected_home).expanduser().resolve())
+    check_path(repository / ".work" / "desktop")
     profile = _below(home / "profiles" / "desktop" / "cordis.patch.yml", home)
     managed = _below(home / ".fish-proteus817", home)
     manifest_path = _below(managed / "install.json", home)
@@ -358,6 +367,7 @@ def install_desktop(*, repository: Path = REPOSITORY, dsh_home: Path | None = No
     content = before or b""
     bounds = _bounds(content)
     prior = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else None
+    temporary_root = temp_root(repository, configured=(prior or {}).get("config", {}).get("tempRoot"), probe=False)
     if prior and (prior.get("schema") != SCHEMA or prior.get("profile") != str(profile)):
         raise ValueError("The desktop installation manifest does not match this selected profile")
     if bounds:
@@ -370,13 +380,15 @@ def install_desktop(*, repository: Path = REPOSITORY, dsh_home: Path | None = No
     if PLUGIN_ID.encode() in outside:
         raise ValueError("A separate desktop registration already uses this plugin ID")
     if uninstall:
+        if not dry_run:
+            writable_directory(home)
         return _uninstall(home, profile, managed, manifest_path, skill, before, bounds, prior, dry_run)
     runtime = _runtime_diagnostics(repository, (prior or {}).get("config", {}).get("resourcePaths"))
     missing = [str(path.relative_to(repository)) for path in
-               (repository / "tools" / "dsh_desktop_tool.mjs", repository / "tools" / "dsh_design_tool.mjs",
+               (repository / "tools" / "dsh_desktop_tool.mjs", repository / "tools" / "dsh_design_tool.mjs", repository / "tools" / "host_paths.mjs",
                 repository / "tools" / "dsh_desktop_bootstrap.mjs", repository / "tools" / "desktop_gate.py")
                if not path.is_file()]
-    executable = find_dsh(dsh_executable)
+    executable = find_dsh(dsh_executable, query_processes=not dry_run, temporary_root=temporary_root)
     archive = executable.parent / "resources" / "app.asar"
     identity = _source_identity(repository)
     # The stable bootstrap is a versioned loading protocol. Config updates reuse
@@ -392,7 +404,7 @@ def install_desktop(*, repository: Path = REPOSITORY, dsh_home: Path | None = No
     config = {"plugin": bootstrap.as_uri(), "implementationModule": plugin_cache["module"],
               "workspace": str(repository), "python": str(Path(sys.executable).resolve()),
               "gate": str(repository / "tools" / "desktop_gate.py"),
-              "stateRoot": str(repository / ".work" / "desktop"),
+              "stateRoot": str(repository / ".work" / "desktop"), "tempRoot": str(temporary_root),
               "sourceIdentity": identity["sha256"],
               "resourcePaths": {key: runtime["proteus"][key]["path"]
                                 for key in RESOURCE_ENV if key in (runtime["proteus"] or {})},
@@ -438,6 +450,9 @@ def install_desktop(*, repository: Path = REPOSITORY, dsh_home: Path | None = No
         return report
     if errors:
         raise ValueError("; ".join(errors))
+    writable_directory(home)
+    writable_directory(repository / ".work" / "desktop")
+    temp_root(repository, configured=temporary_root)
     if before == after and present == wanted and prior and plugin_cache["ready"]:
         return {**report, "status": "unchanged", "manifest": str(manifest_path)}
     managed.mkdir(parents=True, exist_ok=True)
@@ -579,7 +594,7 @@ def _uninstall(home, profile, managed, manifest_path, skill, before, bounds, pri
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dsh-home", type=Path, help="Existing DSH home (default: ~/.dsh)")
+    parser.add_argument("--dsh-home", type=Path, help="Actual initialized Harness home (or DSH_HOME); never migrates data")
     parser.add_argument("--dsh-executable", type=Path, help="Existing desktop executable, selected once at installation")
     parser.add_argument("--dry-run", action="store_true", help="Report installation readiness without changing files")
     parser.add_argument("--uninstall", action="store_true", help="Remove this registration and restore its original skill")
@@ -590,7 +605,7 @@ def main() -> int:
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result["status"] != "not_ready" else 1
     except (OSError, ValueError, RuntimeError, json.JSONDecodeError) as exc:
-        print(json.dumps({"schema": SCHEMA, "status": "error", "message": str(exc)}, ensure_ascii=False), file=sys.stderr)
+        print(json.dumps({"schema": SCHEMA, "status": "blocked", "message": str(exc)}, ensure_ascii=False), file=sys.stderr)
         return 1
 
 

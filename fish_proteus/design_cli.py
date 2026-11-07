@@ -18,6 +18,7 @@ import re
 import shutil
 import sys
 import tempfile
+from .host_paths import temp_root, writable_directory, writable_file
 import uuid
 import zipfile
 
@@ -391,6 +392,7 @@ def _json_default(value):
 
 def _write(path, value):
     path = Path(path)
+    writable_file(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp-" + uuid.uuid4().hex)
     temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2, default=_json_default, allow_nan=False) + "\n", encoding="utf8")
@@ -398,35 +400,15 @@ def _write(path, value):
 
 
 def _make_log_directory(task_root):
-    """Host-owned ASCII staging, preferably within an ancestor of this task.
-
-    Windows sandbox TEMP may permit directory creation but deny child-file I/O.
-    Use a fixed staging name under a writable ASCII task ancestor, then try the
-    OS temp directory. No model-supplied field selects either base or filename.
-    """
-    task_root = Path(task_root).resolve()
-    bases = [parent / ".work" / "fish-proteus-log-staging"
-             for parent in (task_root, *task_root.parents)
-             if str(parent).isascii() and parent != Path(parent.anchor)]
-    bases.append(Path(tempfile.gettempdir()))
-    for base in bases:
-        if not str(base).isascii():
-            continue
-        directory = None
-        try:
-            base.mkdir(parents=True, exist_ok=True)
-            directory = Path(tempfile.mkdtemp(prefix="fish-proteus-log-", dir=base)).resolve()
-            probe = directory / "write-probe"
-            probe.write_bytes(b"")
-            probe.unlink()
-            return directory
-        except OSError:
-            if directory is not None:
-                try:
-                    _remove_log_directory(directory)
-                except OSError:
-                    pass
-    raise ValueError("No writable ASCII native-log staging directory is available")
+    """Host-owned ASCII staging beneath the validated temporary root."""
+    base = temp_root(Path(task_root).resolve())
+    directory = Path(tempfile.mkdtemp(prefix="fish-proteus-log-", dir=base)).resolve()
+    try:
+        writable_directory(directory, ascii_only=True)
+        return directory
+    except OSError:
+        _remove_log_directory(directory)
+        raise
 
 
 def _remove_log_directory(directory):
@@ -442,7 +424,7 @@ class DesignTask:
 
     def __init__(self, root, inputs=None, *, api=None, runtime=None):
         self.root = Path(root).resolve()
-        self.root.mkdir(parents=True, exist_ok=True)
+        writable_directory(self.root)
         self.inputs = inputs or {}
         _need(isinstance(self.inputs, dict) and self.inputs.keys() <= {"schema", "config", "projects", "firmware"}, "Invalid host input manifest")
         self.api = api
@@ -457,7 +439,8 @@ class DesignTask:
     def path(self, relative):
         candidate = (self.root / _relative(relative)).resolve()
         _need(candidate != self.root and self.root in candidate.parents, "Artifact path escapes task root")
-        return candidate
+        from .host_paths import check_path
+        return check_path(candidate)
 
     def _bind_inputs(self):
         observed = {}

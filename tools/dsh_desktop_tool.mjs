@@ -1,9 +1,10 @@
 /** Persistent desktop adapter. Session/task plumbing is owned by the host. */
 import { spawn } from 'node:child_process';
-import { appendFile, mkdir, realpath, writeFile } from 'node:fs/promises';
+import { appendFile, realpath, writeFile } from 'node:fs/promises';
 import { createHash, randomUUID } from 'node:crypto';
 import { dirname, isAbsolute, join, relative } from 'node:path';
 import { parameters, decodeCliStdout, projectModelResponse } from './dsh_design_tool.mjs';
+import { childEnvironment as hostEnvironment, writableDirectory, checkWritablePath, timeoutScale } from './host_paths.mjs';
 
 export const name = 'fish-proteus-desktop-tool';
 export const inject = ['tools', 'workingDirectory'];
@@ -42,14 +43,8 @@ function blocked(type, message) {
     error: { type, message } } };
 }
 
-function childEnvironment(resourcePaths = {}) {
-  const environment = {};
-  for (const key of ['PATH', 'Path', 'SYSTEMROOT', 'SystemRoot', 'WINDIR', 'COMSPEC',
-    'PATHEXT', 'TEMP', 'TMP', 'PROGRAMFILES', 'ProgramFiles', 'ProgramFiles(x86)',
-    'PROGRAMDATA', 'ProgramData', 'USERPROFILE', 'LOCALAPPDATA', 'APPDATA',
-    'FISH_PROTEUS_EXE', 'FISH_PROTEUS_LIBRARY', 'FISH_PROTEUS_SAMPLES', 'FISH_PROTEUS_TEMPLATE']) {
-    if (process.env[key] !== undefined) environment[key] = process.env[key];
-  }
+function childEnvironment(resourcePaths = {}, workspace, tempRoot) {
+  const environment = hostEnvironment(workspace, tempRoot);
   const names = { executable: 'FISH_PROTEUS_EXE', library_root: 'FISH_PROTEUS_LIBRARY',
     samples_root: 'FISH_PROTEUS_SAMPLES', template_project: 'FISH_PROTEUS_TEMPLATE' };
   for (const [key, value] of Object.entries(resourcePaths)) {
@@ -68,7 +63,7 @@ export function runDesktopGate(config, args, { sessionId, workingDirectory, sign
     const child = spawn(config.python, ['-I', '-B', config.gate,
       '--workspace', config.workspace, '--store-root', config.stateRoot,
       '--session-id', sessionId, '--working-directory', workingDirectory],
-    { cwd: config.workspace, env: childEnvironment(config.resourcePaths), shell: false, windowsHide: true,
+    { cwd: config.workspace, env: childEnvironment(config.resourcePaths, config.workspace, config.tempRoot), shell: false, windowsHide: true,
       stdio: ['pipe', 'pipe', 'pipe'] });
     let ended = false, termination = null, byteCount = 0, stderr = '';
     const chunks = [];
@@ -82,7 +77,7 @@ export function runDesktopGate(config, args, { sessionId, workingDirectory, sign
       } else child.kill('SIGTERM');
     };
     const cancel = () => stop('aborted');
-    const timer = setTimeout(() => stop('timeout'), 360000);
+    const timer = setTimeout(() => stop('timeout'), 600000 * timeoutScale());
     signal?.addEventListener('abort', cancel, { once: true });
     if (signal?.aborted) cancel();
     child.stdout.on('data', chunk => {
@@ -145,12 +140,13 @@ export async function apply(ctx, config) {
       || !inside(gate, join(workspace, 'tools'))) {
     throw new Error('Desktop plugin paths must belong to its installed companion repository.');
   }
-  await mkdir(stateRoot, { recursive: true });
+  writableDirectory(stateRoot);
+  hostEnvironment(workspace, config.tempRoot);
   const checkedStateRoot = await realpath(stateRoot);
   if (!inside(checkedStateRoot, join(workspace, '.work'))) {
     throw new Error('Desktop task storage cannot escape through a link.');
   }
-  const fixed = { workspace, python, gate, stateRoot: checkedStateRoot, resourcePaths: config.resourcePaths };
+  const fixed = { workspace, python, gate, stateRoot: checkedStateRoot, resourcePaths: config.resourcePaths, tempRoot: config.tempRoot };
   const { defineTool } = await import(config.toolsModule);
   ctx.tools.register(defineTool({
     name: 'fish_proteus_design',
@@ -177,9 +173,9 @@ export async function apply(ctx, config) {
       const reportId = randomUUID();
       const full = JSON.stringify(result, null, 2) + '\n';
       try {
-        await mkdir(reportDirectory, { recursive: true });
+        writableDirectory(reportDirectory);
         await writeFile(join(reportDirectory, `${reportId}.json`), full, { encoding: 'utf8', flag: 'wx' });
-        await appendFile(join(reportDirectory, 'audit.jsonl'), JSON.stringify({
+        await appendFile(checkWritablePath(join(reportDirectory, 'audit.jsonl')), JSON.stringify({
           report_id: reportId, action: args.action, payload_status: result.payload?.status ?? null,
           exit_code: result.exit_code, termination: result.termination ?? null,
           implementation_module: import.meta.url,

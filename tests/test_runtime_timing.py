@@ -1,5 +1,6 @@
 """Exercise timing completion with an owned-desktop fake, without Windows UI."""
 import ctypes
+import os
 import importlib.util
 from pathlib import Path
 import types
@@ -69,6 +70,12 @@ def controller_for(desktop):
 
 
 class RuntimeTimingTests(unittest.TestCase):
+    def test_slow_machine_scale_extends_short_capture_budget(self):
+        with patch.dict(os.environ, {'FISH_PROTEUS_TIMEOUT_SCALE': '3'}):
+            result,_=self.run_timer(DesktopFake(native_pause=False), [ValueError('missing'), ValueError('missing')], seconds=.001)
+        self.assertEqual(result['capture_wait_wall_seconds'], 45)
+        self.assertFalse(result['actual_time_verified'])
+
     def run_timer(self, desktop, clocks, seconds=.1):
         module,controller=controller_for(desktop)
         controller.clock=Mock(side_effect=clocks)

@@ -84,6 +84,8 @@ def execute(args: argparse.Namespace) -> tuple[dict, int]:
             raise ValueError(f"Parameters do not apply to {args.case}: {', '.join(sorted(extra))}")
         return generate_variant(Path(args.library), args.case, Path(args.output), **parameters), 0
     manifest_path, manifest = read_manifest(args.manifest)
+    from .host_paths import writable_file
+    writable_file(manifest_path)
     if args.command == "build":
         from .build import build_job
         if args.nasm:

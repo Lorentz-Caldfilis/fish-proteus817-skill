@@ -40,6 +40,7 @@ class DesktopInstallTests(unittest.TestCase):
         (self.repo / "tools").mkdir()
         (self.repo / "tools/dsh_desktop_tool.mjs").write_text("export const name='test';", encoding="utf-8")
         (self.repo / "tools/dsh_design_tool.mjs").write_text("export const parameters=()=>({});", encoding="utf-8")
+        (self.repo / "tools/host_paths.mjs").write_text("export const fixture=true;", encoding="utf-8")
         (self.repo / "tools/dsh_desktop_bootstrap.mjs").write_text("export const apply=async()=>{};", encoding="utf-8")
         (self.repo / "tools/desktop_gate.py").write_text("# trusted gate", encoding="utf-8")
         self.exe = self.root / "DSH/DeepSeek Harness.exe"
@@ -85,6 +86,37 @@ class DesktopInstallTests(unittest.TestCase):
         self.assertIn((cache / "dsh_desktop_tool.mjs").as_uri().encode(), content)
         for name in ("dsh_desktop_tool.mjs", "dsh_design_tool.mjs"):
             self.assertEqual((cache / name).read_bytes(), (self.repo / "tools" / name).read_bytes())
+
+    def test_unspecified_home_never_uses_user_home(self):
+        with patch.dict(os.environ, {'DSH_HOME': ''}), patch.object(Path, 'home', side_effect=AssertionError):
+            with self.assertRaisesRegex(ValueError, 'actual initialized Harness home'):
+                installer.install_desktop(repository=self.repo, dsh_executable=self.exe)
+
+    def test_temp_root_is_persisted_and_revalidated_without_environment(self):
+        temporary = self.root / 'verified-temp'
+        with patch.dict(os.environ, {'FISH_PROTEUS_TEMP_DIR': str(temporary)}):
+            first = self.run_install()
+        self.assertEqual(first['plugin']['tempRoot'], str(temporary))
+        with patch.dict(os.environ, {'FISH_PROTEUS_TEMP_DIR': ''}):
+            second = self.run_install()
+        self.assertEqual(second['plugin']['tempRoot'], str(temporary))
+        self.assertEqual(second['status'], 'unchanged')
+
+    def test_saved_temp_root_is_forwarded_to_discovery(self):
+        temporary = self.root / 'verified-temp'
+        with patch.dict(os.environ, {'FISH_PROTEUS_TEMP_DIR': str(temporary)}):
+            self.run_install()
+        with patch.dict(os.environ, {'FISH_PROTEUS_TEMP_DIR': ''}), \
+                patch.object(installer, 'find_dsh', return_value=self.exe) as discover:
+            self.run_install()
+        self.assertEqual(discover.call_args.kwargs['temporary_root'], temporary)
+
+    def test_dry_run_does_not_create_temp_or_probe_home(self):
+        temporary = self.root / 'not-created'
+        with patch.dict(os.environ, {'FISH_PROTEUS_TEMP_DIR': str(temporary)}), \
+                patch.object(installer, 'writable_directory', side_effect=AssertionError):
+            self.assertEqual(self.run_install(dry_run=True)['status'], 'ready')
+        self.assertFalse(temporary.exists())
 
     def test_verified_paths_are_saved_and_reused_without_setup_environment(self):
         self.runtime_patch.stop()

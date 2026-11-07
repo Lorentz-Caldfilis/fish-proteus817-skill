@@ -12,6 +12,8 @@ import sys
 
 
 REPOSITORY = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPOSITORY))
+from fish_proteus.host_paths import check_path, writable_directory
 
 
 def _inventory(directory: Path) -> dict[str, str]:
@@ -35,6 +37,7 @@ def install_skill(workspace: Path, *, update: bool = False) -> dict:
             )
     source = REPOSITORY / "skills" / "fish-proteus817"
     destination = workspace / ".dsh" / "skills" / "fish-proteus817"
+    check_path(destination)
     if workspace not in destination.resolve().parents:
         raise ValueError("The skill destination escapes the requested workspace.")
     expected = _inventory(source)
@@ -54,7 +57,9 @@ def install_skill(workspace: Path, *, update: bool = False) -> dict:
         backup = workspace / ".work" / "skill-install-backups" / stamp / destination.name
         if workspace not in backup.resolve().parents:
             raise ValueError("The backup escapes the requested workspace.")
+        writable_directory(backup.parent)
         shutil.copytree(destination, backup)
+    writable_directory(destination.parent)
     shutil.copytree(source, destination, dirs_exist_ok=destination.exists())
     if _inventory(destination) != expected:
         raise ValueError("The installed skill failed its content-hash check.")

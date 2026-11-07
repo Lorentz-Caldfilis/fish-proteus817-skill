@@ -95,6 +95,17 @@ console.log(JSON.stringify({{name:tool.name,result}}));
         value = self.execute(resource_paths=paths)
         self.assertTrue(value["result"]["payload"]["data"]["paths_match"])
 
+    def test_desktop_child_receives_validated_temp(self):
+        self.gate.write_text("import json,os,sys\njson.load(sys.stdin)\n"
+                            "print(json.dumps({'status':'prepared','data':{'valid': "
+                            "os.environ['TEMP']==os.environ['TMP']==os.environ['FISH_PROTEUS_TEMP_DIR'],"
+                            "'temp':os.environ['TEMP']}}))\n", encoding="utf8")
+        data=self.execute()['result']['payload']['data']
+        self.assertTrue(data['valid'])
+        report=next((self.root/'.work/desktop/observations').rglob('*.json'))
+        full=json.loads(report.read_text(encoding='utf8'))
+        self.assertEqual(full['payload']['data']['temp'],str(self.root/'.work/fish-proteus-temp'))
+
     def test_missing_agent_does_not_create_shared_fallback_task(self):
         result = self.execute(missing=True)["result"]
         self.assertEqual(result["payload"]["error"]["type"], "MissingDesktopSession")

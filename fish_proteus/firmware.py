@@ -133,7 +133,8 @@ def extract_firmware(project, destination, member=None) -> dict:
         if destination.suffix.lower() != Path(member).suffix.lower():
             raise ValueError("Destination must preserve the firmware extension")
         data = archive.read(matches[0])
-    destination.parent.mkdir(parents=True, exist_ok=True)
+    from .host_paths import writable_file
+    writable_file(destination)
     with destination.open("xb") as output:
         output.write(data)
     try:

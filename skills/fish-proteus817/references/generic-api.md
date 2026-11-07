@@ -117,7 +117,7 @@ operation; an incorrect index is not a missing simulation clock.
 
 ## Host/CLI setup
 
-Send the same JSON request on stdin to `python -m fish_proteus.design_cli --task-root <task> --inputs-file <host-inputs.json> --allow <actions...>`. Only the host writes that input manifest: `projects`/`firmware` map IDs to read-only originals; `config` contains executable/library_root/samples_root/template_project resource paths.
+Send the same JSON request on stdin to `python -B -m fish_proteus.design_cli --task-root <task> --inputs-file <host-inputs.json> --allow <actions...>`. Only the host writes that input manifest: `projects`/`firmware` map IDs to read-only originals; `config` contains executable/library_root/samples_root/template_project resource paths.
 
 The DSH launcher uses `--workflow design`, new output/job directories, repeated `--input-project ID=PATH` / `--input-firmware ID=PATH` and optional `--design-config`. Explicitly enable run_sequence through `--allowed-operations`; the default design allowlist is file-only. `--workflow course` retains the legacy tool. Model credentials are not inherited by the Python tool child, and saved global DSH profiles are unchanged.
 

@@ -5,6 +5,9 @@ from datetime import datetime, timezone
 import hashlib, json, math, os, re, shutil, tempfile, uuid, zipfile
 from pathlib import Path
 import xml.etree.ElementTree as ET
+from fish_proteus.host_paths import temp_root, writable_directory, writable_file
+
+_owned_stages = set()
 
 
 def _sha(path):
@@ -12,6 +15,7 @@ def _sha(path):
 
 
 def _write(path,value):
+    writable_file(path)
     Path(path).write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 
 
@@ -27,16 +31,25 @@ def _finish(output,job_root,result):
 
 def _cleanup_stage(stage):
     stage=Path(stage)
-    temporary_root=Path(tempfile.gettempdir()).resolve()
-    if stage.is_symlink() or stage.resolve().parent!=temporary_root or not stage.name.startswith('fish-pds-'):
+    if stage.is_symlink() or stage.resolve()!=stage or stage not in _owned_stages:
         raise RuntimeError('Refusing cleanup outside the exact temporary staging directory')
     shutil.rmtree(stage)
+    _owned_stages.remove(stage)
 
 
 def _stage(job):
     """Copy only this job's files into an ASCII-friendly private temporary tree."""
     root=Path(job['job_root']).resolve()
-    stage=Path(tempfile.mkdtemp(prefix='fish-pds-')).resolve()
+    stage=Path(tempfile.mkdtemp(prefix='fish-pds-',dir=temp_root(root))).resolve()
+    _owned_stages.add(stage)
+    try:
+        return _populate_stage(job, root, stage)
+    except BaseException:
+        _cleanup_stage(stage)
+        raise
+
+
+def _populate_stage(job, root, stage):
     paths={}
     for key in ('project','source','executable'):
         original=Path(job[key]).resolve(strict=True)
@@ -187,7 +200,8 @@ def run_job(manifest_path: str | Path, seconds: float=0.05,
     job_root=Path(job['job_root']).resolve(strict=True)
     if job_file.parent!=job_root:
         raise ValueError('Manifest parent must match the prepared job_root')
-    output=job_root/'runtime'/uuid.uuid4().hex[:12];output.mkdir(parents=True)
+    writable_directory(job_root)
+    output=job_root/'runtime'/uuid.uuid4().hex[:12];writable_directory(output)
     result={'schema':'fish-proteus.runtime.v1','status':'blocked','case_id':job['case_id'],
             'recorded_at':datetime.now(timezone.utc).isoformat(),'observed':{},'diagnostics':[],
             'raw_artifacts':[],'requested_seconds':duration,'states':[],'errors':[],
@@ -322,6 +336,9 @@ def run_job(manifest_path: str | Path, seconds: float=0.05,
         if stage is not None:
             # The directory was created by mkdtemp in this call; never a user path.
             try:_cleanup_stage(stage)
-            except OSError as exc:result['diagnostics'].append(f'Temporary staging cleanup: {exc}')
+            except (OSError,RuntimeError) as exc:
+                result['status']='blocked'
+                result['errors'].append(f'Temporary staging cleanup: {exc}')
+                result['diagnostics'].append(f'Temporary staging cleanup: {exc}')
         _finish(output,job_root,result)
     return result

@@ -106,7 +106,8 @@ def set_simulation_options(source, destination, properties, *, config=None, over
     changed = rewrite_options(bytes(project._dsn), properties)
     if destination == source and changed == bytes(project._dsn):
         return destination
-    destination.parent.mkdir(parents=True, exist_ok=True)
+    from .host_paths import writable_file
+    writable_file(destination)
     descriptor, name = tempfile.mkstemp(prefix='.fish-options-', suffix='.pdsprj', dir=destination.parent)
     os.close(descriptor)
     temporary = Path(name)

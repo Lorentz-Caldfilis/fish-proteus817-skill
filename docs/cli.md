@@ -4,7 +4,7 @@
 
 A normal DeepSeek Harness chat does not use this page. The desktop tool calls the same backend. Use the commands when you want a job you can rerun, or when you are not in a chat.
 
-The console script is `fish-proteus`. `python -m fish_proteus` is the same program. Both print JSON.
+The console script is `fish-proteus`. `python -B -m fish_proteus` is the same program. Both print JSON.
 
 ## Course commands
 
@@ -22,10 +22,10 @@ The console script is `fish-proteus`. `python -m fish_proteus` is the same progr
 One divider, from the repository root, after [import](getting-started.md):
 
 ```powershell
-python -m fish_proteus prepare --library .local/course --case divider --divisor 10 --output .work/manual-100khz
-python -m fish_proteus build --manifest .work/manual-100khz/job.json
-python -m fish_proteus run --manifest .work/manual-100khz/job.json --seconds 0.05
-python -m fish_proteus verify --manifest .work/manual-100khz/job.json
+python -B -m fish_proteus prepare --library .local/course --case divider --divisor 10 --output .work/manual-100khz
+python -B -m fish_proteus build --manifest .work/manual-100khz/job.json
+python -B -m fish_proteus run --manifest .work/manual-100khz/job.json --seconds 0.05
+python -B -m fish_proteus verify --manifest .work/manual-100khz/job.json
 ```
 
 Use a new output directory for the next variant. Read each command's JSON before the next one. A built executable is not a `passed` verify.

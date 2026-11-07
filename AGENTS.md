@@ -3,12 +3,12 @@
 When a user asks you to install this repository's Proteus skill in DeepSeek Harness desktop, use this workflow. Reading the repository or requesting a circuit alone is not permission to install. Obtain the user's authorization before changing their desktop profile or installing dependencies. A request to install grants that authorization; do not ask again when it already covers these steps. If permission or a shell/filesystem capability is unavailable, explain the blocker and give the commands below; do not claim installation succeeded.
 
 1. If given only a repository URL, clone it into an unused persistent local directory first: `git clone --branch main https://github.com/Lorentz-Caldfilis/fish-proteus817-skill.git`. For an explicitly requested old-lab-PC demo, use `--branch demo/portable-lab` instead. Inspect an existing checkout's branch and local changes before reusing it; preserve user changes. Work on the same Windows machine as the user's existing DeepSeek Harness and licensed Proteus 8.17 SP2. Keep this repository in a persistent location: the installed tool uses its paths. Open Harness once to create its profile. Never ask for or handle account credentials.
-2. From the repository root, use Python 3.10 or newer and a repository-local virtual environment. In PowerShell:
+2. Before starting Harness, follow `docs/configuration.md` school-machine policy: use non-system-drive repository/venv and actual initialized Harness home; set TEMP/TMP, `FISH_PROTEUS_TEMP_DIR`, and pip cache policy in that launch environment. Keep strict Windows mode enabled for school computers. Never migrate a home or fall back to HOME/system TEMP. External application writes remain outside this skill's complete control. From the repository root, use Python 3.10 or newer and a repository-local virtual environment. In PowerShell:
 
    ```powershell
-   if (-not (Test-Path .venv)) { py -3 -m venv .venv }
-   .\.venv\Scripts\python.exe -m pip install -e ".[dsh]"
-   .\.venv\Scripts\python.exe tools/dsh_install_desktop.py --dry-run
+   if (-not (Test-Path .venv)) { py -3 -B -m venv .venv }
+   .\.venv\Scripts\python.exe -B -m pip install --no-cache-dir -e ".[dsh]"
+   .\.venv\Scripts\python.exe -B tools/dsh_install_desktop.py --dsh-home $ActualInitializedHarnessHome --dry-run
    ```
 
    If `.venv` already exists, reuse it only if it is this repository's intended environment and is usable; do not delete or replace an existing environment. Dependency installation needs network access or locally available packages. Read the dry-run JSON, especially `status`, `errors`, and `warnings`.

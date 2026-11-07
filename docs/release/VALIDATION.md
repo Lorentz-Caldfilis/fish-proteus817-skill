@@ -276,19 +276,19 @@ The public offline suite needs neither Proteus nor private course files:
 
 ```powershell
 python -B -m unittest discover -s tests -v
-python tools/vendor_provenance.py
+python -B tools/vendor_provenance.py
 ```
 
 With your own licensed local installation, generate a fresh structural queue:
 
 ```powershell
-python tools/generic_structure_acceptance.py --output .work/my-structure
+python -B tools/generic_structure_acceptance.py --output .work/my-structure
 ```
 
 Then, separately on the interactive Windows desktop, launch serial native checks:
 
 ```powershell
-python tools/generic_native_acceptance.py --queue .work/my-structure/acceptance.json --output .work/my-native-structure
+python -B tools/generic_native_acceptance.py --queue .work/my-structure/acceptance.json --output .work/my-native-structure
 ```
 
 Local integration tests in `test_generic_acceptance.py` can also be enabled with
@@ -344,14 +344,14 @@ From a checkout with dependencies installed:
 
 ```powershell
 python -B -m unittest discover -s tests -v
-python tools/public_release.py --output .work/release-check
-python tools/public_release.py --check .work/release-check/repository
+python -B tools/public_release.py --output .work/release-check
+python -B tools/public_release.py --check .work/release-check/repository
 ```
 
 For a fresh desktop run after importing your originals:
 
 ```powershell
-python tools/acceptance.py --library .local/course --output .work/my-acceptance --runtime --repeat 3
+python -B tools/acceptance.py --library .local/course --output .work/my-acceptance --runtime --repeat 3
 ```
 
 An unused output directory is required. Omitting `--runtime` produces `build_only`, not a simulation pass. Keep generated files and raw evidence private until their rights and contents have been reviewed.

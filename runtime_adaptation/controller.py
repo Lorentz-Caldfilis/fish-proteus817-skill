@@ -11,6 +11,7 @@ import json, math, re, subprocess, time, unicodedata, uuid
 from . import native
 from .capture import capture_window
 from .session import Session
+from fish_proteus.host_paths import child_environment, writable_file, writable_directory, timeout_scale
 
 
 class Controller(Session):
@@ -125,7 +126,7 @@ class Controller(Session):
             raise ValueError('Capture timeout must be finite and positive')
         # This wall-time budget only bounds waiting for a capture. It is never
         # substituted for the simulator's clock or for measured waveform data.
-        wait_budget=min(timeout,max(2.0,min(8.0,seconds*2+1.0)))
+        wait_budget=min(timeout,max(15.0,seconds*2+1.0))*timeout_scale()
         diagnostics=[];clock_readings={}
         self.pause()
         try:
@@ -188,7 +189,7 @@ class Controller(Session):
         from .image_evidence import crop_scaled_png
         from fish_proteus.waveform import _png_rgb
         directory=Path(self.evidence_directory or self.project.parent/'clock-evidence')
-        directory.mkdir(parents=True,exist_ok=True)
+        writable_directory(directory)
         token=label+'-'+uuid.uuid4().hex[:8]
         full=directory/(token+'-window.png');capture_window(self._ready()['hwnd'],full)
         width,height,_=_png_rgb(full.read_bytes())
@@ -226,8 +227,8 @@ class Controller(Session):
             return rows[0] if len(rows)==1 else None
         row=self._wait(find)
         native.u.ShowWindow.argtypes=(w.HWND,c.c_int);native.u.ShowWindow(row['hwnd'],4)
-        native.u.SetWindowPos.argtypes=(w.HWND,w.HWND,c.c_int,c.c_int,c.c_int,c.c_int,w.UINT)
-        if not native.u.SetWindowPos(row['hwnd'],None,0,0,1380,900,0x14):raise c.WinError(c.get_last_error())
+        from .scope_layout import fit_scope
+        fit_scope(native,row['hwnd'])
         time.sleep(.25)
         return row
 
@@ -243,9 +244,11 @@ class Controller(Session):
 
 
 def read_ocr(image_path, output_path):
+    writable_file(output_path)
     script=Path(__file__).with_name('ocr.ps1')
     command=['powershell.exe','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',str(script),'-ImagePath',str(Path(image_path).resolve())]
-    result=subprocess.run(command,capture_output=True,timeout=40)
+    result=subprocess.run(command,capture_output=True,timeout=40*timeout_scale(),
+                          env=child_environment(Path(output_path).resolve().parent))
     stdout=result.stdout.decode('utf-8-sig',errors='replace')
     stderr=result.stderr.decode('utf-8-sig',errors='replace')
     if result.returncode:raise RuntimeError(f'Windows OCR failed: {stderr[:1200]}')

@@ -19,6 +19,7 @@ import tempfile
 import uuid
 
 from .config import ProteusConfig
+from .host_paths import writable_directory, writable_file
 from .design_cli import ACTIONS, DesignTask, execute_request, validate_request, _identifier
 
 
@@ -60,6 +61,7 @@ def _sha(path):
 def _write(path, value):
     """Replace one complete manifest on its own filesystem."""
     path = Path(path)
+    writable_file(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     descriptor, temporary = tempfile.mkstemp(prefix=".desktop-", suffix=".tmp", dir=path.parent)
     try:
@@ -78,6 +80,7 @@ def _write(path, value):
 def file_lock(path):
     """An OS-owned nonblocking lock; a dead process cannot leave a stale lock."""
     path = Path(path)
+    writable_file(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a+b") as stream:
         if stream.seek(0, os.SEEK_END) == 0:
@@ -232,6 +235,7 @@ class DesktopTasks:
         _need(isinstance(session_id, str) and 0 < len(session_id) <= 4096,
               "The desktop host must supply a real session identity")
         self.store = Path(store_root).expanduser().resolve()
+        writable_directory(self.store)
         self.working_directory = Path(working_directory).expanduser().resolve(strict=True)
         _need(self.working_directory.is_dir(), "The session working directory must be a directory")
         self.session_id = session_id
@@ -460,7 +464,7 @@ class DesktopTasks:
               "Export must be outside desktop task storage")
         config = self.config()
         config.check_destination(destination)
-        destination.parent.mkdir(parents=True, exist_ok=True)
+        writable_directory(destination.parent)
         temporary = Path(tempfile.mkdtemp(prefix=".fish-export-", dir=destination.parent))
         try:
             relative = source.relative_to(root)

@@ -12,6 +12,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from fish_proteus.firmware import firmware_info
+from fish_proteus.host_paths import writable_directory, child_environment
 
 
 def build(toolchain: Path, output: Path, *, dwarf_version=2) -> dict:
@@ -28,21 +29,22 @@ def build(toolchain: Path, output: Path, *, dwarf_version=2) -> dict:
     source = ROOT / "examples" / "stm32_gpio_follow"
     sources = [source / "main.c", source / "startup.S", source / "stm32f103r6.ld"]
     source_hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
-    output.mkdir(parents=True)
+    writable_directory(output)
+    environment = child_environment(output)
     elf, hexfile = output / "gpio-follow.elf", output / "gpio-follow.hex"
     command = [str(compiler), "-mcpu=cortex-m3", "-mthumb", "-ffreestanding", "-fno-builtin",
                "-nostdlib", "-Os", "-g3", f"-gdwarf-{dwarf_version}", "-Wall", "-Wextra", "-Werror", "-Wl,--build-id=none",
                "-Wl,-Map=" + str(output / "gpio-follow.map"), "-T", str(sources[2]),
                str(sources[1]), str(sources[0]), "-o", str(elf)]
-    completed = subprocess.run(command, capture_output=True, text=True, timeout=60)
+    completed = subprocess.run(command, capture_output=True, text=True, timeout=60, env=environment)
     if completed.returncode:
         raise RuntimeError("Firmware build failed: " + completed.stdout + completed.stderr)
     subprocess.run([str(objcopy), "-O", "ihex", str(elf), str(hexfile)], check=True,
-                   capture_output=True, text=True, timeout=30)
+                   capture_output=True, text=True, timeout=30, env=environment)
     result = {"status": "built", "runtime_verified": False, "debug_format": f"DWARF-{dwarf_version}", "source_sha256": source_hashes,
               "compiler": {"path": str(compiler), "sha256": hashlib.sha256(compiler.read_bytes()).hexdigest(),
                            "version": subprocess.run([str(compiler), "--version"], capture_output=True,
-                                                     text=True, check=True, timeout=10).stdout.splitlines()[0]},
+                                                     text=True, check=True, timeout=10, env=environment).stdout.splitlines()[0]},
               "command": command, "elf": firmware_info(elf), "hex": firmware_info(hexfile),
               "input": "PA0", "output": "PA5"}
     (output / "build.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

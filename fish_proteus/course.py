@@ -74,6 +74,9 @@ def import_course(source_root: str | Path, destination: str | Path) -> dict[str,
             "original_source_sha256": sha256_file(sources[0]),
         }
         planned.append((original, copied))
+    from .host_paths import writable_directory, check_path
+    check_path(target)
+    writable_directory(target.parent)
     target.mkdir(parents=True)
     for original, copied in planned:
         shutil.copytree(original, copied)
@@ -274,6 +277,9 @@ def generate_variant(imported: str | Path | dict[str, Any], case_id: str,
     # The switch project originally stores a 29-byte absolute PROGRAM path.
     # This 29-byte relative replacement preserves the unknown binary format.
     executable_relative = "8086/Debug/generated-8086.exe" if case_id == "switch" else "8086/Debug/Debug.exe"
+    from .host_paths import writable_directory, check_path
+    check_path(output)
+    writable_directory(output.parent)
     output.mkdir(parents=True)
     project = output / Path(case["project"]).name
     source = output / "8086/main.asm"

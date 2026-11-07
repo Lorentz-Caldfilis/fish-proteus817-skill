@@ -16,6 +16,8 @@ from urllib.parse import unquote
 import zipfile
 
 REPOSITORY = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPOSITORY))
+from fish_proteus.host_paths import writable_directory
 CONFIG = "public-release.json"
 MANIFEST = "PUBLIC_MANIFEST.json"
 SKILL = "skills/fish-proteus817"
@@ -165,7 +167,7 @@ def export_public(root: Path, output: Path) -> dict:
     # Read and validate every input before creating any output.
     files = {name: _source_bytes(root, name) for name in config["files"]}
     tree = output / "repository"
-    tree.mkdir(parents=True)
+    writable_directory(tree)
     rows = []
     for name, data in sorted(files.items()):
         target = tree / name

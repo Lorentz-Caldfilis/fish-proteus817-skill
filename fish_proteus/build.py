@@ -221,7 +221,8 @@ def build_program(asm_path: str | Path, output_exe: str | Path, toolchain: str =
         raise BuildError(f"Refusing to overwrite existing executable: {target}")
     if toolchain not in ("auto", "builtin", "nasm"):
         raise BuildError("toolchain must be auto, builtin, or nasm")
-    target.parent.mkdir(parents=True, exist_ok=True)
+    from .host_paths import writable_file, child_environment
+    writable_file(target)
     source_data = source_path.read_bytes()
     source = _decode_source(source_data)
     chosen_nasm = discover_nasm(nasm) if toolchain != "builtin" else None
@@ -245,8 +246,9 @@ def build_program(asm_path: str | Path, output_exe: str | Path, toolchain: str =
             flat, listing = work / "program.bin", work / "program.lst"
             command = [str(chosen_nasm), "-f", "bin", "-o", str(flat), "-l", str(listing), str(translated)]
             try:
-                completed = subprocess.run(command, shell=False, capture_output=True, text=True, errors="replace", timeout=timeout)
-                version = subprocess.run([str(chosen_nasm), "-v"], shell=False, capture_output=True, text=True, errors="replace", timeout=timeout)
+                environment = child_environment(target.parent)
+                completed = subprocess.run(command, shell=False, capture_output=True, text=True, errors="replace", timeout=timeout, env=environment)
+                version = subprocess.run([str(chosen_nasm), "-v"], shell=False, capture_output=True, text=True, errors="replace", timeout=timeout, env=environment)
             except (subprocess.TimeoutExpired, OSError) as error:
                 raise BuildError(f"NASM could not complete: {error}") from error
             if completed.returncode or not flat.is_file():

@@ -56,6 +56,20 @@ class RuntimeIntegrityTests(unittest.TestCase):
                     self.assertEqual(archive.read('ROOT.CDB'),b'untouched-netlist-data')
             finally:_cleanup_stage(stage)
 
+    def test_explicit_temp_root_owns_staging_and_failed_staging_is_cleaned(self):
+        import os
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as directory:
+            job,_=self.make_job(directory)
+            temporary=Path(directory).resolve()/'chosen-temp'
+            with patch.dict(os.environ,{'FISH_PROTEUS_TEMP_DIR':str(temporary)}):
+                stage,_=_stage(job)
+                self.assertEqual(stage.parent,temporary)
+                _cleanup_stage(stage)
+                with patch('runtime_adaptation.runner._populate_stage',side_effect=ValueError('bad project')):
+                    with self.assertRaisesRegex(ValueError,'bad project'):_stage(job)
+                self.assertEqual(list(temporary.iterdir()),[])
+
     def test_stale_source_is_blocked_before_any_desktop_import(self):
         with tempfile.TemporaryDirectory() as directory:
             job,_=self.make_job(directory)

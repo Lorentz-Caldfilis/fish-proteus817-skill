@@ -9,6 +9,8 @@ import subprocess
 import sys
 import urllib.request
 import zipfile
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from fish_proteus.host_paths import writable_directory, child_environment
 
 VERSION = "3.02"
 URL = f"https://www.nasm.us/pub/nasm/releasebuilds/{VERSION}/win64/nasm-{VERSION}-win64.zip"
@@ -17,7 +19,7 @@ ARCHIVE_SHA256 = "161d0bfaff53c2f9e9f3e69fd0672323ebabafd1268976a5cec11be92a19ae
 
 def install(directory: str | Path, archive: str | Path | None = None) -> dict:
     target = Path(directory).resolve()
-    target.mkdir(parents=True, exist_ok=True)
+    writable_directory(target)
     if archive:
         archive_path = Path(archive).resolve()
     else:
@@ -46,7 +48,8 @@ def install(directory: str | Path, archive: str | Path | None = None) -> dict:
             destination.write_bytes(data)
             installed.append({"name": name, "sha256": hashlib.sha256(data).hexdigest()})
     version = subprocess.run([str(target / "nasm.exe"), "-v"], shell=False, capture_output=True,
-                             text=True, errors="replace", timeout=15, check=True).stdout.strip()
+                             text=True, errors="replace", timeout=15, check=True,
+                             env=child_environment(target)).stdout.strip()
     result = {"status": "installed", "version": version, "url": URL,
               "archive_sha256": digest, "directory": str(target), "files": installed,
               "nasm": str(target / "nasm.exe"), "global_changes": False}

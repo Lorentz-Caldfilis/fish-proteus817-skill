@@ -73,8 +73,9 @@ class ProteusConfig:
         return result
 
     def check_destination(self, destination: str | Path) -> Path:
+        from .host_paths import check_path
         path = _resolved(destination)
         protected = (self.executable.parent.parent, self.library_root, self.samples_root)
         if any(path == root or root in path.parents for root in protected):
             raise ValueError("Generated projects must be saved outside installed Proteus resources")
-        return path
+        return check_path(path)

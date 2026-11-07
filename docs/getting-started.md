@@ -16,14 +16,18 @@ File-level Python imports work without Windows. Simulation does not.
 
 ## Install and register
 
+On Windows, first follow [School computers / no system-drive writes](configuration.md#school-computers-no-system-drive-writes). Use a non-system-drive repository and virtual environment, a verified ASCII temporary directory, and the actual initialized Harness home. Set TEMP/TMP, `FISH_PROTEUS_TEMP_DIR` and pip cache policy **before starting Harness**. `--dsh-home` selects an existing home; it never migrates one. Repository placement on D alone is insufficient. For ordinary machines only, the documented strict-mode opt-out is available.
+
+学校机先读[写入配置与边界](configuration.md#学校机禁止向系统盘写数据)：在启动 Harness 前设置 TEMP/TMP、`FISH_PROTEUS_TEMP_DIR`、pip 缓存；仓库和虚拟环境放非系统盘。`--dsh-home` 不是搬家工具。外部 Proteus/Harness/Windows 的全部写入无法由本 skill 保证。
+
 From PowerShell:
 
 ```powershell
 git clone https://github.com/Lorentz-Caldfilis/fish-proteus817-skill.git
 Set-Location fish-proteus817-skill
-py -3 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e ".[dsh]"
-.\.venv\Scripts\python.exe tools/dsh_install_desktop.py
+py -3 -B -m venv .venv
+.\.venv\Scripts\python.exe -B -m pip install --no-cache-dir -e ".[dsh]"
+.\.venv\Scripts\python.exe -B tools/dsh_install_desktop.py --dsh-home $ActualInitializedHarnessHome
 ```
 
 The installer adds this skill to your existing Harness profile and remembers the Python and the repo path. Other settings are left in place. A backup is kept. `--dry-run` writes nothing. `--uninstall` removes this registration.
@@ -53,10 +57,14 @@ The 8086 recipes expect a reference tree you already have, with each case's orig
 
 Import makes a private, hashed copy. Later jobs use fresh working copies.
 
+All three directories must each contain exactly one `.pdsprj` and `main.asm`, even if only divider is requested. GitHub source alone cannot reproduce the course five-divider case. No teacher files are bundled. A partial import is not supported.
+
+三套固定材料目录都必须各有一个 `.pdsprj` 和 `main.asm`，只跑 divider 也一样。仅有 GitHub 源码无法复现课程五分频，仓库不分发教师原件，不支持隐式的单套材料导入。
+
 ```powershell
-.\.venv\Scripts\python.exe tools/bootstrap_nasm.py
-.\.venv\Scripts\python.exe -m fish_proteus doctor
-.\.venv\Scripts\python.exe -m fish_proteus import-course --source $CourseReference --destination .local/course
+.\.venv\Scripts\python.exe -B tools/bootstrap_nasm.py
+.\.venv\Scripts\python.exe -B -m fish_proteus doctor
+.\.venv\Scripts\python.exe -B -m fish_proteus import-course --source $CourseReference --destination .local/course
 ```
 
 `bootstrap_nasm.py` downloads a pinned NASM archive, checks its SHA-256, and puts it in `.tools/nasm`. It does not change the system `PATH`. Pass `--archive` if you already have that archive.

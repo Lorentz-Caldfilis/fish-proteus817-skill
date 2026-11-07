@@ -19,6 +19,7 @@ runtime_adaptation/*
 !runtime_adaptation/native.py
 !runtime_adaptation/session.py
 !runtime_adaptation/controller.py
+!runtime_adaptation/scope_layout.py
 !runtime_adaptation/capture.py
 !runtime_adaptation/image_evidence.py
 !runtime_adaptation/runner.py

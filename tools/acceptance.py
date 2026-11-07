@@ -36,7 +36,8 @@ def acceptance(source: Path | None, library: Path | None, output: Path, runtime:
     protected_before = verify_import(library)
     if protected_before["status"] != "verified":
         raise ValueError("The protected course library/originals failed integrity verification")
-    output.mkdir(parents=True, exist_ok=True)
+    from fish_proteus.host_paths import writable_directory
+    writable_directory(output)
     environment = discover()
     write_json(output / "environment.json", environment)
     scenarios = [

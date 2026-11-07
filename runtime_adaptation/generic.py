@@ -73,6 +73,7 @@ class Session:
             self.identity['native_logfile']=str(self.logfile)
 
     def _configure_logfile(self,logfile):
+        from fish_proteus.host_paths import writable_directory
         from fish_proteus.simulation_options import read_simulation_options,set_simulation_options
         path=self.config.check_destination(Path(logfile).expanduser().resolve())
         if not str(path).isascii() or any(ord(char)<32 for char in str(path)):
@@ -81,7 +82,7 @@ class Session:
         if path==self.project:raise ValueError('LOGFILE cannot be the project itself')
         values=read_simulation_options(self.project)
         self._previous_logfile=values.get('LOGFILE')
-        path.parent.mkdir(parents=True,exist_ok=True)
+        writable_directory(path.parent,ascii_only=True)
         set_simulation_options(self.project,self.project,{'LOGFILE':str(path)},
                                config=self.config,overwrite=True)
         self._revision=_sha(self.project)

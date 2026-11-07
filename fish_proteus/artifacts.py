@@ -20,7 +20,8 @@ def sha256_file(path: str | Path) -> str:
 
 def write_json(path: str | Path, value: Any) -> None:
     target = Path(path)
-    target.parent.mkdir(parents=True, exist_ok=True)
+    from .host_paths import writable_file
+    writable_file(target)
     encoded = (json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
     descriptor, temporary = tempfile.mkstemp(prefix=".fish-json-", dir=target.parent)
     try:

@@ -5,6 +5,9 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from fish_proteus.host_paths import writable_file
 
 
 def check(root: Path, *, refresh=False) -> dict:
@@ -23,6 +26,7 @@ def check(root: Path, *, refresh=False) -> dict:
         elif row["adapted_sha256"] != digest:
             raise ValueError("Vendor adapted identity changed: " + name)
     if refresh:
+        writable_file(manifest)
         manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return {"status": "refreshed" if refresh else "passed", "files": len(data["files"]),
             "upstream_commit": data["commit"]}

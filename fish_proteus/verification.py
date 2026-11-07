@@ -124,9 +124,13 @@ def verify_job(manifest_path: str | Path, runtime_path: str | Path | None = None
         if _number(measured) and measured > 0:
             error = abs(measured - expected) / expected
             check("output_frequency_matches", error <= 0.01, {"measured_hz": measured, "expected_hz": expected, "relative_error": error, "allowed_relative_error": 0.01})
-        if "input_hz" in observed:
-            measured_input = observed["input_hz"]
-            check("input_frequency_matches", _number(measured_input) and abs(measured_input - 1_000_000) <= 10_000, measured_input)
+        measured_input = observed.get("input_hz")
+        check("input_frequency_matches", _number(measured_input) and abs(measured_input - 1_000_000) <= 10_000,
+              measured_input, missing=not _number(measured_input))
+        if _number(measured_input) and _number(measured) and measured > 0:
+            ratio = measured_input / measured
+            check("measured_division_ratio", abs(ratio-divisor)/divisor <= 0.02,
+                  {"measured_ratio": ratio, "expected_ratio": divisor, "allowed_relative_error": 0.02})
     else:
         low, high = values["on_value"], values["off_value"]
         if values["invert"]:
