@@ -10,7 +10,7 @@ I built this as a course extension. The lab was still the clicking: drop a part,
 [![License](https://img.shields.io/badge/license-MIT-111111)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-111111)](https://www.python.org/downloads/)
 [![CI](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-0.3.0--alpha-111111)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.1--alpha-111111)](CHANGELOG.md)
 ![Windows](https://img.shields.io/badge/Windows-0078D4?logo=windows&logoColor=white)
 ![Proteus](https://img.shields.io/badge/Proteus-8.17%20SP2-111111)
 
@@ -26,7 +26,7 @@ Proteus keeps the circuit in its own project, on a Windows desktop, with a licen
 
 You want it if you have Proteus 8.17 SP2 on an interactive Windows desktop and you use DeepSeek Harness. If you are happy clicking through Proteus yourself, you do not need it.
 
-Alpha, version 0.3.0. It is not an MCP server, and it is not a Labcenter or DeepSeek product.
+Alpha, version 0.3.1. It is not an MCP server, and it is not a Labcenter or DeepSeek product.
 
 **Ask the desktop agent to install:** Give DeepSeek Harness access to this repository and authorize setup. It should follow [AGENTS.md](AGENTS.md) to install both the skill and its desktop tool. Local shell and profile access are required.
 

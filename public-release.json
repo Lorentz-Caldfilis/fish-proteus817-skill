@@ -143,5 +143,5 @@
     "tools/vendor_provenance.py"
   ],
   "schema": "fish-proteus.public-source.v1",
-  "version": "0.3.0"
+  "version": "0.3.1"
 }

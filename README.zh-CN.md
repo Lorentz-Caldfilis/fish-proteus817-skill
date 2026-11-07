@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/badge/license-MIT-111111)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-111111)](https://www.python.org/downloads/)
 [![CI](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-0.3.0--alpha-111111)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.1--alpha-111111)](CHANGELOG.md)
 ![Windows](https://img.shields.io/badge/Windows-0078D4?logo=windows&logoColor=white)
 ![Proteus](https://img.shields.io/badge/Proteus-8.17%20SP2-111111)
 
@@ -26,7 +26,7 @@ Proteus 的工程在你自己的 Windows 桌面上，软件也得你自己有授
 
 你已经装了 Proteus 8.17 SP2，平时用 DeepSeek Harness，就可以用。如果你更想自己在 Proteus 里点，那就不需要它。
 
-当前是 Alpha，版本 0.3.0。它不是 MCP 服务器，也不是 Labcenter 或 DeepSeek 的产品。
+当前是 Alpha，版本 0.3.1。它不是 MCP 服务器，也不是 Labcenter 或 DeepSeek 的产品。
 
 **让桌面模型安装：** 把此仓库交给 DeepSeek Harness 读取并授权安装。模型应按 [AGENTS.md](AGENTS.md) 安装 skill 和配套桌面工具；它需要本机命令行和配置文件访问权限。
 

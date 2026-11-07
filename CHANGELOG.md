@@ -1,16 +1,21 @@
 # Changelog
 
-## Unreleased
+## 0.3.1 — 2026-11-07
+
+- Respect `DSH_HOME` during desktop setup, with `--dsh-home` taking precedence and the normal home default retained.
+- Keep custom Proteus and NASM paths available to the bounded project and design tools.
+- Require measured input and output frequencies for divider and cascade verification, with a check of their actual ratio.
+- Improve desktop setup diagnostics and preserve verified resource paths across updates.
 
 - Rewrite the English and Chinese READMEs in a short, human voice, and move the lab record under `docs/release/`. Add a docs map: getting started, configuration, skill usage, CLI, architecture, and troubleshooting.
 - Tighten `skills/fish-proteus817/SKILL.md` so the description says when to use it. The skill path and `fish_proteus_design` are unchanged.
 - Document the repository layout and an unofficial-tool disclaimer in both READMEs. The Agent Skill remains `skills/fish-proteus817/SKILL.md`; Python packages stay at the repository root.
 - Add Ruff configuration, a `dev` extra, and a lint job for the offline tree. Vendored Proteus sources stay excluded so their provenance hashes do not change.
 - Ignore common Python, editor, Windows, and Proteus backup artifacts. Stop tracking generated `PUBLIC_MANIFEST.json`; `tools/public_release.py` still writes it into an export.
-- Drop unused imports and an unused validator binding. Circuit, simulation, and tool behavior are unchanged.
-- State in the publication guide that the current source version is 0.3.0.
+- Drop unused imports and an unused validator binding.
+- Align package, Skill and publication metadata at 0.3.1.
 
-中文：README 改成短的人话，中英文各一篇；实测记录挪到 `docs/release/`。Skill 路径和工具行为不变。另补充仓库结构与非官方免责说明，加入 Ruff 检查，忽略常见 Python、Windows 和 Proteus 备份文件，不再提交导出工具生成的 `PUBLIC_MANIFEST.json`。
+中文：安装器支持 `DSH_HOME`，工具保留自定义 Proteus/NASM 路径，分频验证同时检查实际输入、输出和分频比。README 改成短的人话，中英文各一篇；实测记录挪到 `docs/release/`。Skill 路径不变。另补充仓库结构与非官方免责说明，加入 Ruff 检查，忽略常见 Python、Windows 和 Proteus 备份文件，不再提交导出工具生成的 `PUBLIC_MANIFEST.json`。
 
 ## 0.3.0 — 2026-10-29
 

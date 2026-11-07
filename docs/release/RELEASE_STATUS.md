@@ -2,7 +2,14 @@
 
 [English README](../../README.md) · [中文说明](../../README.zh-CN.md)
 
-## Current desktop integration: 0.3.0
+## Current source: 0.3.1
+
+Version 0.3.1 improves desktop setup, preserves custom runtime paths in the
+bounded tools, and checks both measured frequencies when verifying counters.
+The release assets carry their own hashes and performed checks in
+`SHA256SUMS` and `VALIDATION-0.3.1.json`.
+
+## Desktop integration baseline: 0.3.0
 
 Version 0.3.0 adds a persistent ordinary-desktop plugin and session/task/resource
 management. The one-time installer preserves other profile settings and installs

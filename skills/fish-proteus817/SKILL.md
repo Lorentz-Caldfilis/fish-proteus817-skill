@@ -5,7 +5,7 @@ license: MIT
 compatibility: DeepSeek Harness desktop with the companion desktop tool installed once, Windows with Proteus 8.17 SP2, and Python 3.10+. Local device definitions, models, and firmware depend on the task. Model access may require network access.
 metadata:
   author: "Fish for Proteus contributors"
-  version: "0.3.0"
+  version: "0.3.1"
   source: "https://github.com/Lorentz-Caldfilis/fish-proteus817-skill"
 ---
 

@@ -4,8 +4,9 @@ This repository separates the reviewed public source distribution from private c
 
 ## Current distribution and completed 0.2.0 baseline
 
-The current source version is 0.3.0. Desktop integration for that version is
-recorded in [release status](docs/release/RELEASE_STATUS.md). Version 0.2.1 was the
+The current source version is 0.3.1. It refines installation, runtime path
+selection and counter verification. Desktop integration was introduced in
+0.3.0; version-specific records are in [release status](docs/release/RELEASE_STATUS.md). Version 0.2.1 was the
 previous documentation and release-metadata revision for the clean public
 repository
 [fish-proteus817-skill](https://github.com/Lorentz-Caldfilis/fish-proteus817-skill).
@@ -114,7 +115,7 @@ private development branches or merge their history into that repository.
 
 若旧私有仓库存过课程电路和会话，只删除当前文件不足以安全公开整个仓库。可以将干净目录推到新的公开仓库，同时保留原私有开发历史；也可先在私有库内用无父提交的 `public-release` 分支评审。该分支不会自动清除其他分支和旧提交，不能直接把原库一键设为公开。
 
-当前仓库源码版本为 0.3.0，桌面接入记录见发行状态。下文 0.2.0 / 0.2.1 仍是历史证据，不改写成 0.3.0 的验收结论。
+当前仓库源码版本为 0.3.1，改进安装、运行路径选择和分频验证。0.3.0 引入桌面接入，各版本记录见发行状态；历史证据仍归属于原版本。
 
 0.2.0 已有本机结构、六类 GPIO、隔离安装和真实 DSH 闭环证据，ADC+BUFFER、直连失败及诊断限制保留。G13 在具体外发授权后完成独立运行续段，17 次文件请求与 19 次运行阶段请求共享任务但不是同一 DSH 会话。每次发行按实际包哈希和安装报告记录，不继承旧包身份、不制造自包含 checksum 循环，也不预写未来包哈希或 CI。白名单只含原创源码与合法 MIT 改编，不含模型/器件定义、官方 donor、原生工程、编译固件、图像、原始导出、个人路径或会话。
 
